@@ -1,0 +1,89 @@
+# Cruise fare and inventory panel -- configuration.
+#
+# Everything a human might want to change lives here: rate limits, date windows,
+# the cabin mapping, and the daily-marker sailing list.
+
+storage:
+  db_path: data/panel.sqlite
+  raw_archive_path: data/raw
+
+http:
+  # Honest, contactable identification. Do not replace with a browser UA string.
+  user_agent: "cruise-fare-panel/0.1 (equity research; contact runoffgeorge@gmail.com)"
+  min_interval_s: 2.0      # hard floor between requests to one host
+  max_retries: 4           # applies to 429/503 and transport errors only
+  backoff_base_s: 2.0
+  backoff_cap_s: 60.0
+  timeout_s: 60.0
+  obey_robots: true        # a disallowed path raises before any request is sent
+
+tiers:
+  weekly-full:
+    # The disputed window.
+    sail_window:
+      start: "2027-01-01"
+      end: "2027-08-31"
+
+  daily-marker:
+    # Near-term control cohort: reprices faster than far-out sailings.
+    sail_window:
+      start: "2026-10-01"
+      end: "2026-12-31"
+    # Restrict to the marker list below plus anything inside the earnings window.
+    marker_only: true
+    event_date: "2026-11-04"     # NCLH Q3 print
+    event_window_days: 14        # +/- two weeks around it
+    # Populate once the weekly-full panel has run and the strata are chosen:
+    # ~20-30 itinerary codes weighted to Southern Europe and Caribbean,
+    # spanning all four standard cabin categories.
+    marker_itineraries: []
+
+lines:
+  ncl:
+    line: "Norwegian Cruise Line"
+    brand: "NCL"
+    enabled: true
+    base_url: "https://www.ncl.com"
+    search_page_size: 50
+    max_itineraries: null      # null = no cap
+
+    # Explicit label -> standard category. No fuzzy matching anywhere.
+    # An unlisted label is logged to `unmapped_labels` and stored with a NULL
+    # cabin_category rather than guessed at.
+    #
+    # JUDGEMENT CALL -- MINISUITE: NCL sells this as "Club Balcony Suite". It is
+    # physically a balcony stateroom marketed with suite branding, so it is mapped
+    # to `balcony`. Mapping it to `suite` would inflate the suite tier by roughly
+    # the size of the balcony tier and corrupt peer_gap comparisons against lines
+    # with no mini-suite product. Flip it here if you disagree -- it is one line,
+    # and re-running normalization over the raw archive will rebuild the panel.
+    cabin_map:
+      STUDIO:    inside      # solo interior cabin, no window
+      INSIDE:    inside
+      OCEANVIEW: oceanview
+      BALCONY:   balcony
+      MINISUITE: balcony     # see note above
+      SUITE:     suite
+      HAVEN:     suite       # NCL's ship-within-a-ship suite complex
+
+    # Vendor destination code -> panel region. Unlisted codes yield a NULL region
+    # and are excluded by the `regions` filter below.
+    # BAHAMAS is folded into Caribbean: the sailings are Caribbean-basin and would
+    # otherwise drop out of the panel entirely.
+    region_map:
+      CARIBBEAN:       Caribbean
+      BAHAMAS:         Caribbean
+      MEDITERRANEAN:   Southern Europe
+      GREEK_ISLES:     Southern Europe
+      NORTHERN_EUROPE: Northern Europe
+      BERMUDA:         Bermuda
+      ALASKA:          Alaska
+
+    # Regions collected. Southern Europe is where the thesis concentrates and is
+    # collected in full.
+    regions:
+      - Caribbean
+      - Southern Europe
+      - Northern Europe
+      - Bermuda
+      - Alaska

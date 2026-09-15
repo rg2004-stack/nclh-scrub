@@ -1,0 +1,13 @@
+# Collected data: the DB and raw archive are rebuildable and large.
+data/panel.sqlite
+data/panel.sqlite-wal
+data/panel.sqlite-shm
+data/raw/
+
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+.DS_Store
