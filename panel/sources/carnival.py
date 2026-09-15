@@ -259,6 +259,53 @@ class CarnivalSource:
         self.store = store
         self.archive = archive
 
+    def _collect_markers(self, markers, tier, scrape_ts, scrape_date,
+                         window, now, result):
+        """Collect only the named itinerary codes, in batches."""
+        done = self.store.completed_itineraries(tier, self.line_cfg.line, scrape_date)
+        BATCH = 10
+        for i in range(0, len(markers), BATCH):
+            batch = markers[i:i + BATCH]
+            marker = "markers_" + "_".join(batch)[:80]
+            if marker in done:
+                continue
+            result.sailings_attempted += 1
+            url = self.search_url(page_size=100, page_number=1,
+                                  itin_codes=",".join(batch))
+            try:
+                payload, body = self.client.get_json_with_body(url)
+            except (FetchError, RobotsDisallowed) as exc:
+                result.errors.append({"stage": "markers", "codes": batch,
+                                      "url": url, "error": str(exc)})
+                continue
+            raw_path = self.archive.write(self.key, "markers", marker, body, ts=now)
+            try:
+                rows, unmapped_cabins, unmapped_regions = parse_search(
+                    payload, line_cfg=self.line_cfg, tier=tier,
+                    scrape_ts=scrape_ts, scrape_date=scrape_date,
+                    source_url=url, raw_path=raw_path,
+                    sail_window=window,
+                    allowed_regions=self.line_cfg.regions or None)
+            except CurrencyMismatch as exc:
+                print(f"  !! CURRENCY MISMATCH on {marker}: {exc}")
+                result.errors.append({"stage": "currency", "codes": batch,
+                                      "url": url, "error": str(exc), "fatal": True})
+                continue
+            for label in unmapped_cabins:
+                self.store.log_unmapped_label(self.line_cfg.line, label)
+            for key in unmapped_regions:
+                self.store.log_unmapped_label(self.line_cfg.line, f"REGION {key}")
+            result.unmapped_labels |= unmapped_cabins | {
+                f"REGION {k}" for k in unmapped_regions}
+            written = self.store.upsert_observations(rows)
+            result.observations_written += written
+            if rows:
+                result.sailings_captured += 1
+            self.store.mark_itinerary_done(tier, self.line_cfg.line, scrape_date,
+                                           marker, written)
+            print(f"    [markers {','.join(batch)}] {written} observations")
+        return result
+
     def search_url(self, *, page_size: int, page_number: int,
                    dest: str | None = None, itin_codes: str | None = None) -> str:
         q = [f"pagesize={page_size}", f"pagenumber={page_number}",
@@ -277,8 +324,17 @@ class CarnivalSource:
         window = (tier_cfg.sail_window_start, tier_cfg.sail_window_end)
 
         page_size = self.line_cfg.search_page_size
-        dests = self.line_cfg.dest_codes or [None]
         done = self.store.completed_itineraries(tier, self.line_cfg.line, scrape_date)
+
+        # The daily-marker tier is a filtered sailing list, not a second sweep of
+        # the whole fleet. Carnival's API takes itincodes directly, so a marker
+        # run is one narrow query per batch instead of paging every destination.
+        markers = tier_cfg.markers_for(self.key)
+        if tier_cfg.marker_only and markers:
+            return self._collect_markers(
+                markers, tier, scrape_ts, scrape_date, window, now, result)
+
+        dests = self.line_cfg.dest_codes or [None]
 
         for dest in dests:
             label = dest or "ALL"

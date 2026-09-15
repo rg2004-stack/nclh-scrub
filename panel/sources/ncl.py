@@ -240,8 +240,9 @@ class NCLSource:
     def discover_itineraries(self, tier_cfg: TierConfig,
                              result: CollectResult) -> list[str]:
         """Page the search endpoint to enumerate itinerary codes in scope."""
-        if tier_cfg.marker_only and tier_cfg.marker_itineraries:
-            return list(tier_cfg.marker_itineraries)
+        markers = tier_cfg.markers_for(self.key)
+        if tier_cfg.marker_only and markers:
+            return markers
 
         months = months_in_window(tier_cfg.sail_window_start, tier_cfg.sail_window_end)
         page_size = self.line_cfg.search_page_size

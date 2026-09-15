@@ -17,10 +17,17 @@ class TierConfig:
     name: str
     sail_window_start: str | None
     sail_window_end: str | None
-    marker_itineraries: list[str] = field(default_factory=list)
+    # Per-line: {"ncl": ["CODE1", ...], "carnival": ["BAW", ...]}. Keyed by line
+    # so each source only ever asks its own API for its own codes.
+    marker_itineraries: dict[str, list[str]] = field(default_factory=dict)
     marker_only: bool = False
     event_date: str | None = None
     event_window_days: int = 14
+
+
+    def markers_for(self, line_key: str) -> list[str]:
+        """Marker itinerary codes for one line (empty if none configured)."""
+        return list(self.marker_itineraries.get(line_key) or [])
 
 
 @dataclass
@@ -106,7 +113,10 @@ def load_config(path: str | os.PathLike[str] = DEFAULT_CONFIG_PATH) -> Config:
             name=name,
             sail_window_start=window.get("start"),
             sail_window_end=window.get("end"),
-            marker_itineraries=list(raw.get("marker_itineraries") or []),
+            marker_itineraries={
+                str(k): list(v or [])
+                for k, v in (raw.get("marker_itineraries") or {}).items()
+            },
             marker_only=bool(raw.get("marker_only", False)),
             event_date=raw.get("event_date"),
             event_window_days=int(raw.get("event_window_days", 14)),
