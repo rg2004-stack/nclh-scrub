@@ -21,28 +21,72 @@ jobs:
         with:
           python-version: "3.12"
 
+      # Fail fast and unambiguously if the repo is missing what we need, so a
+      # broken job can never be mistaken for a completed check.
+      - name: Preflight - required files present
+        run: |
+          missing=0
+          for f in requirements.txt config/panel.yaml scripts/verify_us_market.py; do
+            if [ -f "$f" ]; then
+              echo "  ok      $f"
+            else
+              echo "  MISSING $f"
+              missing=1
+            fi
+          done
+          if [ "$missing" = "1" ]; then
+            echo ""
+            echo "Repository is incomplete - the verification did NOT run."
+            echo "This says nothing about the US market. Commit the missing"
+            echo "files and re-run."
+            exit 1
+          fi
+
       - name: Install dependencies
         run: pip install -r requirements.txt
 
       - name: Run the test suite first
         run: python -m pytest -q
 
+      # Capture the exit code rather than letting the step fail, so the three
+      # outcomes stay distinguishable:
+      #   0 = US market confirmed
+      #   1 = checks ran and did not pass  (a real verdict)
+      #   * = the script itself broke      (no verdict at all)
       - name: Verify US market
         id: verify
-        run: python scripts/verify_us_market.py
+        run: |
+          set +e
+          python scripts/verify_us_market.py
+          code=$?
+          set -e
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          echo "Verification script exited with code $code"
+          exit 0
 
       - name: Result
-        if: always()
         run: |
-          if [ "${{ steps.verify.outcome }}" = "success" ]; then
-            echo "### US market CONFIRMED" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "- \`currencyCode == USD\` on both endpoints" >> $GITHUB_STEP_SUMMARY
-            echo "- \`taxesAndFees.amount\` populated and non-null" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "Safe to enable the scheduled collection workflows." >> $GITHUB_STEP_SUMMARY
-          else
-            echo "### US market NOT confirmed" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "Do not schedule recurring collection. See the job log." >> $GITHUB_STEP_SUMMARY
-          fi
+          code="${{ steps.verify.outputs.exit_code }}"
+          {
+            if [ "$code" = "0" ]; then
+              echo "## US market CONFIRMED"
+              echo ""
+              echo "- \`currencyCode == USD\` on both endpoints"
+              echo "- \`taxesAndFees.amount\` populated and non-null"
+              echo ""
+              echo "Safe to enable the scheduled collection workflows."
+            elif [ "$code" = "1" ]; then
+              echo "## US market NOT confirmed"
+              echo ""
+              echo "The checks ran and did not pass. This is a real verdict:"
+              echo "the runner is not being served the US market."
+              echo "Do not schedule recurring collection. See the job log."
+            else
+              echo "## Verification did NOT run (exit code $code)"
+              echo ""
+              echo "The script failed before reaching a verdict, so this tells"
+              echo "us **nothing** about the US market. Fix the job and re-run."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+          # Only a genuine "not confirmed" or a broken job should fail the run.
+          [ "$code" = "0" ]
