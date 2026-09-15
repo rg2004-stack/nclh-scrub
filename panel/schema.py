@@ -6,7 +6,7 @@ The natural key deliberately truncates scrape_ts_utc to a date so that re-runnin
 a tier on the same day updates rather than duplicates.
 """
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 
 DDL = """
 CREATE TABLE IF NOT EXISTS observations (
@@ -52,7 +52,10 @@ CREATE TABLE IF NOT EXISTS observations (
     availability_status_raw TEXT,              -- verbatim vendor status, never lossy
     units_remaining        INTEGER,            -- NULL unless the source exposes a count
 
-    promo_text             TEXT,               -- RAW offer payload, verbatim
+    -- Promo bodies live in `promos`, keyed by this hash. Storing the verbatim
+    -- payload per observation duplicated ~6 KB across thousands of rows for a
+    -- couple of dozen distinct offers; the hash is the join key and the body is
+    -- stored once. See Store.promo_text().
     promo_hash             TEXT,               -- stable hash for week-over-week diffing
 
     tier                   TEXT    NOT NULL,   -- 'weekly-full' | 'daily-marker'
@@ -106,6 +109,17 @@ CREATE TABLE IF NOT EXISTS unmapped_labels (
     n_seen      INTEGER NOT NULL DEFAULT 1,
     PRIMARY KEY (line, raw_label)
 );
+
+-- Promo bodies, stored once per distinct offer set rather than per observation.
+CREATE TABLE IF NOT EXISTS promos (
+    promo_hash  TEXT PRIMARY KEY,
+    promo_text  TEXT NOT NULL,   -- RAW offer payload, verbatim
+    first_seen  TEXT NOT NULL,
+    last_seen   TEXT NOT NULL,
+    n_seen      INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE INDEX IF NOT EXISTS ix_obs_promo ON observations (promo_hash);
 
 CREATE TABLE IF NOT EXISTS meta (
     key   TEXT PRIMARY KEY,

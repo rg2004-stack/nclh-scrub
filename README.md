@@ -22,10 +22,10 @@ Every design decision below protects those two properties.
 | 2. Schema, storage, logging | done |
 | 3. Norwegian end-to-end, weekly-full, tested | done |
 | 4. Generalize to remaining lines | **Carnival done; RC/Celebrity blocked, see gaps** |
-| 5. daily-marker tier | scaffolded, sailing list empty |
+| 5. daily-marker tier | scheduled; marker sailing list still empty |
 | 6. Analysis module | not started |
 
-147 tests pass. Live runs collected 260 NCL observations and 2,128 Carnival
+162 tests pass. Live runs collected 260 NCL observations and 2,128 Carnival
 observations with zero errors, zero unmapped cabin labels and zero unmapped
 regions.
 
@@ -60,11 +60,12 @@ panel/
   http_client.py   polite GET client: robots gate, rate limit, backoff
   config.py        YAML loading
   collect.py       CLI (--tier)
+  export.py        JSONL export / rebuild -- the durable artifact
   sources/ncl.py   Norwegian: URL building, parsing, collection loop
   sources/carnival.py      Carnival: paged search, parsing, collection loop
   sources/capabilities.py  what each source actually resolves (see below)
 config/panel.yaml  lines, regions, date ranges, rate limits, cabin map
-tests/             147 tests, run against archived real responses in fixtures/
+tests/             162 tests, run against archived real responses in fixtures/
 data/panel.sqlite  the panel
 data/raw/          every raw response, gzipped by line and date
 ```
@@ -200,6 +201,55 @@ column = comparison_column(level)                              # -> "cabin_categ
 every other cross-line function must route through these** — comparisons run at
 category level only. Carnival-only analysis may legitimately use the finer
 levels.
+
+## Persistence and scheduling
+
+CI runners are ephemeral, so each run must write somewhere durable. The panel is
+**not** stored as a committed SQLite file: SQLite is binary, git stores a full
+copy per commit, ~37,800 rows/week compounds to GBs of repo growth within a
+year, and two concurrent runs cannot merge a binary file.
+
+Instead each run writes an immutable gzipped JSONL file at a path unique to
+(date, tier, line):
+
+```
+data/observations/2027/03/2027-03-08__weekly-full__ncl.jsonl.gz
+data/observations/promos.jsonl.gz      # bodies, deduped by hash
+```
+
+Concurrent weekly and daily runs never touch the same path, so they cannot
+conflict. SQLite is a derived artifact, rebuilt on demand:
+
+```bash
+python -m panel.export export          # after a collection run
+python -m panel.export rebuild         # reconstruct data/panel.sqlite
+```
+
+The round trip is verified lossless field-by-field, including the exact sum of
+all prices. Measured cost: **26 bytes/observation gzipped, ~950 KB/week,
+~68 MB/year** - comfortable for git indefinitely.
+
+**Promo bodies are stored once.** `promo_text` used to sit on every observation:
+289 rows carried ~5,900 bytes each for only 24 distinct offer sets, 38% of the
+database. Bodies now live in a `promos` table keyed by `promo_hash`, read back
+via `Store.promo_text(hash)`. That alone took the panel from 1,597 to 901
+bytes/row, and the saving grows with NCL volume since most NCL rows carry promos.
+
+### Schedule
+
+`.github/workflows/collect.yml`
+
+| Tier | Cron (UTC) | Scope |
+|---|---|---|
+| `weekly-full` | `10 6 * * 1` (Mondays) | all lines, all regions, Jan-Aug 2027 |
+| `daily-marker` | `40 6 * * *` (daily) | near-term cohort + earnings window |
+
+Each run: tests -> **confirm US market** -> rebuild from JSONL history ->
+collect -> export -> commit. Rebuilding first is what makes resume and
+idempotency work against real history rather than an empty database. The US
+check runs before collection so a non-US egress fails the job instead of
+writing a CAD panel. Raw responses upload as a 14-day artifact rather than
+being committed.
 
 ## Decisions worth knowing
 

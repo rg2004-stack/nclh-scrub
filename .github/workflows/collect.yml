@@ -1,0 +1,167 @@
+name: Collect panel
+
+# Stratified cadence, per the build spec:
+#   weekly-full  -- all lines, all regions, Jan-Aug 2027 sail window. Sailings
+#                   6+ months out do not move fast enough for daily sampling to
+#                   add independent signal.
+#   daily-marker -- a small filtered subset (near-term cohort + the earnings
+#                   window) run daily for clean depletion slopes.
+#
+# The runner must be US-hosted: NCL resolves market from client IP at the edge.
+# Every row records the market actually served, and the collector exits non-zero
+# on a currency mismatch, so a non-US run cannot silently enter the panel.
+
+on:
+  schedule:
+    # Weekly full panel - Mondays 06:10 UTC
+    - cron: "10 6 * * 1"
+    # Daily marker tier - every day 06:40 UTC (after the weekly on Mondays)
+    - cron: "40 6 * * *"
+  workflow_dispatch:
+    inputs:
+      tier:
+        description: "Which tier to run"
+        required: true
+        default: weekly-full
+        type: choice
+        options: [weekly-full, daily-marker]
+      limit_itineraries:
+        description: "Cap NCL itineraries (smoke test; blank = no cap)"
+        required: false
+        type: string
+      limit_pages:
+        description: "Cap Carnival search pages (smoke test; blank = no cap)"
+        required: false
+        type: string
+
+permissions:
+  contents: write          # needed to commit the JSONL export back
+
+concurrency:
+  # Never let two collection runs write at once. JSONL paths are unique per
+  # (date, tier, line) so they cannot clobber each other, but serialising keeps
+  # the commit step conflict-free.
+  group: collect-panel
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    name: ${{ github.event.inputs.tier || 'scheduled' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 330      # full weekly panel is rate-limited to >=2s/request
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run tests
+        run: python -m pytest -q
+
+      # cron does not tell the job which schedule fired, so derive the tier.
+      - name: Resolve tier
+        id: tier
+        run: |
+          if [ -n "${{ github.event.inputs.tier }}" ]; then
+            tier="${{ github.event.inputs.tier }}"
+          elif [ "${{ github.event.schedule }}" = "10 6 * * 1" ]; then
+            tier="weekly-full"
+          else
+            tier="daily-marker"
+          fi
+          echo "tier=$tier" >> "$GITHUB_OUTPUT"
+          echo "Running tier: $tier"
+
+      # A non-US egress would produce a CAD panel. Fail before collecting.
+      - name: Confirm US market
+        run: python scripts/verify_us_market.py
+
+      # Rebuild the local database from the committed JSONL so that resume
+      # state and idempotency work against real history, not an empty file.
+      - name: Rebuild panel from JSONL history
+        run: |
+          if [ -d data/observations ]; then
+            python -m panel.export rebuild
+          else
+            echo "no export history yet - starting a fresh panel"
+          fi
+
+      - name: Collect
+        run: |
+          args="--tier ${{ steps.tier.outputs.tier }}"
+          if [ -n "${{ github.event.inputs.limit_itineraries }}" ]; then
+            args="$args --limit-itineraries ${{ github.event.inputs.limit_itineraries }}"
+          fi
+          if [ -n "${{ github.event.inputs.limit_pages }}" ]; then
+            args="$args --limit-pages ${{ github.event.inputs.limit_pages }}"
+          fi
+          echo "python -m panel.collect $args"
+          python -m panel.collect $args
+
+      - name: Export to JSONL
+        run: python -m panel.export export --tier ${{ steps.tier.outputs.tier }}
+
+      - name: Commit the export
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/observations
+          if git diff --cached --quiet; then
+            echo "no new observations to commit"
+            exit 0
+          fi
+          n=$(git diff --cached --numstat | wc -l)
+          git commit -m "panel: ${{ steps.tier.outputs.tier }} $(date -u +%Y-%m-%d) ($n files)"
+          # Another run may have landed while this one collected.
+          for attempt in 1 2 3; do
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && break
+            echo "rebase attempt $attempt failed, retrying"
+            sleep 5
+          done
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## Panel run - ${{ steps.tier.outputs.tier }}"
+            echo ""
+            if [ -f data/panel.sqlite ]; then
+              python - <<'PY'
+          import sqlite3
+          c = sqlite3.connect("data/panel.sqlite")
+          c.row_factory = sqlite3.Row
+          print("| line | tier | observations | sailings | regions |")
+          print("|---|---|---|---|---|")
+          for r in c.execute(
+                  "SELECT line, tier, COUNT(*) n, COUNT(DISTINCT sailing_id) s, "
+                  "COUNT(DISTINCT region) g FROM observations GROUP BY line, tier"):
+              print(f"| {r['line']} | {r['tier']} | {r['n']} | {r['s']} | {r['g']} |")
+          cur = {r[0] for r in c.execute(
+              "SELECT DISTINCT currency FROM observations WHERE price_total IS NOT NULL")}
+          print("")
+          print(f"Currencies present: `{sorted(cur)}`")
+          bad = c.execute(
+              "SELECT COUNT(*) FROM observations "
+              "WHERE availability_status='sold_out' AND price_total IS NOT NULL"
+          ).fetchone()[0]
+          print(f"Sold-out rows carrying a price (must be 0): **{bad}**")
+          PY
+            else
+              echo "No database produced."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload raw archive
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raw-${{ steps.tier.outputs.tier }}-${{ github.run_id }}
+          path: data/raw/
+          retention-days: 14
+          if-no-files-found: ignore

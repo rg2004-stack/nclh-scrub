@@ -65,7 +65,13 @@ class Observation:
     raw_response_path: str | None = None
 
 
-_COLUMNS: Sequence[str] = tuple(f.name for f in Observation.__dataclass_fields__.values())  # type: ignore[attr-defined]
+# promo_text is carried on the dataclass (parsers produce it) but is NOT an
+# observations column: Store splits it into `promos`, keyed by promo_hash.
+_PROMO_BODY = "promo_text"
+_COLUMNS: Sequence[str] = tuple(
+    f.name for f in Observation.__dataclass_fields__.values()  # type: ignore[attr-defined]
+    if f.name != _PROMO_BODY
+)
 
 _UPSERT = f"""
 INSERT INTO observations ({", ".join(_COLUMNS)})
@@ -108,16 +114,60 @@ class Store:
                 f"PRAGMA table_info({table})").fetchall()}
             if column not in cols:
                 self.conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {ddl}")
+
+        # v3: move promo bodies out of observations into `promos`.
+        cols = {r[1] for r in self.conn.execute(
+            "PRAGMA table_info(observations)").fetchall()}
+        if _PROMO_BODY in cols:
+            self.conn.execute(
+                "INSERT OR IGNORE INTO promos "
+                "  (promo_hash, promo_text, first_seen, last_seen, n_seen) "
+                "SELECT promo_hash, promo_text, MIN(scrape_ts_utc), "
+                "       MAX(scrape_ts_utc), COUNT(*) "
+                "FROM observations "
+                "WHERE promo_hash IS NOT NULL AND promo_text IS NOT NULL "
+                "GROUP BY promo_hash"
+            )
+            self.conn.execute(
+                f"ALTER TABLE observations DROP COLUMN {_PROMO_BODY}")
         self.conn.commit()
 
     # -- observations -----------------------------------------------------
     def upsert_observations(self, rows: Iterable[Observation]) -> int:
-        payload = [tuple(asdict(r)[c] for c in _COLUMNS) for r in rows]
-        if not payload:
+        rows = list(rows)
+        if not rows:
             return 0
+        self._store_promos(rows)
+        payload = [tuple(asdict(r)[c] for c in _COLUMNS) for r in rows]
         self.conn.executemany(_UPSERT, payload)
         self.conn.commit()
         return len(payload)
+
+    def _store_promos(self, rows: list[Observation]) -> None:
+        """Store each distinct promo body once, keyed by its hash."""
+        bodies: dict[str, tuple[str, str]] = {}
+        for r in rows:
+            if r.promo_hash and r.promo_text:
+                bodies[r.promo_hash] = (r.promo_text, r.scrape_ts_utc)
+        if not bodies:
+            return
+        self.conn.executemany(
+            "INSERT INTO promos (promo_hash, promo_text, first_seen, last_seen, n_seen) "
+            "VALUES (?,?,?,?,1) "
+            "ON CONFLICT (promo_hash) DO UPDATE SET "
+            "last_seen=excluded.last_seen, n_seen=promos.n_seen+1",
+            [(h, text, ts, ts) for h, (text, ts) in bodies.items()],
+        )
+
+    def promo_text(self, promo_hash: str) -> str | None:
+        """Read a promo body back by hash."""
+        row = self.conn.execute(
+            "SELECT promo_text FROM promos WHERE promo_hash=?", (promo_hash,)).fetchone()
+        return row["promo_text"] if row else None
+
+    def promos(self) -> list[sqlite3.Row]:
+        return self.conn.execute(
+            "SELECT * FROM promos ORDER BY n_seen DESC").fetchall()
 
     def count_observations(self) -> int:
         return self.conn.execute("SELECT COUNT(*) FROM observations").fetchone()[0]
