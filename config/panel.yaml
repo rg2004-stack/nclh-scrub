@@ -87,3 +87,64 @@ lines:
       - Northern Europe
       - Bermuda
       - Alaska
+
+  carnival:
+    line: "Carnival Cruise Line"
+    brand: "Carnival"
+    enabled: true
+    base_url: "https://www.carnival.com"
+    search_page_size: 20
+    max_pages: null            # null = page to lastPage
+
+    # Carnival's meta codes are the stable per-sailing cabin label and carry the
+    # natural key. The finer categoryCode (8A/GS/6K) goes to vendor_category_code,
+    # which is NULL on sold-out cells and NULL for every source that lacks it.
+    cabin_map:
+      IS: inside
+      OS: oceanview
+      OB: balcony
+      SU: suite
+
+    # regionCode is authoritative. Carnival's `dest` filter collapses all of
+    # Europe into a single "E", which is useless for a thesis concentrated on
+    # Southern Europe; regionCode separates them properly.
+    # Codes below are the ones actually observed in the fleet -- unobserved codes
+    # are deliberately absent and will be logged to unmapped_labels, not guessed.
+    region_map:
+      # Southern Europe
+      ME: Southern Europe       # Mediterranean
+      GI: Southern Europe       # Greek Isles, Turkey & Italy
+      CG: Southern Europe       # Croatia, Greece & Italy
+      IB: Southern Europe       # Spain, Portugal & France
+      EC: Southern Europe       # Eclipse, Spain, Portugal & ... (Iberian routing)
+      # Northern Europe
+      EN: Northern Europe       # Northern Europe
+      ES: Northern Europe       # Scandinavia & Baltic
+      BI: Northern Europe       # British Isles
+      # Caribbean basin -- BH folded in, matching the NCL treatment
+      CE: Caribbean             # Eastern Caribbean
+      CW: Caribbean             # Western Caribbean
+      CS: Caribbean             # Southern Caribbean
+      BH: Caribbean             # The Bahamas
+      # Others
+      BM: Bermuda
+      GL: Alaska                # Alaska Inside Passage & Glacier Bay
+
+    # Fallback ONLY, and only for ports that serve exactly one region.
+    # London (LON) is deliberately absent: it is the embark port for Northern
+    # itineraries (EN, ES, BI) *and* Iberian ones (IB, EC), so mapping it either
+    # way would silently misclassify the region the thesis depends on.
+    port_region_map:
+      BCN: Southern Europe      # Barcelona
+      CIV: Southern Europe      # Civitavecchia (Rome)
+      LIS: Southern Europe      # Lisbon
+
+    # Destination filters to page through. Europe is collected in full via E.
+    dest_codes: ["E", "C", "BH", "BM", "A"]
+
+    regions:
+      - Caribbean
+      - Southern Europe
+      - Northern Europe
+      - Bermuda
+      - Alaska

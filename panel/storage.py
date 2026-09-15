@@ -11,7 +11,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Iterable, Sequence
 
-from .schema import DDL, SCHEMA_VERSION
+from .schema import DDL, MIGRATIONS, SCHEMA_VERSION
 
 
 def utcnow() -> datetime:
@@ -46,6 +46,9 @@ class Observation:
     region: str | None = None
     currency: str | None = None
     cabin_category: str | None = None
+    vendor_category_code: str | None = None
+    rate_code: str | None = None
+    offer_id: str | None = None
     price_total: float | None = None
     price_pppn: float | None = None
     price_per_person: float | None = None
@@ -85,11 +88,26 @@ class Store:
         self.conn.execute("PRAGMA journal_mode=WAL")
         self.conn.execute("PRAGMA foreign_keys=ON")
         self.conn.executescript(DDL)
+        self._migrate()
         self.conn.execute(
             "INSERT INTO meta (key, value) VALUES ('schema_version', ?) "
             "ON CONFLICT (key) DO UPDATE SET value=excluded.value",
             (str(SCHEMA_VERSION),),
         )
+        self.conn.commit()
+
+    def _migrate(self) -> None:
+        """Apply additive column migrations to a database built by an older version.
+
+        Only ADD COLUMN steps: existing rows keep their values and the new
+        columns read NULL, which is exactly what "this source never had that
+        resolution" should look like.
+        """
+        for _version, table, column, ddl in MIGRATIONS:
+            cols = {r[1] for r in self.conn.execute(
+                f"PRAGMA table_info({table})").fetchall()}
+            if column not in cols:
+                self.conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {ddl}")
         self.conn.commit()
 
     # -- observations -----------------------------------------------------

@@ -6,7 +6,7 @@ The natural key deliberately truncates scrape_ts_utc to a date so that re-runnin
 a tier on the same day updates rather than duplicates.
 """
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 DDL = """
 CREATE TABLE IF NOT EXISTS observations (
@@ -31,7 +31,14 @@ CREATE TABLE IF NOT EXISTS observations (
     currency               TEXT,
 
     cabin_category         TEXT,               -- inside/oceanview/balcony/suite, NULL if unmapped
-    cabin_subcategory      TEXT    NOT NULL,   -- raw vendor label
+    cabin_subcategory      TEXT    NOT NULL,   -- raw vendor label, stable per sailing
+
+    -- Finer granularity, only where a source actually exposes it. NULL elsewhere;
+    -- never synthesised, so cross-line analysis can tell real resolution from
+    -- padding. See panel/sources/capabilities.py.
+    vendor_category_code   TEXT,               -- e.g. Carnival 8A/GS/6K. NULL for NCL.
+    rate_code              TEXT,               -- e.g. Carnival OB7/PSV/OTR. NULL for NCL.
+    offer_id               TEXT,               -- vendor offer id where exposed
 
     price_total            REAL,               -- 2 pax, taxes/fees EXCLUDED
     price_pppn             REAL,               -- per person per night, taxes/fees EXCLUDED
@@ -105,3 +112,12 @@ CREATE TABLE IF NOT EXISTS meta (
     value TEXT NOT NULL
 );
 """
+
+
+# Additive migrations, applied in order for databases created before the
+# current SCHEMA_VERSION. Each entry is (version_introduced, table, column, ddl).
+MIGRATIONS = [
+    (2, "observations", "vendor_category_code", "TEXT"),
+    (2, "observations", "rate_code", "TEXT"),
+    (2, "observations", "offer_id", "TEXT"),
+]

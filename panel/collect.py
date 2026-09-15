@@ -37,6 +37,8 @@ def build_parser() -> argparse.ArgumentParser:
                    help="restrict to one configured line; repeatable")
     p.add_argument("--limit-itineraries", type=int, default=None,
                    help="cap itineraries per line (smoke tests)")
+    p.add_argument("--limit-pages", type=int, default=None,
+                   help="cap search pages per line, for paged sources")
     p.add_argument("--dry-run", action="store_true",
                    help="enumerate and report scope without fetching sailings")
     p.add_argument("--db", default=None, help="override the database path")
@@ -77,6 +79,8 @@ def run(argv: Sequence[str] | None = None) -> int:
             line_cfg = cfg.line(key)
             if args.limit_itineraries is not None:
                 line_cfg.max_itineraries = args.limit_itineraries
+            if args.limit_pages is not None:
+                line_cfg.max_pages = args.limit_pages
             factory = SOURCES.get(key)
             if factory is None:
                 print(f"  no collector implemented for line {key!r}; skipping")
@@ -86,6 +90,9 @@ def run(argv: Sequence[str] | None = None) -> int:
             source = factory(cfg, line_cfg, client, store, archive)
 
             if args.dry_run:
+                if not hasattr(source, "discover_itineraries"):
+                    print("  dry run not supported for this source (paged search)")
+                    continue
                 probe = CollectResult()
                 codes = source.discover_itineraries(cfg.tier(args.tier), probe)
                 print(f"  dry run: {len(codes)} itineraries in scope")
@@ -115,10 +122,15 @@ def run(argv: Sequence[str] | None = None) -> int:
         if not args.dry_run:
             print(f"\ntotal observations in db: {store.count_observations()}")
 
+    fatal = [e for e in overall.errors if e.get("fatal")]
     if overall.errors:
         print(f"\n{len(overall.errors)} error(s); first few:")
         for err in overall.errors[:5]:
             print("  " + json.dumps(err, ensure_ascii=False)[:200])
+    if fatal:
+        print(f"\n!! {len(fatal)} FATAL error(s) -- "
+              f"panel integrity is not assured.")
+        return 1
     return 0
 
 

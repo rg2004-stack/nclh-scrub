@@ -35,6 +35,11 @@ class LineConfig:
     regions: list[str] = field(default_factory=list)
     search_page_size: int = 50
     max_itineraries: int | None = None
+    max_pages: int | None = None
+    # Carnival only: regionCode is authoritative, port is a narrow fallback for
+    # ports that serve exactly one region. Ambiguous ports are deliberately absent.
+    port_region_map: dict[str, str] = field(default_factory=dict)
+    dest_codes: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -87,6 +92,9 @@ def load_config(path: str | os.PathLike[str] = DEFAULT_CONFIG_PATH) -> Config:
             regions=list(raw.get("regions") or []),
             search_page_size=int(raw.get("search_page_size", 50)),
             max_itineraries=raw.get("max_itineraries"),
+            max_pages=raw.get("max_pages"),
+            port_region_map=_upper_keys(raw.get("port_region_map")),
+            dest_codes=list(raw.get("dest_codes") or []),
         )
 
     tiers: dict[str, TierConfig] = {}

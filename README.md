@@ -20,13 +20,14 @@ Every design decision below protects those two properties.
 |---|---|
 | 1. robots.txt audit across all domains | done |
 | 2. Schema, storage, logging | done |
-| 3. Norwegian end-to-end, weekly-full, tested | **done — this is what ships now** |
-| 4. Generalize to remaining lines | not started |
+| 3. Norwegian end-to-end, weekly-full, tested | done |
+| 4. Generalize to remaining lines | **Carnival done; RC/Celebrity blocked, see gaps** |
 | 5. daily-marker tier | scaffolded, sailing list empty |
 | 6. Analysis module | not started |
 
-77 tests pass. A live smoke run collected 260 observations across 4 itineraries
-and 41 sailings with zero errors and zero unmapped cabin labels.
+147 tests pass. Live runs collected 260 NCL observations and 2,128 Carnival
+observations with zero errors, zero unmapped cabin labels and zero unmapped
+regions.
 
 ## Quick start
 
@@ -36,8 +37,9 @@ pip install -r requirements.txt
 # see what is in scope without fetching anything
 python -m panel.collect --tier weekly-full --dry-run
 
-# small live run
-python -m panel.collect --tier weekly-full --limit-itineraries 5
+# small live runs
+python -m panel.collect --tier weekly-full --line ncl      --limit-itineraries 5
+python -m panel.collect --tier weekly-full --line carnival --limit-pages 2
 
 # full weekly panel
 python -m panel.collect --tier weekly-full
@@ -59,8 +61,10 @@ panel/
   config.py        YAML loading
   collect.py       CLI (--tier)
   sources/ncl.py   Norwegian: URL building, parsing, collection loop
+  sources/carnival.py      Carnival: paged search, parsing, collection loop
+  sources/capabilities.py  what each source actually resolves (see below)
 config/panel.yaml  lines, regions, date ranges, rate limits, cabin map
-tests/             77 tests, run against archived real responses in fixtures/
+tests/             147 tests, run against archived real responses in fixtures/
 data/panel.sqlite  the panel
 data/raw/          every raw response, gzipped by line and date
 ```
@@ -96,6 +100,106 @@ status value cannot be silently flattened.
 `units_remaining` is always NULL for NCL — no inventory count is exposed
 anywhere. Sold-out and solo-only cells also carry NULL prices, which is correct:
 there is no purchasable fare, and NULL must not be read as zero.
+
+## What Carnival exposes
+
+One paged endpoint, robots-allowed, no crawl-delay declared:
+
+```
+GET /cruisesearch/api/search?pagesize=&pagenumber=&numadults=2&dest=
+  -> results.itineraries[].sailings[].rooms.{interior,oceanview,balcony,suite}
+```
+
+The grid is nested inside each itinerary; `results.sailings` is always null and
+is a red herring. One page of 20 itineraries returns hundreds of
+(sailing x cabin) cells, so the whole fleet is roughly 40 requests.
+
+Carnival resolves **finer than NCL**. Each cell carries `categoryCode`
+(25 distinct observed: `8A`, `GS`, `6K`, `BL`, `JS`…) and `rateCode`
+(8 distinct: `OB7`, `PSV`, `OTR`…). Those populate `vendor_category_code` and
+`rate_code`, which stay NULL for NCL.
+
+### Three traps, each covered by a test
+
+**Sold-out cells report `price=0`, not null**, with `categoryCode`,
+`priceCurrency` and `taxesAndFees` all null. Writing that through would put a
+stream of $0 fares into the panel and crater every distribution statistic.
+Sold-out cells are stored with NULL prices, and a test asserts no row ever has
+`availability_status='sold_out'` together with a non-null price. A second test
+guards that the fixture still contains sold-out cells, so the first cannot pass
+vacuously.
+
+**The USD result comes from a cache we do not control.** `locality` is echoed
+back as `"1"` whatever we send (`locality=3&currency=GBP` still returns USD),
+and `source` reads `"From Redis Cache"`. So we get US pricing, but not because
+we asked. Every priced row is asserted to be USD; a mismatch raises
+`CurrencyMismatch`, which is recorded in `collection_log`, printed as
+`!! CURRENCY MISMATCH`, and makes the run exit non-zero. It is never dropped
+and never converted. Fault injection confirms it fires: flipping 163 cells to
+CAD raised on the first one.
+
+**`cabin_subcategory` holds the meta code, not `categoryCode`.** `categoryCode`
+goes null on sold-out cells, so it cannot carry the natural key. The stable
+per-sailing label (`IS`/`OS`/`OB`/`SU`) is the key; the finer code lives in
+`vendor_category_code`.
+
+### Region mapping: regionCode, not dest, not port
+
+Carnival's `dest` filter collapses all of Europe into a single `E`, which is
+useless for a thesis concentrated on Southern Europe. `regionCode` is far finer
+and is authoritative:
+
+| regionCode | Region |
+|---|---|
+| `ME` `GI` `CG` `IB` `EC` | Southern Europe |
+| `EN` `ES` `BI` | Northern Europe |
+| `CE` `CW` `CS` `BH` | Caribbean |
+| `BM` / `GL` | Bermuda / Alaska |
+
+**Port is only a fallback, and London is deliberately excluded from it.** LON is
+the embark port for Northern itineraries (`EN`, `ES`, `BI`) *and* for Iberian
+ones (`IB`, `EC`), so a port-based guess would misclassify Southern Europe —
+the one region the thesis depends on. The live run confirms this matters:
+`EU3` ("10-Day Spain, Portugal & France from London") and `JU2` ("11-Day
+Eclipse, Spain, Portugal & France") both sail from London and are correctly
+classified Southern Europe. Only unambiguous ports (`BCN`, `CIV`, `LIS`) are in
+the fallback map. Tests pin every region code, the port fallback, and the
+precedence between them.
+
+An unknown `regionCode` yields a NULL region and is logged to
+`unmapped_labels`, never guessed. That is how `CS` (Southern Caribbean) was
+found after the first run and added.
+
+## Cross-line comparison and granularity
+
+Sources do not resolve equally, and the panel does not pretend otherwise:
+
+| | NCL | Carnival |
+|---|---|---|
+| finest granularity | `category` | `rate_code` |
+| `vendor_category_code` | NULL | populated |
+| `rate_code` | NULL | populated |
+| availability states | available / limited / sold_out | available / sold_out |
+| tax amount | US market only | never (always 0.0) |
+| promo detail | structured `offerGroups[]` | none |
+
+`panel/sources/capabilities.py` declares this and enforces it. The failure it
+exists to prevent is a cross-line comparison silently run at a resolution only
+one side has — comparing Carnival's real sub-categories against NCL's NULLs
+would return a confident, meaningless number.
+
+```python
+lines = ["ncl", "carnival"]
+level = require_granularity(lines, shared_granularity(lines))  # -> "category"
+column = comparison_column(level)                              # -> "cabin_category"
+```
+
+`shared_granularity(["ncl", "carnival"])` returns `category`;
+`require_granularity(["ncl", "carnival"], "subcategory")` raises
+`GranularityError` naming the source that cannot support it. **`peer_gap()` and
+every other cross-line function must route through these** — comparisons run at
+category level only. Carnival-only analysis may legitimately use the finer
+levels.
 
 ## Decisions worth knowing
 
@@ -149,12 +253,14 @@ is one request — check `currencyCode == "USD"` and that `taxes_fees` is
 non-NULL. Until then every row is stamped `market='CA'`, `currency='CAD'` so a
 Canadian run cannot silently contaminate a USD panel.
 
-### 2. Carnival — untested
+### 2. Carnival tax amount
 
-Carnival has the most permissive robots.txt of any domain audited (only
-`/CMS/SiteSearch/`, `/error/`, `/Errors/` and two logon query params disallowed)
-and returned 200 to a plain client. It was never actually tested end to end. It
-is the most likely second line to work and the natural next build step.
+Carnival's price is tax-exclusive — its own itinerary page says "Taxes, fees,
+and port expenses are an additional {taxesAndFees} per person" — so the basis
+matches NCL and `peer_gap` is comparable. But the search endpoint returns
+`taxesAndFees: 0.0` in every sampled cell, so `taxes_fees` is NULL for Carnival.
+A zero is stored as NULL rather than a genuine zero-tax sailing. The amount may
+be available from the itinerary or booking endpoint; one probe would settle it.
 
 ### 3. Other lines — dropped or degraded
 

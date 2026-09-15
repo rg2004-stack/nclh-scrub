@@ -63,3 +63,49 @@ def ncl_line_cfg():
         regions=["Caribbean", "Southern Europe", "Northern Europe",
                  "Bermuda", "Alaska"],
     )
+
+
+@pytest.fixture(scope="session")
+def ccl_search_us():
+    """Real archived /cruisesearch/api/search response (US/USD)."""
+    return load_fixture("ccl_search_us.json")
+
+
+@pytest.fixture(scope="session")
+def ccl_page1():
+    return load_fixture("ccl_search_page1.json")
+
+
+@pytest.fixture(scope="session")
+def ccl_page2():
+    return load_fixture("ccl_search_page2.json")
+
+
+@pytest.fixture
+def ccl_line_cfg():
+    """Mirrors the carnival block in config/panel.yaml so the tests fail if the
+    shipped mapping changes underneath them."""
+    return LineConfig(
+        key="carnival",
+        line="Carnival Cruise Line",
+        brand="Carnival",
+        enabled=True,
+        base_url="https://www.carnival.com",
+        cabin_map={"IS": "inside", "OS": "oceanview",
+                   "OB": "balcony", "SU": "suite"},
+        region_map={
+            "ME": "Southern Europe", "GI": "Southern Europe",
+            "CG": "Southern Europe", "IB": "Southern Europe",
+            "EC": "Southern Europe",
+            "EN": "Northern Europe", "ES": "Northern Europe",
+            "BI": "Northern Europe",
+            "CE": "Caribbean", "CW": "Caribbean", "BH": "Caribbean",
+            "BM": "Bermuda", "GL": "Alaska",
+        },
+        # LON deliberately absent: it serves both Northern and Iberian routes.
+        port_region_map={"BCN": "Southern Europe", "CIV": "Southern Europe",
+                         "LIS": "Southern Europe"},
+        regions=["Caribbean", "Southern Europe", "Northern Europe",
+                 "Bermuda", "Alaska"],
+        search_page_size=20,
+    )
