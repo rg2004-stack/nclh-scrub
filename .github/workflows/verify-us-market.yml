@@ -1,0 +1,48 @@
+name: Verify US market
+
+# Manual only. Nothing recurring is scheduled until this passes.
+# GitHub-hosted runners are US-based by default, which is what this checks.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Confirm NCL serves USD with a separable tax amount
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run the test suite first
+        run: python -m pytest -q
+
+      - name: Verify US market
+        id: verify
+        run: python scripts/verify_us_market.py
+
+      - name: Result
+        if: always()
+        run: |
+          if [ "${{ steps.verify.outcome }}" = "success" ]; then
+            echo "### US market CONFIRMED" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "- \`currencyCode == USD\` on both endpoints" >> $GITHUB_STEP_SUMMARY
+            echo "- \`taxesAndFees.amount\` populated and non-null" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Safe to enable the scheduled collection workflows." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### US market NOT confirmed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Do not schedule recurring collection. See the job log." >> $GITHUB_STEP_SUMMARY
+          fi
