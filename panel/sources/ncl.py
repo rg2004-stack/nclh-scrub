@@ -134,6 +134,12 @@ def parse_sailings(
         published = row.get(PRICE_BASIS)
         per_person = float(published) if isinstance(published, (int, float)) else None
 
+        # NCL does not publish a tax amount on any reachable endpoint: this key
+        # is absent from every pricingStateRooms row observed, in both USD and
+        # CAD. Read defensively anyway so the panel picks it up for free if NCL
+        # ever starts sending it. The fare itself is tax-exclusive (NCL's
+        # disclaimers: taxes and fees "are additional"), so price_total and
+        # price_pppn are fare-only regardless.
         taxes = row.get("taxesAndFees")
         taxes_amount = taxes.get("amount") if isinstance(taxes, Mapping) else None
         taxes_text = taxes.get("text") if isinstance(taxes, Mapping) else None

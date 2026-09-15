@@ -1,25 +1,40 @@
 """Confirm the collector is being served the US market.
 
-Run this on a GitHub Actions runner (US-hosted) before scheduling anything
-recurring. It makes a minimal number of NCL requests and checks the two things
-the panel depends on:
+Run on a GitHub Actions runner (US-hosted) before scheduling recurring
+collection.
 
-  1. currencyCode == "USD"
-  2. taxesAndFees.amount is present and non-null
+WHAT IS GATED, AND WHY
+----------------------
+Hard requirement: currencyCode == "USD" on both endpoints the collector reads.
+A CAD-served run would silently produce a panel in the wrong currency.
 
-(2) is the one that actually matters and the reason a Canadian egress is
-unusable: on the CAD market NCL omits taxesAndFees.amount entirely, so the
-"taxes captured separately, never folded into price" rule cannot be satisfied.
-Currency alone is not sufficient evidence.
+NOT gated: the presence of a tax amount. An earlier version of this script
+required taxesAndFees.amount to be populated, on the mistaken belief that the
+US market exposes it and the CAD market does not. That was wrong, and the
+evidence for it was a hardcoded literal found in NCL's JS bundle rather than a
+live response. Verified since:
 
-Exit code 0 = US market confirmed, safe to schedule.
-Exit code 1 = not confirmed; do not schedule, the panel would be contaminated.
+  * `taxesAndFees` does not appear on pricingStateRooms rows at all -- 0 of
+    1,276 archived rows carry it, and no key containing "tax" or "fee" exists
+    anywhere in those payloads.
+  * It is absent from /api/vacations/search/{code} and
+    /api/vacations/events/{id}/package/{id} too.
+  * The itinerary-level taxesAndFees on the search endpoint is {"text": ""}
+    on the US market as well as CAD -- a vestigial field.
+  * NCL's own /api/vacations/disclaimers states: "Government taxes, fees,
+    port expenses, and fuel supplement (where applicable) are additional."
 
-    python scripts/verify_us_market.py
+So the published fare is tax-EXCLUSIVE, which is exactly what the panel needs:
+price_total / price_pppn are fare-only and the "never fold taxes into price"
+rule holds. taxes_fees is simply NULL for NCL because the public API does not
+publish the amount. That is a missing column, not a contaminated price, and it
+is not a reason to block collection.
+
+Exit 0 = US market confirmed, safe to schedule.
+Exit 1 = not confirmed; do not schedule.
 """
 from __future__ import annotations
 
-import json
 import os
 import sys
 
@@ -43,53 +58,38 @@ def main() -> int:
     line_cfg = cfg.line("ncl")
     client = PoliteClient(
         user_agent=cfg.user_agent,
-        rate=RateLimit(min_interval_s=cfg.min_interval_s,
-                       timeout_s=cfg.timeout_s),
+        rate=RateLimit(min_interval_s=cfg.min_interval_s, timeout_s=cfg.timeout_s),
         obey_robots=cfg.obey_robots,
     )
 
     failures: list[str] = []
-    notes: list[str] = []
 
-    # --- where are we actually coming from? ------------------------------
     banner("EGRESS")
     try:
         geo = client.get_json("https://ipinfo.io/json")
         print(f"  ip       : {geo.get('ip')}")
-        print(f"  location : {geo.get('city')}, {geo.get('region')}, "
-              f"{geo.get('country')}")
+        print(f"  location : {geo.get('city')}, {geo.get('region')}, {geo.get('country')}")
         print(f"  org      : {geo.get('org')}")
-        if str(geo.get("country", "")).upper() != "US":
-            notes.append(f"egress country is {geo.get('country')!r}, not US")
-    except Exception as exc:                                  # non-fatal
+    except Exception as exc:
         print(f"  (geo lookup unavailable: {exc})")
 
-    # --- 1. search endpoint ----------------------------------------------
-    banner("CHECK 1 - /api/v2/vacations/search")
-    search_url = f"{line_cfg.base_url}/api/v2/vacations/search?limit=3&offset=0"
-    print(f"  GET {search_url}")
-    payload = client.get_json(search_url)
+    # --- GATE: currency on the search endpoint ---------------------------
+    banner("GATE 1 - /api/v2/vacations/search currency")
+    url = f"{line_cfg.base_url}/api/v2/vacations/search?limit=3&offset=0"
+    print(f"  GET {url}")
+    payload = client.get_json(url)
     itineraries = payload.get("itineraries") or []
     if not itineraries:
         print("  FAIL: no itineraries returned")
         return 1
-
     for it in itineraries:
         cur = it.get("currencyCode")
-        taxes = it.get("taxesAndFees") or {}
-        amount = taxes.get("amount") if isinstance(taxes, dict) else None
-        text = taxes.get("text") if isinstance(taxes, dict) else None
-        print(f"    {str(it.get('code'))[:26]:<28} currency={cur!r:<7} "
-              f"taxesAndFees.amount={amount!r} text={str(text)[:38]!r}")
+        print(f"    {str(it.get('code'))[:26]:<28} currency={cur!r}")
         if str(cur).upper() != EXPECTED_CURRENCY:
             failures.append(f"search: currencyCode {cur!r} != {EXPECTED_CURRENCY}")
-        if amount is None:
-            failures.append(
-                f"search: taxesAndFees.amount missing for {it.get('code')} "
-                "- taxes cannot be captured separately on this market")
 
-    # --- 2. sailings endpoint (what the collector actually reads) --------
-    banner("CHECK 2 - /api/vacations/sailings/{itineraryCode}")
+    # --- GATE: currency on the endpoint the collector actually reads ----
+    banner("GATE 2 - /api/vacations/sailings/{code} currency")
     code = itineraries[0].get("code")
     sail_url = f"{line_cfg.base_url}/api/vacations/sailings/{code}"
     print(f"  GET {sail_url}")
@@ -104,31 +104,39 @@ def main() -> int:
         if currencies != {EXPECTED_CURRENCY}:
             failures.append(
                 f"sailings: currencies {currencies} != {{'{EXPECTED_CURRENCY}'}}")
+        priced = [r for r in rows if isinstance(r.get(PRICE_BASIS), (int, float))]
+        print(f"  priced cells: {len(priced)}/{len(rows)}")
+        if priced:
+            s = priced[0]
+            print(f"  sample: {s.get('stateroomType')} {s.get('status')} "
+                  f"{PRICE_BASIS}={s.get(PRICE_BASIS)} {s.get('currencyCode')}")
 
-        sample = rows[0]
-        print(f"  sample cell: type={sample.get('stateroomType')} "
-              f"status={sample.get('status')} "
-              f"{PRICE_BASIS}={sample.get(PRICE_BASIS)} "
-              f"currency={sample.get('currencyCode')}")
-        tax_fields = {k: v for k, v in sample.items() if "ax" in k.lower()}
-        print(f"  tax-ish fields on the cell: {tax_fields or 'none'}")
+    # --- INFORMATIONAL: tax exposure (never gates) -----------------------
+    banner("INFO - tax handling (not a gate)")
+    tax_keys = [k for r in rows[:50] for k in r if "tax" in k.lower() or "fee" in k.lower()]
+    print(f"  tax/fee keys on pricing rows : {set(tax_keys) or 'none (expected)'}")
+    try:
+        disc = client.get_json(f"{line_cfg.base_url}/api/vacations/disclaimers")
+        text = " ".join(d.get("text", "") for d in disc if isinstance(d, dict))
+        idx = text.lower().find("government taxes")
+        if idx >= 0:
+            print(f"  NCL disclaimer: ...{text[idx:idx + 150]}...")
+        print("  => published fare is tax-EXCLUSIVE; taxes_fees stays NULL for NCL.")
+        print("     The 'never fold taxes into price' rule holds.")
+    except Exception as exc:
+        print(f"  (disclaimers unavailable: {exc})")
 
-    # --- verdict ----------------------------------------------------------
     banner("VERDICT")
-    for n in notes:
-        print(f"  NOTE: {n}")
     if failures:
         print(f"  NOT CONFIRMED - {len(failures)} check(s) failed:\n")
         for f in failures:
             print(f"    x {f}")
         print("\n  Do NOT schedule recurring collection from this egress.")
-        print("  The panel would record a non-US market and could not satisfy")
-        print("  the 'taxes captured separately' rule.")
         return 1
 
     print("  US MARKET CONFIRMED")
     print(f"    - currencyCode == {EXPECTED_CURRENCY} on both endpoints")
-    print("    - taxesAndFees.amount is populated and non-null")
+    print("    - fare basis is tax-exclusive (taxes_fees NULL by design)")
     print("\n  Safe to schedule recurring collection.")
     return 0
 

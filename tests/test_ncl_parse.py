@@ -106,13 +106,20 @@ class TestPricesAndTaxes:
         assert {r.price_basis for r in rows} == {"combinedPrice"}
 
     def test_absent_tax_amount_is_null_not_zero(self, sailings_payload, ncl_line_cfg):
-        """The CAD market omits taxesAndFees.amount. Null != 0, and must not
-        be confused for a genuine zero-tax sailing."""
+        """NCL publishes no tax amount at all. Null != 0, and must not be
+        confused for a genuine zero-tax sailing."""
         rows, _ = parse(sailings_payload, ncl_line_cfg)
         assert all(r.taxes_fees is None for r in rows)
 
-    def test_tax_amount_is_captured_separately_when_present(self, ncl_line_cfg):
-        """Synthesised USD-shaped row: amount must land in taxes_fees alone."""
+    def test_tax_amount_would_be_captured_separately_if_ncl_ever_sent_one(
+            self, ncl_line_cfg):
+        """Forward-looking guard, not a description of live data.
+
+        NCL publishes no tax amount on any reachable endpoint (absent from all
+        1,276 archived rows, USD and CAD alike). This synthesised row proves
+        that if NCL ever does start sending one, it lands in taxes_fees and is
+        never folded into price_total.
+        """
         payload = {
             "itineraryCode": "TEST1",
             "itineraryDetails": {"code": "TEST1", "title": "Test",

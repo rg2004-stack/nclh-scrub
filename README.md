@@ -180,7 +180,7 @@ Sources do not resolve equally, and the panel does not pretend otherwise:
 | `vendor_category_code` | NULL | populated |
 | `rate_code` | NULL | populated |
 | availability states | available / limited / sold_out | available / sold_out |
-| tax amount | US market only | never (always 0.0) |
+| tax amount | never published | never (always 0.0) |
 | promo detail | structured `offerGroups[]` | none |
 
 `panel/sources/capabilities.py` declares this and enforces it. The failure it
@@ -229,29 +229,46 @@ human to resolve. `BALCONY_PLUS` will not silently become `balcony`.
 
 ## Open TODOs
 
-### 1. US egress — blocks the market requirement
+### 1. US egress - RESOLVED
 
-The spec calls for US site, USD only. **This machine resolves to Toronto and is
-served CAD.** All in-band workarounds were tested and all 15 failed:
+The spec calls for US site, USD only. A developer machine in Toronto is served
+CAD, and no in-band override exists: 15 attempts (query params `currency`,
+`market`, `country`, `locale`, `site`; headers `x-market`, `x-currency`,
+`x-country`, `Referer`; path prefixes `/us/en/`, `/en/us/`) all returned CAD or
+404. Akamai EdgeScape resolves market from client IP at the edge.
 
-- query params `currency`, `currencyCode`, `market`, `country`, `countryCode`, `locale`, `site`
-- headers `Accept-Language: en-US`, `x-market`, `x-currency`, `x-locale`, `x-country`, `Referer`
-- path prefixes `/us/en/` and `/en/us/` — both 404
+**A US-hosted GitHub Actions runner resolves correctly.** Confirmed on Azure
+`westus2` (13.77.158.3, Moses Lake WA): `currencyCode == "USD"` on both the
+search and sailings endpoints, every pricing cell. No proxy needed, and none is
+used. Run `.github/workflows/verify-us-market.yml` to re-confirm.
 
-Akamai EdgeScape resolves market from client IP **at the edge**, before origin
-sees the request (`ak_country=CAN`, `ak_location=CA,ON,TORONTO`). No header or
-parameter overrides it. Spoofing `X-Forwarded-For` would be circumventing a geo
-control and is deliberately not implemented.
+Rows are stamped with the market actually served (`market`, `currency`), so a
+CAD-served run can never be mistaken for a USD panel.
 
-This matters beyond the currency label: **on the CAD market
-`taxesAndFees.amount` is absent entirely**, so the "taxes captured separately"
-rule cannot be satisfied from this egress. The US response does populate it
-(`{"text": "Includes taxes, fees and port expenses", "amount": 146}`).
+### 1b. NCL publishes no tax amount - by design, not by market
 
-*Fix:* run the collector from a US VPS, or route through a US VPN. Confirmation
-is one request — check `currencyCode == "USD"` and that `taxes_fees` is
-non-NULL. Until then every row is stamped `market='CA'`, `currency='CAD'` so a
-Canadian run cannot silently contaminate a USD panel.
+An earlier version of this README claimed the US market exposes
+`taxesAndFees.amount` and CAD omits it. **That was wrong.** The evidence was a
+hardcoded literal in NCL's JS bundle, not a live response. Verified since:
+
+- `taxesAndFees` appears on **0 of 1,276** archived `pricingStateRooms` rows,
+  and no key containing "tax" or "fee" exists anywhere in those payloads.
+- It is equally absent from `/api/vacations/search/{code}` and
+  `/api/vacations/events/{id}/package/{id}`.
+- The itinerary-level `taxesAndFees` on the search endpoint is `{"text": ""}`
+  on the **US** market as well as CAD - a vestigial field.
+
+NCL's own `/api/vacations/disclaimers` settles the basis:
+
+> "Fares shown are in US dollars and are per person, based on double occupancy
+> ... Government taxes, fees, port expenses, and fuel supplement (where
+> applicable) **are additional**."
+
+So the published fare is **tax-exclusive**. `price_total` and `price_pppn` are
+fare-only and the "never fold taxes into price" rule holds. `taxes_fees` is
+NULL for NCL because the public API does not publish the amount - a missing
+column, not a contaminated price. The collector still reads the field
+defensively, so the panel would pick it up for free if NCL ever sends it.
 
 ### 2. Carnival tax amount
 

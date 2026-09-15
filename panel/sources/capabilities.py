@@ -42,8 +42,11 @@ CAPABILITIES: dict[str, SourceCapability] = {
         granularity="category",
         availability_states=("available", "limited", "sold_out"),
         exposes_units_remaining=False,
-        # Only on the US market; the CAD response omits taxesAndFees.amount.
-        exposes_tax_amount=True,
+        # Verified absent: `taxesAndFees` is on 0 of 1,276 archived pricing rows
+        # and on no NCL endpoint we can reach, in USD or CAD. NCL's own
+        # disclaimers say taxes "are additional", so the published fare is
+        # tax-exclusive and taxes_fees is NULL by design, not by market.
+        exposes_tax_amount=False,
         exposes_promo_detail=True,
         notes=("cabin_subcategory is the stateroom type (INSIDE/BALCONY/...), "
                "which is category-level. No vendor sub-category or rate code."),
