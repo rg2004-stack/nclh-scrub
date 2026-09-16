@@ -6,14 +6,22 @@ window, the scrape dates, the granularity, and the row counts behind it.
 
 Why the basis is not optional
 -----------------------------
-The two tiers are not two samples of the same population. weekly-full covers
-Jan-Aug 2027 across five regions. daily-marker covers Oct-Dec 2026, and in that
-window the Mediterranean season has ended and the ships have repositioned, so
-its supply is effectively Caribbean-only on both NCL and Carnival. A number
-computed on one tier therefore says nothing about the other, and a number
-computed by pooling them describes no real population at all: it would read as
-"Southern Europe pricing is moving" when the movement is Caribbean rows
-entering the average.
+The two tiers are not two samples of the same population. weekly-full is the
+broad snapshot: every configured region and line, swept once a week.
+daily-marker is a narrow, curated subset of near-term sailings read every day.
+Their sail windows overlap, but their breadth and cadence do not, so the same
+region can carry hundreds of weekly rows and a handful of daily ones.
+
+A number computed on one tier therefore says nothing about the other, and a
+number computed by pooling them describes no real population at all: it would
+read as "Southern Europe pricing is moving" when the movement is Caribbean rows
+entering the average, or as a depletion slope when it is really the weekly
+sweep adding itineraries the daily tier never tracked.
+
+Note that no window is hardcoded here. `Basis.label()` reports the sail window
+actually present in the rows, because a window written into a docstring is a
+claim that goes stale the moment the config changes -- which is exactly how the
+"immutable" export path came to overwrite history.
 
 So: no function pools tiers. `tier` is a required argument everywhere, a query
 is scoped to exactly one tier, and combining two results requires
@@ -50,8 +58,12 @@ TIERS = ("weekly-full", "daily-marker")
 # when a run happens to be missing rows for an unrelated reason.
 TIER_SCOPE_NOTES: dict[str, str] = {
     "weekly-full": (
-        "weekly-full is the Jan-Aug 2027 book across all configured regions; "
-        "it is a forward-book cross-section, not a near-term depletion series."
+        "weekly-full is the broad weekly sweep: every configured region and "
+        "line. It is a cross-section of the book, sampled once a week, not a "
+        "high-frequency series -- read levels and spreads from it, and take "
+        "day-to-day movement from daily-marker. The sail window it covers is "
+        "whatever the config asks for; this basis reports the window actually "
+        "present in the rows."
     ),
     "daily-marker": (
         "daily-marker is the Oct-Dec 2026 near-term cohort, and its region mix "

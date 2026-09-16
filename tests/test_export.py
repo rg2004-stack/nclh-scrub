@@ -76,7 +76,10 @@ class TestPromoDedupe:
     def test_real_fixture_collapses_many_rows_to_few_bodies(
             self, sailings_payload, ncl_line_cfg, tmp_path):
         rows, _ = ncl.parse_sailings(
-            sailings_payload, line_cfg=ncl_line_cfg, tier="weekly-full",
+            sailings_payload,
+            # archived fixture is a CAD capture from the original recon
+            expected_currency="CAD",
+            line_cfg=ncl_line_cfg, tier="weekly-full",
             scrape_ts="2026-09-15T12:00:00+00:00", scrape_date="2026-09-15",
             source_url="https://example.invalid")
         store = Store(tmp_path / "p.sqlite")
@@ -110,7 +113,10 @@ class TestRoundTrip:
     @pytest.fixture
     def populated(self, tmp_path, sailings_payload, ncl_line_cfg):
         rows, _ = ncl.parse_sailings(
-            sailings_payload, line_cfg=ncl_line_cfg, tier="weekly-full",
+            sailings_payload,
+            # archived fixture is a CAD capture from the original recon
+            expected_currency="CAD",
+            line_cfg=ncl_line_cfg, tier="weekly-full",
             scrape_ts="2026-09-15T12:00:00+00:00", scrape_date="2026-09-15",
             source_url="https://example.invalid")
         db = tmp_path / "src.sqlite"

@@ -41,6 +41,18 @@ class UnmappedCabinLabel(Exception):
     """Raised only by strict callers; the collector logs instead."""
 
 
+class CurrencyMismatch(Exception):
+    """A priced row arrived in a currency the panel did not ask for.
+
+    Deliberately fatal rather than skipped. Both sources resolve market
+    server-side -- NCL from client IP at the Akamai edge, Carnival from a
+    cache we do not control -- so a currency change means the egress or the
+    upstream moved, and every row from that run is suspect. A panel that
+    quietly mixes CAD and USD prices produces a ~35% phantom price gap that
+    looks exactly like a pricing signal.
+    """
+
+
 def map_cabin_category(raw_label: str, mapping: Mapping[str, str]) -> str | None:
     """Map a raw vendor label to one of STANDARD_CATEGORIES.
 

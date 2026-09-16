@@ -23,6 +23,12 @@ def parse(payload, line_cfg, **kw):
     kw.setdefault("scrape_ts", SCRAPE_TS)
     kw.setdefault("scrape_date", SCRAPE_DATE)
     kw.setdefault("source_url", URL)
+    # The archived fixture is a CAD capture from the original recon,
+    # taken before the US-egress workflow existed. Parsing mechanics are
+    # currency-independent, so these tests state the fixture's currency
+    # explicitly rather than weakening the USD guard. The guard itself is
+    # tested in TestCurrencyGuard.
+    kw.setdefault("expected_currency", "CAD")
     return ncl.parse_sailings(payload, line_cfg=line_cfg, **kw)
 
 

@@ -50,6 +50,13 @@ STATUS_MAP = {
 # published per-person double-occupancy fare, i.e. the number a shopper sees.
 PRICE_BASIS = "combinedPrice"
 
+# NCL resolves market from client IP, so this is the assertion that the runner
+# is where we think it is. See scripts/verify_us_market.py for the preflight.
+EXPECTED_CURRENCY = "USD"
+
+# Re-exported so callers can catch one type for either source.
+CurrencyMismatch = norm.CurrencyMismatch
+
 # Currency -> market code, for recording the market actually served.
 _MARKET_BY_CURRENCY = {
     "USD": "US", "CAD": "CA", "GBP": "UK", "EUR": "EU", "AUD": "AU", "NZD": "NZ",
@@ -69,8 +76,12 @@ def market_for(currency: str | None) -> str:
     """Record the market actually served, not the one we asked for.
 
     The request always goes to the US site; Akamai resolves market from client
-    IP at the edge. Storing the resolved market stops a CAD-served run from
-    silently contaminating a USD panel.
+    IP at the edge, so what comes back depends on where the runner sits.
+    Recording the resolved market is only half the defence -- `parse_sailings`
+    raises CurrencyMismatch on any priced row that is not EXPECTED_CURRENCY, so
+    a non-US egress fails the run instead of quietly filling the panel with CAD.
+    That is not hypothetical: a local run on 2026-09-16 wrote 4,470 CAD rows
+    before this guard existed.
     """
     if not currency:
         return "UNKNOWN"
@@ -98,6 +109,7 @@ def parse_sailings(
     raw_path: str | None = None,
     sail_window: tuple[str | None, str | None] = (None, None),
     allowed_regions: Iterable[str] | None = None,
+    expected_currency: str = EXPECTED_CURRENCY,
 ) -> tuple[list[Observation], set[str]]:
     """Turn one /sailings/{code} payload into observations.
 
@@ -148,6 +160,15 @@ def parse_sailings(
 
         published = row.get(PRICE_BASIS)
         per_person = float(published) if isinstance(published, (int, float)) else None
+
+        # A priced row in the wrong currency means the edge served a different
+        # market. Fail the itinerary loudly rather than record a CAD fare.
+        currency = row.get("currencyCode")
+        if per_person is not None and str(currency or "").upper() != expected_currency.upper():
+            raise norm.CurrencyMismatch(
+                f"{itinerary_code}: expected {expected_currency}, got {currency!r} "
+                f"on sailing {row.get('sailId')!r}. The egress is not resolving "
+                f"as the {expected_currency} market; no rows written.")
 
         # NCL does not publish a tax amount on any reachable endpoint: this key
         # is absent from every pricingStateRooms row observed, in both USD and
@@ -330,17 +351,29 @@ class NCLSource:
                 continue
 
             raw_path = self.archive.write(self.key, "sailings", code, body, ts=now)
-            rows, unmapped = parse_sailings(
-                payload,
-                line_cfg=self.line_cfg,
-                tier=tier,
-                scrape_ts=scrape_ts,
-                scrape_date=scrape_date,
-                source_url=url,
-                raw_path=raw_path,
-                sail_window=window,
-                allowed_regions=self.line_cfg.regions or None,
-            )
+            try:
+                rows, unmapped = parse_sailings(
+                    payload,
+                    line_cfg=self.line_cfg,
+                    tier=tier,
+                    scrape_ts=scrape_ts,
+                    scrape_date=scrape_date,
+                    source_url=url,
+                    raw_path=raw_path,
+                    sail_window=window,
+                    allowed_regions=self.line_cfg.regions or None,
+                )
+            except norm.CurrencyMismatch as exc:
+                # The edge resolved a market we did not ask for. Every remaining
+                # itinerary would be wrong the same way, so stop the line rather
+                # than write hundreds more rows in the wrong currency. Recorded
+                # as fatal so the CLI exits non-zero and the run is not silently
+                # treated as a good collection.
+                print(f"  !! CURRENCY MISMATCH: {exc}")
+                result.errors.append({"stage": "currency", "code": code,
+                                      "url": url, "error": str(exc),
+                                      "fatal": True})
+                break
 
             for label in unmapped:
                 self.store.log_unmapped_label(self.line_cfg.line, label)

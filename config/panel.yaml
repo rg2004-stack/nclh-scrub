@@ -19,9 +19,14 @@ http:
 
 tiers:
   weekly-full:
-    # The disputed window.
+    # The comprehensive snapshot: all lines, all configured regions, swept
+    # weekly. The window starts in the near term and runs through the disputed
+    # 2027 book, so one tier answers both "what is the forward book priced at"
+    # and "what is happening to sailings that are about to go". daily-marker
+    # then re-reads a curated subset of the near-term end of this range every
+    # day; the two tiers overlap in dates by design and are never pooled.
     sail_window:
-      start: "2027-01-01"
+      start: "2026-10-01"
       end: "2027-08-31"
 
   daily-marker:

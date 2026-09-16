@@ -19,6 +19,12 @@ def parse(payload, line_cfg, **kw):
     kw.setdefault("scrape_ts", SCRAPE_TS)
     kw.setdefault("scrape_date", SCRAPE_DATE)
     kw.setdefault("source_url", URL)
+    # The archived fixture is a CAD capture from the original recon,
+    # taken before the US-egress workflow existed. Parsing mechanics are
+    # currency-independent, so these tests state the fixture's currency
+    # explicitly rather than weakening the USD guard. The guard itself is
+    # tested in TestCurrencyGuard.
+    kw.setdefault("expected_currency", "CAD")
     return ncl.parse_sailings(payload, line_cfg=line_cfg, **kw)
 
 
@@ -134,7 +140,7 @@ class TestPricesAndTaxes:
                                  "amount": 146},
             }],
         }
-        rows, _ = parse(payload, ncl_line_cfg)
+        rows, _ = parse(payload, ncl_line_cfg, expected_currency="USD")
         row = rows[0]
         assert row.taxes_fees == 146.0
         assert row.price_total == 1400.0          # fare only, taxes excluded
@@ -162,7 +168,7 @@ class TestAvailability:
                     "destinations": [{"code": "CARIBBEAN"}]},
                 "pricingStateRooms": [dict(base, status=raw_status)],
             }
-            rows, _ = parse(payload, ncl_line_cfg)
+            rows, _ = parse(payload, ncl_line_cfg, expected_currency="USD")
             assert rows[0].availability_status == expected
             # verbatim value is never lost
             assert rows[0].availability_status_raw == raw_status
@@ -184,7 +190,7 @@ class TestAvailability:
         payload = {"itineraryCode": "T",
                    "itineraryDetails": {"destinations": [{"code": "CARIBBEAN"}]},
                    "pricingStateRooms": [base]}
-        rows, _ = parse(payload, ncl_line_cfg)
+        rows, _ = parse(payload, ncl_line_cfg, expected_currency="USD")
         assert rows[0].availability_status == norm.AVAIL_SOLO_ONLY
         assert rows[0].availability_status not in norm.AVAIL_CLOSED
         assert rows[0].availability_status_raw == "SOLO_GUEST_ONLY"
@@ -248,7 +254,7 @@ class TestUnmappedLabels:
                 "currencyCode": "USD", "status": "AVAILABLE", "combinedPrice": 500,
             }],
         }
-        rows, unmapped = parse(payload, ncl_line_cfg)
+        rows, unmapped = parse(payload, ncl_line_cfg, expected_currency="USD")
         assert unmapped == {"SPA_VILLA"}
         assert rows[0].cabin_category is None          # not guessed
         assert rows[0].cabin_subcategory == "SPA_VILLA"  # raw label kept
@@ -299,3 +305,70 @@ class TestMarket:
         rows, _ = parse(sailings_payload, ncl_line_cfg)
         assert {r.market for r in rows} == {"CA"}
         assert {r.currency for r in rows} == {"CAD"}
+
+
+class TestCurrencyGuard:
+    """A non-US egress must fail the run, not fill the panel with CAD.
+
+    On 2026-09-16 a local run collected 4,470 NCL rows at market=CA because
+    nothing refused them: `market_for()` recorded the served market faithfully
+    and the collector wrote the rows anyway. NCL resolves market from client IP
+    at the Akamai edge, so this is a property of where the runner sits, and it
+    is exactly what the GitHub Actions setup exists to control.
+    """
+
+    def test_the_archived_fixture_is_a_cad_capture(self, sailings_payload):
+        """Guards the premise of the tests above: if this ever becomes USD,
+        the explicit expected_currency="CAD" in this file is wrong."""
+        currencies = {r.get("currencyCode")
+                      for r in sailings_payload["pricingStateRooms"]}
+        assert currencies == {"CAD"}
+
+    def test_cad_payload_raises_when_usd_is_expected(self, sailings_payload,
+                                                     ncl_line_cfg):
+        with pytest.raises(norm.CurrencyMismatch) as exc:
+            parse(sailings_payload, ncl_line_cfg, expected_currency="USD")
+        assert "CAD" in str(exc.value)
+        assert "USD" in str(exc.value)
+
+    def test_the_default_expectation_is_usd(self, sailings_payload, ncl_line_cfg):
+        """Nothing should have to opt in to the guard."""
+        assert ncl.EXPECTED_CURRENCY == "USD"
+        with pytest.raises(norm.CurrencyMismatch):
+            ncl.parse_sailings(
+                sailings_payload, line_cfg=ncl_line_cfg, tier="weekly-full",
+                scrape_ts=SCRAPE_TS, scrape_date=SCRAPE_DATE, source_url=URL)
+
+    def test_unpriced_rows_do_not_trip_the_guard(self, ncl_line_cfg):
+        """A sold-out cell carries no price and no currency; it is not evidence
+        that the egress moved, so it must not fail the run."""
+        payload = {
+            "itineraryCode": "T",
+            "itineraryDetails": {"destinations": [{"code": "CARIBBEAN"}]},
+            "pricingStateRooms": [{
+                "sailId": "1", "packageId": "p", "stateroomType": "INSIDE",
+                "sailStartDate": "2027-03-01T00:00",
+                "sailEndDate": "2027-03-04T00:00",
+                "status": "SOLD_OUT", "currencyCode": None,
+            }],
+        }
+        rows, _ = parse(payload, ncl_line_cfg, expected_currency="USD")
+        assert len(rows) == 1
+        assert rows[0].price_total is None
+
+    def test_mismatch_names_the_itinerary_and_both_currencies(self, ncl_line_cfg):
+        payload = {
+            "itineraryCode": "JOY3MIANASNPIMIA",
+            "itineraryDetails": {"destinations": [{"code": "CARIBBEAN"}]},
+            "pricingStateRooms": [{
+                "sailId": "77", "packageId": "p", "stateroomType": "BALCONY",
+                "sailStartDate": "2027-03-01T00:00",
+                "sailEndDate": "2027-03-08T00:00",
+                "status": "AVAILABLE", "currencyCode": "CAD",
+                "combinedPrice": 1200,
+            }],
+        }
+        with pytest.raises(norm.CurrencyMismatch) as exc:
+            parse(payload, ncl_line_cfg, expected_currency="USD")
+        msg = str(exc.value)
+        assert "JOY3MIANASNPIMIA" in msg and "77" in msg

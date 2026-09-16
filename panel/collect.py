@@ -22,7 +22,7 @@ from .config import DEFAULT_CONFIG_PATH, TIERS, load_config
 from .http_client import PoliteClient, RateLimit
 from .sources import SOURCES
 from .sources.base import CollectResult
-from .storage import RawArchive, Store, new_run_id
+from .storage import RawArchive, Store, new_run_id, utcnow
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -41,6 +41,11 @@ def build_parser() -> argparse.ArgumentParser:
                    help="cap search pages per line, for paged sources")
     p.add_argument("--dry-run", action="store_true",
                    help="enumerate and report scope without fetching sailings")
+    p.add_argument("--reset-progress", action="store_true",
+                   help="discard today's resume markers and re-collect from "
+                        "scratch; needed after a collection-scope change, since "
+                        "resume markers would otherwise skip work whose scope "
+                        "has moved underneath them")
     p.add_argument("--db", default=None, help="override the database path")
     return p
 
@@ -75,6 +80,14 @@ def run(argv: Sequence[str] | None = None) -> int:
           f"robots={'enforced' if cfg.obey_robots else 'IGNORED'}")
 
     with Store(db_path) as store:
+        if args.reset_progress:
+            today = utcnow().strftime("%Y-%m-%d")
+            for key in keys:
+                n = store.reset_progress(args.tier, today, cfg.line(key).line)
+                if n:
+                    print(f"  reset {n} resume marker(s) for "
+                          f"{cfg.line(key).line} on {today}")
+
         for key in keys:
             line_cfg = cfg.line(key)
             if args.limit_itineraries is not None:

@@ -132,9 +132,16 @@ different populations:
 
 | | weekly-full | daily-marker |
 |---|---|---|
-| sail window | Jan-Aug 2027 | Oct-Dec 2026 |
-| regions | all five configured | Caribbean-dominated by deployment |
+| sail window | Oct 2026 - Aug 2027 | Oct - Dec 2026 |
+| breadth | every configured region and line | ~26 curated itineraries |
+| cadence | weekly | daily |
 | cross-line? | yes: Caribbean, Southern Europe, Bermuda | **Caribbean only** |
+
+The windows overlap by design: weekly-full is the broad snapshot, daily-marker
+re-reads a curated slice of its near-term end every day. They are still never
+pooled, because breadth and cadence differ -- a region can carry hundreds of
+weekly rows and a handful of daily ones, so a pooled "change" would mostly
+measure which itineraries the weekly sweep happened to add.
 
 Measured from the near-term universe on 2026-09-15: Caribbean has 104 eligible
 itineraries (85 NCL / 19 Carnival); Southern Europe has 15, **all NCL**, all
@@ -337,7 +344,7 @@ bytes/row, and the saving grows with NCL volume since most NCL rows carry promos
 
 | Tier | Cron (UTC) | Scope |
 |---|---|---|
-| `weekly-full` | `10 6 * * 1` (Mondays) | all lines, all regions, Jan-Aug 2027 |
+| `weekly-full` | `10 6 * * 1` (Mondays) | all lines, all regions, Oct 2026 - Aug 2027 |
 | `daily-marker` | `40 6 * * *` (daily) | near-term cohort + earnings window |
 
 Each run: tests -> **confirm US market** -> rebuild from JSONL history ->
@@ -447,12 +454,21 @@ yield mix. Worth stating explicitly in any writeup built on this data.
 26 markers are live in `config/panel.yaml`: 20 NCL + 6 Carnival, all four cabin
 categories, 112 near-term departures and 39 inside the earnings window.
 
-The sampling frame is `data/sail_dates.json`, **not** the weekly-full panel.
-NCL itinerary codes are season-specific: of the 152 NCL itineraries sailing
-Oct-Dec 2026, only 35 appear anywhere in the Jan-Aug 2027 panel, and in the
-Mediterranean it is 1 of 15. Selecting from the panel produced a list where 14
-of 24 markers had no near-term departure at all and would have collected
-nothing. Re-select with:
+The sampling frame is `data/sail_dates.json`, the calendar written by
+`scripts/probe_sail_dates.py`.
+
+Originally this was because the panel could not see the near term at all: the
+weekly window was Jan-Aug 2027, NCL itinerary codes are season-specific, and of
+the 152 NCL itineraries sailing Oct-Dec 2026 only 35 appeared anywhere in that
+panel -- 1 of 15 in the Mediterranean. Picking from the panel produced a list
+where 14 of 24 markers had no near-term departure at all and would have
+collected nothing, every day, silently.
+
+Widening weekly-full to start 2026-10-01 removes most of that gap: the panel
+now covers the near-term window directly. The calendar is still the frame,
+because it carries two things the panel does not -- sail dates beyond the
+collection window (so a marker chosen today can be checked for departures after
+it), and the `is_package` product flag per itinerary. Re-select with:
 
 ```bash
 python scripts/probe_sail_dates.py     # refresh the calendar (~310 requests)

@@ -183,6 +183,27 @@ class Store:
         )
         return {r[0] for r in cur.fetchall()}
 
+    def reset_progress(self, tier: str, scrape_date: str,
+                       line: str | None = None) -> int:
+        """Forget today's completion markers so a run re-fetches from scratch.
+
+        Resume markers mean "this itinerary was already collected today under
+        the settings in force at the time". When the collection SCOPE changes --
+        a wider sail window, a different destination sweep -- those markers are
+        stale: the same pages now yield different rows, but a resumed run would
+        skip them and the day's file would silently keep the old scope. This is
+        the explicit way to say "collect that day again", and it is never called
+        automatically.
+        """
+        sql = "DELETE FROM run_progress WHERE tier=? AND scrape_date=?"
+        args: list[object] = [tier, scrape_date]
+        if line:
+            sql += " AND line=?"
+            args.append(line)
+        n = self.conn.execute(sql, args).rowcount
+        self.conn.commit()
+        return n
+
     def mark_itinerary_done(self, tier: str, line: str, scrape_date: str,
                             itinerary_code: str, n_observations: int) -> None:
         self.conn.execute(

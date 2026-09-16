@@ -62,7 +62,10 @@ class TestIdempotency:
     def test_double_run_of_a_full_payload_is_harmless(
             self, sailings_payload, ncl_line_cfg, store):
         rows, _ = ncl.parse_sailings(
-            sailings_payload, line_cfg=ncl_line_cfg, tier="weekly-full",
+            sailings_payload,
+            # archived fixture is a CAD capture from the original recon
+            expected_currency="CAD",
+            line_cfg=ncl_line_cfg, tier="weekly-full",
             scrape_ts="2026-09-14T21:00:00+00:00", scrape_date="2026-09-14",
             source_url="https://example.invalid")
         store.upsert_observations(rows)

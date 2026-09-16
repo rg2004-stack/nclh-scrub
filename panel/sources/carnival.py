@@ -59,13 +59,9 @@ SLOT_METACODE = {
 }
 
 
-class CurrencyMismatch(Exception):
-    """Raised when a priced row is not in the expected currency.
-
-    Deliberately fatal for the itinerary rather than silently skipped: the USD
-    result depends on a server-side cache, so a change must be noticed while
-    the panel is being collected.
-    """
+# Shared with NCL so a caller can catch one type for either source; see
+# panel.normalize.CurrencyMismatch for why this is fatal rather than skipped.
+CurrencyMismatch = norm.CurrencyMismatch
 
 
 def parse_search(
