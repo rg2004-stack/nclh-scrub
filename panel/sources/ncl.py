@@ -36,9 +36,13 @@ from .base import CollectResult
 # SOLO_GUEST_ONLY is a genuine late-stage depletion signal: the category is
 # depleted enough that NCL only offers it on single occupancy. It maps to
 # "limited", and the verbatim value is preserved in availability_status_raw.
+# SOLO_GUEST_ONLY is a product restriction, not scarcity: it marks NCL's Studio
+# staterooms, which are single-occupancy by design and therefore never quotable
+# on the panel's 2-pax basis. Mapping it to `limited` would have counted a fixed
+# attribute of the cabin as inventory depletion. See normalize.AVAIL_SOLO_ONLY.
 STATUS_MAP = {
     "AVAILABLE": norm.AVAIL_AVAILABLE,
-    "SOLO_GUEST_ONLY": norm.AVAIL_LIMITED,
+    "SOLO_GUEST_ONLY": norm.AVAIL_SOLO_ONLY,
     "SOLD_OUT": norm.AVAIL_SOLD_OUT,
 }
 
@@ -108,6 +112,17 @@ def parse_sailings(
     dest_codes = [d.get("code") for d in (details.get("destinations") or [])]
     region = norm.region_for(dest_codes, line_cfg.region_map)
 
+    # Land+cruise packages ("cruisetours"): NCL publishes a package fare but
+    # stamps the row with the cruise segment only, e.g. Denali itineraries carry
+    # duration {"itinerary": 14, "cruising": 7}. Dividing the package fare by
+    # cruise nights would overstate the nightly cruise rate ~2x and put a
+    # bundled land tour up against a peer's cruise-only fare. Capture the flag
+    # and the package length; do not adjust the price, which would invent a
+    # cruise-only fare NCL never published.
+    duration = details.get("duration") if isinstance(details.get("duration"), Mapping) else {}
+    itinerary_nights = duration.get("itinerary")
+    itinerary_nights = int(itinerary_nights) if isinstance(itinerary_nights, int) else None
+
     allowed = set(allowed_regions) if allowed_regions else None
     window_start, window_end = sail_window
 
@@ -149,6 +164,17 @@ def parse_sailings(
         raw_status = row.get("status")
         status = STATUS_MAP.get(str(raw_status).upper(), norm.AVAIL_UNKNOWN)
 
+        # Prefer the per-row flag; fall back to the published durations
+        # disagreeing, which is what a package looks like when isPackage is
+        # absent. Unknown stays NULL rather than defaulting to "not a package".
+        flag = row.get("isPackage")
+        if isinstance(flag, bool):
+            is_package = int(flag)
+        elif itinerary_nights is not None and nights is not None:
+            is_package = int(itinerary_nights > nights)
+        else:
+            is_package = None
+
         rows.append(Observation(
             scrape_ts_utc=scrape_ts,
             scrape_date=scrape_date,
@@ -162,6 +188,8 @@ def parse_sailings(
             sail_date=str(sail_date)[:10] if sail_date else None,
             return_date=str(return_date)[:10] if return_date else None,
             nights=nights,
+            is_package=is_package,
+            itinerary_nights=itinerary_nights,
             itinerary_name=details.get("title"),
             embark_port=embark.get("title") or details.get("startingLocation"),
             disembark_port=disembark.get("title"),

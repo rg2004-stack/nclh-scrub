@@ -1,0 +1,13 @@
+# [weekly-full] sail 2027-03-29..2027-08-28 | regions: Southern Europe | observed 2026-09-15 | 222 obs / 38 sailings | granularity: category
+"# CAVEAT: weekly-full is the Jan-Aug 2027 book across all configured regions; it is a forward-book cross-section, not a near-term depletion series."
+# CAVEAT: SINGLE-REGION BASIS: every row here is Southern Europe. Do not generalise this to the other regions in the panel.
+"# note: closed_share = (limited + sold_out) / bookable cells, where bookable excludes solo_only."
+"# note: solo_only is NCL's SOLO_GUEST_ONLY on Studio cabins: single occupancy by design, so it is a product attribute and not depletion. It is reported but kept out of both sides of the ratio."
+"# note: Carnival publishes no 'limited' state (soldOut is a boolean), so its limited count is structurally 0 and its closed_share is a strict sold-out share. Compare closed_share within a line over time, and sold_out_share across lines."
+"# note: An unpriced cell is a cell the vendor declined to quote, usually because it is sold out; priced_share is therefore a second, independent read on depletion."
+
+line,region,cabin_category,cells,bookable_cells,available,limited,solo_only,sold_out,unknown,closed_share,sold_out_share,priced_share,mean_pppn,min_pppn
+Norwegian Cruise Line,Southern Europe,balcony,76,76,76,0,0,0,0,0.0,0.0,1.0,363.43,149.67
+Norwegian Cruise Line,Southern Europe,inside,53,38,37,0,15,1,0,0.0263,0.0263,0.9737,206.26,99.67
+Norwegian Cruise Line,Southern Europe,oceanview,38,38,37,0,0,1,0,0.0263,0.0263,0.9737,233.49,116.33
+Norwegian Cruise Line,Southern Europe,suite,55,55,55,0,0,0,0,0.0,0.0,1.0,690.35,300.9

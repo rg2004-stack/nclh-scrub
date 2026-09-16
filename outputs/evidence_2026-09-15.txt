@@ -1,0 +1,171 @@
+
+====================================================================================================
+0. SAMPLE BASE -- every row in the panel, and what the cruise-only filter removes
+====================================================================================================
+
+All rows by line and product type:
+  line                       total  cruise-only   package  unclassified   priced
+  Carnival Cruise Line        1276         1276         0             0     1267
+  Norwegian Cruise Line       3475         2660       815             0     3084
+
+Priced rows only (what a price comparison can actually use):
+  line                    region              priced  cruise-only   package  unclassified
+  Carnival Cruise Line    Alaska                 187          187         0             0
+  Carnival Cruise Line    Bermuda                 59           59         0             0
+  Carnival Cruise Line    Caribbean              977          977         0             0
+  Carnival Cruise Line    Northern Europe          4            4         0             0
+  Carnival Cruise Line    Southern Europe         40           40         0             0
+  Norwegian Cruise Line   Alaska                 377          114       263             0
+  Norwegian Cruise Line   Bermuda                367          367         0             0
+  Norwegian Cruise Line   Caribbean             1686         1602        84             0
+  Norwegian Cruise Line   Northern Europe        189           61       128             0
+  Norwegian Cruise Line   Southern Europe        465          205       260             0
+
+Package rows excluded, by itinerary (NCL only -- Carnival sells no packages here):
+  Alaska           SBDENALIEXBLIS2BLISS7SEASITJNUICYKTNVICSEA  7n cruise / 12d package  rows=80   mean pppn=  771.57
+  Alaska           SBDENALIEXPENCENCORE7SEAJNUSGYKTNVICSEA     7n cruise / 13d package  rows=75   mean pppn=  843.62
+  Alaska           SBDENVALDEZJADEJADE7WQFICYJNUSGYKTNVAN      7n cruise / 14d package  rows=42   mean pppn=  886.86
+  Alaska           NBDENVALDEZJADEJADE7VANKTNJNUSGYICYWQF      7n cruise / 14d package  rows=36   mean pppn=  892.85
+  Alaska           NBDENSEWARDJADEJADE7VANKTNJNUSGYICYWQF      7n cruise / 13d package  rows=12   mean pppn=  729.95
+  Alaska           NBAUTHENTICJADEJADE7VANKTNJNUSGYICYWQF      7n cruise / 14d package  rows=6    mean pppn=  734.48
+  Alaska           SBDENSEWARDJADEJADE7WQFICYJNUSGYKTNVAN      7n cruise / 13d package  rows=6    mean pppn=  674.71
+  Alaska           TOKYOCRUISETO23JADE16YOKSDAHKDICYJNUSGYKTN  16n cruise / 20d package  rows=6    mean pppn=  391.65
+  Caribbean        GALCRUISETOUR1VIVA7GALCZMRTBBPICMAGAL       7n cruise / 10d package  rows=84   mean pppn=  380.72
+  Northern Europe  HELCRUISETOUR4JEWEL7HELTLLNYNRIXWARKIECPH   7n cruise / 11d package  rows=12   mean pppn=  724.36
+  Northern Europe  LONDONCRUISET30PRIMA11SOUZEEIJMBGOGNRAESAK  11n cruise / 15d package  rows=12   mean pppn=  685.27
+  Northern Europe  CPHCRUISETOUR21JEWEL9CPHGDYWARRNNKLJRIXNYN  9n cruise / 13d package  rows=6    mean pppn=  617.56
+  Northern Europe  CPHCRUISETOUR23JEWEL7CPHWARRNNGDYRIXNYNTLL  7n cruise / 11d package  rows=6    mean pppn=  684.95
+  Northern Europe  HELCRUISETOUR5JEWEL9HELTLLNYNRIXKLJGDYRNNW  9n cruise / 13d package  rows=6    mean pppn=  663.30
+  Northern Europe  HELCRUISETOUR5JEWEL9HELTLLNYNRIXVBYGDYWARK  9n cruise / 13d package  rows=6    mean pppn=  654.59
+  Northern Europe  LONDONCRUISET29JEWEL9SOULEHZEEIJMOSLAARWAR  9n cruise / 13d package  rows=6    mean pppn=  715.70
+  Northern Europe  LONDONCRUISET30PRIMA11SOUZEEIJMMLYGNRAESAK  11n cruise / 15d package  rows=6    mean pppn=  696.64
+  Northern Europe  LONDONCRUISET30PRIMA11SOUZEEIJMMLYGNRAESTH  11n cruise / 15d package  rows=6    mean pppn=  724.82
+  Northern Europe  LONDONCRUISET31PRIMA10SOUZEEIJMBGOGNRAESAK  10n cruise / 14d package  rows=6    mean pppn=  752.97
+  Northern Europe  REYCRUISETOUR5PRIMA10REYISAAKUAESHSYFLMIJM  10n cruise / 14d package  rows=6    mean pppn=  788.13
+  Northern Europe  CPHCRUISETOUR24STAR7CPHHAMIJMZEELEHSOU      7n cruise / 11d package  rows=5    mean pppn=  525.14
+  Northern Europe  LONDONCRUISET34STAR7SOULEHRTMIJMOSLCPH      7n cruise / 11d package  rows=5    mean pppn=  587.14
+  Northern Europe  LONDONCRUISET35STAR11SOUDUNBFSPTRIVGNWHTYN  11n cruise / 15d package  rows=5    mean pppn=  635.82
+  Northern Europe  LONDONCRUISET35STAR11SOUIJMNWHIVGSTWBFSDUN  11n cruise / 15d package  rows=5    mean pppn=  578.55
+  Northern Europe  LONDONCRUISET35STAR11SOUIPOCOBBFSPTRIVGNWH  11n cruise / 15d package  rows=5    mean pppn=  576.00
+  Northern Europe  LONDONCRUISET35STAR11SOULEHZEEIJMNWHIVGBFS  11n cruise / 15d package  rows=5    mean pppn=  649.27
+  Northern Europe  LONDONCRUISET37STAR10SOUIPOCOBDUNBFSSTWKWL  10n cruise / 14d package  rows=5    mean pppn=  556.40
+  Northern Europe  LONDONCRUISET37STAR10SOUIPORINLVPBFSDUNIVG  10n cruise / 14d package  rows=5    mean pppn=  576.60
+  Northern Europe  LONDONCRUISET37STAR10SOUNWHIVGPTRBFSLVPDUN  10n cruise / 14d package  rows=5    mean pppn=  583.80
+  Northern Europe  LONDONCRUISET37STAR10SOUNWHIVGPTRRINDUNBFS  10n cruise / 14d package  rows=5    mean pppn=  544.20
+  Southern Europe  RAVCRUISETOUR5GEM7RAVDBVKOTCFUKAKJMKJTRPIR  7n cruise / 11d package  rows=36   mean pppn=  676.10
+  Southern Europe  ATHENSCRUISET20GEM7PIRJTRKAKCFUKOTZADKOPRA  7n cruise / 10d package  rows=30   mean pppn=  551.57
+  Southern Europe  BCNCRUISETOUR25DAWN7BCNPMIVLCMOTGIBCADPRML  7n cruise / 11d package  rows=25   mean pppn=  430.06
+  Southern Europe  BCNCRUISETOUR38EPIC7BCNMRSVLFLIVMSNSALCIV   7n cruise / 11d package  rows=25   mean pppn=  505.31
+  Southern Europe  LISCRUISETOUR17DAWN7LISPRMCADMOTGIBIBZPMIB  7n cruise / 11d package  rows=25   mean pppn=  426.97
+  Southern Europe  ROMECRUISETOR34EPIC7CIVSALCTALIVVLFMRSBCN   7n cruise / 10d package  rows=19   mean pppn=  470.02
+  Southern Europe  ROMECRUISETOR34EPIC7CIVSALCTALIVMRSIBZBCN   7n cruise / 10d package  rows=16   mean pppn=  472.57
+  Southern Europe  RAVCRUISETOUR8SUN7RAVSPUZADKOTCFUMSNSALCIV  7n cruise / 11d package  rows=15   mean pppn=  529.81
+  Southern Europe  ATHENSCRUISET20GEM7PIRJTRKAKCFUKOTSPUKOPRA  7n cruise / 10d package  rows=12   mean pppn=  545.90
+  Southern Europe  ATHENSCRUISET20GEM7PIRJTRKAKCFUKOTBRIKOPRA  7n cruise / 10d package  rows=6    mean pppn=  559.48
+  Southern Europe  BCNCRUISETOUR35VIVA9BCNVLFLIVCIVSALCTACFUB  9n cruise / 13d package  rows=6    mean pppn=  720.15
+  Southern Europe  BCNCRUISETOUR35VIVA9BCNVLFLIVCIVSALMSNCFUB  9n cruise / 13d package  rows=6    mean pppn=  673.11
+  Southern Europe  BCNCRUISETOUR25DAWN7BCNPMIALCMOTGIBCADPRML  7n cruise / 11d package  rows=5    mean pppn=  422.86
+  Southern Europe  BCNCRUISETOUR33DAWN7BCNPMIVLCMOTGIBCADPRML  7n cruise / 11d package  rows=5    mean pppn=  416.86
+  Southern Europe  BCNCRUISETOUR38EPIC7BCNPMIMRSLIVCTASALCIV   7n cruise / 11d package  rows=5    mean pppn=  486.29
+  Southern Europe  LISCRUISETOUR17DAWN7LISPRMMOTCADGIBIBZPMIB  7n cruise / 11d package  rows=5    mean pppn=  502.57
+  Southern Europe  RAVCRUISETOUR9SUN7RAVDBVKOTCFUKAKJMKJTRPIR  7n cruise / 11d package  rows=5    mean pppn=  562.29
+  Southern Europe  ROMECRUISETOR36SUN7CIVSALCTACFUKOTDBVKOPRA  7n cruise / 10d package  rows=5    mean pppn=  527.43
+  Southern Europe  ROMECRUISETOR36SUN7CIVSALCTACFUKOTZADKOPRA  7n cruise / 10d package  rows=5    mean pppn=  515.14
+  Southern Europe  ROMECRUISETOR34EPIC7CIVSALCTALIVMRSPMIBCN   7n cruise / 10d package  rows=4    mean pppn=  458.64
+                   TOTAL EXCLUDED PRICED PACKAGE ROWS          735
+
+====================================================================================================
+1. PEER GAP -- Caribbean, cross-line, cruise-only  [NCL vs Carnival]
+====================================================================================================
+== peer_gap ==
+   [weekly-full] sail 2027-01-02..2027-08-30 | regions: Caribbean | observed 2026-09-15 | 2579 obs / 543 sailings | granularity: category
+   ! weekly-full is the Jan-Aug 2027 book across all configured regions; it is a forward-book cross-section, not a near-term depletion series.
+   ! PEER-COMPARABLE REGIONS in this basis: Caribbean. Single-line only (no peer rows, so no cross-line claim can rest on them): none.
+   ! SINGLE-REGION BASIS: every row here is Caribbean. Do not generalise this to the other regions in the panel.
+   ! price_pppn is per person per night, taxes and fees excluded on every line. Vendor base fields differ (NCL combinedPrice, Carnival per-person fare), so levels are comparable in direction and spread more safely than in absolute cents.
+   ! PRODUCT FILTER: cruise-only. Of 2663 priced rows in scope, 2579 are cruise-only, 84 are land+cruise packages (excluded), 0 are unclassified.
+   - treatment: Norwegian Cruise Line; peers: Carnival Cruise Line.
+   - compared at 'category' -- the finest level ['carnival', 'ncl'] all genuinely publish.
+   - Medians, not minima: the whole point of the panel is that the minimum is contaminated by inventory mix.
+   - gap_pct > 0 means the treatment line prices above the peer set.
+
+  region     category   treatment_n  peer_n  treatment_median_pppn  peer_median_pppn  treatment_p25_pppn  treatment_p75_pppn  peer_p25_pppn  peer_p75_pppn  gap_pppn  gap_pct  status
+  ---------  ---------  -----------  ------  ---------------------  ----------------  ------------------  ------------------  -------------  -------------  --------  -------  ------
+  Caribbean  balcony    593          245     176.33                 178.00            149.75              229.80              143.40         207.25         -1.67     -0.94    ok    
+  Caribbean  inside     297          246     126.33                 103.62            107.00              155.80              83.40          130.67         22.71     21.91    ok    
+  Caribbean  oceanview  285          246     139.80                 125.70            119.75              177.00              104.50         159.00         14.10     11.22    ok    
+  Caribbean  suite      427          240     499.75                 257.42            417.00              594.00              226.75         291.50         242.33    94.14    ok    
+
+Raw cells behind each bucket (the n's above, itemised):
+  category    line                       rows  sailings  itineraries  ships      min   median      max
+  inside      Norwegian Cruise Line       297       297           90     16    71.90   126.33   245.80
+  inside      Carnival Cruise Line        246       246           26      9    55.40   103.50   184.25
+  oceanview   Norwegian Cruise Line       285       285           85     16    84.90   139.80   298.43
+  oceanview   Carnival Cruise Line        246       246           26      9    69.20   125.40   229.25
+  balcony     Norwegian Cruise Line       593       297           90     16   104.75   176.33   412.71
+  balcony     Carnival Cruise Line        245       245           26      9    92.00   178.00   269.75
+  suite       Norwegian Cruise Line       427       296           89     16   249.75   499.75  1699.00
+  suite       Carnival Cruise Line        240       240           26      9   177.60   257.33   409.50
+
+====================================================================================================
+2. AVAILABILITY SNAPSHOT -- Caribbean, both lines, cruise-only
+====================================================================================================
+== availability_snapshot ==
+   [weekly-full] sail 2027-01-02..2027-08-30 | regions: Caribbean | observed 2026-09-15 | 2824 obs / 543 sailings | granularity: category
+   ! weekly-full is the Jan-Aug 2027 book across all configured regions; it is a forward-book cross-section, not a near-term depletion series.
+   ! PEER-COMPARABLE REGIONS in this basis: Caribbean. Single-line only (no peer rows, so no cross-line claim can rest on them): none.
+   ! SINGLE-REGION BASIS: every row here is Caribbean. Do not generalise this to the other regions in the panel.
+   - closed_share = (limited + sold_out) / bookable cells, where bookable excludes solo_only.
+   - solo_only is NCL's SOLO_GUEST_ONLY on Studio cabins: single occupancy by design, so it is a product attribute and not depletion. It is reported but kept out of both sides of the ratio.
+   - Carnival publishes no 'limited' state (soldOut is a boolean), so its limited count is structurally 0 and its closed_share is a strict sold-out share. Compare closed_share within a line over time, and sold_out_share across lines.
+   - An unpriced cell is a cell the vendor declined to quote, usually because it is sold out; priced_share is therefore a second, independent read on depletion.
+
+  line                   region     cabin_category  cells  bookable_cells  available  limited  solo_only  sold_out  unknown  closed_share  sold_out_share  priced_share  mean_pppn  min_pppn
+  ---------------------  ---------  --------------  -----  --------------  ---------  -------  ---------  --------  -------  ------------  --------------  ------------  ---------  --------
+  Carnival Cruise Line   Caribbean  balcony         246    246             245        0        0          1         0        0.00          0.00            1.00          176.22     92.00   
+  Carnival Cruise Line   Caribbean  inside          246    246             246        0        0          0         0        0.00          0.00            1.00          106.95     55.40   
+  Carnival Cruise Line   Caribbean  oceanview       246    246             246        0        0          0         0        0.00          0.00            1.00          133.43     69.20   
+  Carnival Cruise Line   Caribbean  suite           246    246             240        0        0          6         0        0.02          0.02            0.98          261.94     177.60  
+  Norwegian Cruise Line  Caribbean  balcony         594    594             593        0        0          1         0        0.00          0.00            1.00          197.66     104.75  
+  Norwegian Cruise Line  Caribbean  inside          520    297             297        0        223        0         0        0.00          0.00            1.00          135.07     71.90   
+  Norwegian Cruise Line  Caribbean  oceanview       297    297             285        0        0          12        0        0.04          0.04            0.96          152.92     84.90   
+  Norwegian Cruise Line  Caribbean  suite           429    429             427        0        0          2         0        0.00          0.00            1.00          504.86     249.75  
+
+====================================================================================================
+3. NCL-ONLY SOUTHERN EUROPE -- availability + price, cruise-only vs package
+====================================================================================================
+== availability_snapshot ==
+   [weekly-full] sail 2027-03-29..2027-08-28 | regions: Southern Europe | observed 2026-09-15 | 222 obs / 38 sailings | granularity: category
+   ! weekly-full is the Jan-Aug 2027 book across all configured regions; it is a forward-book cross-section, not a near-term depletion series.
+   ! SINGLE-REGION BASIS: every row here is Southern Europe. Do not generalise this to the other regions in the panel.
+   - closed_share = (limited + sold_out) / bookable cells, where bookable excludes solo_only.
+   - solo_only is NCL's SOLO_GUEST_ONLY on Studio cabins: single occupancy by design, so it is a product attribute and not depletion. It is reported but kept out of both sides of the ratio.
+   - Carnival publishes no 'limited' state (soldOut is a boolean), so its limited count is structurally 0 and its closed_share is a strict sold-out share. Compare closed_share within a line over time, and sold_out_share across lines.
+   - An unpriced cell is a cell the vendor declined to quote, usually because it is sold out; priced_share is therefore a second, independent read on depletion.
+
+  line                   region           cabin_category  cells  bookable_cells  available  limited  solo_only  sold_out  unknown  closed_share  sold_out_share  priced_share  mean_pppn  min_pppn
+  ---------------------  ---------------  --------------  -----  --------------  ---------  -------  ---------  --------  -------  ------------  --------------  ------------  ---------  --------
+  Norwegian Cruise Line  Southern Europe  balcony         76     76              76         0        0          0         0        0.00          0.00            1.00          363.43     149.67  
+  Norwegian Cruise Line  Southern Europe  inside          53     38              37         0        15         1         0        0.03          0.03            0.97          206.26     99.67   
+  Norwegian Cruise Line  Southern Europe  oceanview       38     38              37         0        0          1         0        0.03          0.03            0.97          233.49     116.33  
+  Norwegian Cruise Line  Southern Europe  suite           55     55              55         0        0          0         0        0.00          0.00            1.00          690.35     300.90  
+
+Southern Europe, NCL, split by product type (this is the contamination):
+  category    product          rows  sailings  itins  median pppn   mean pppn
+  inside      cruise-only        37        37     26       185.57      206.26
+  inside      package            51        51     20       332.57      345.17
+  oceanview   cruise-only        37        37     26       208.09      233.49
+  oceanview   package            40        40     18       341.14      371.91
+  balcony     cruise-only        76        38     27       344.14      363.43
+  balcony     package           102        51     20       455.43      481.70
+  suite       cruise-only        55        38     27       675.57      690.35
+  suite       package            67        51     20       769.71      821.49
+
+====================================================================================================
+4. THE OCTOBER SOUTHERN EUROPE SERIES -- not available yet
+====================================================================================================
+
+  NCL Southern Europe rows in the panel : 511
+  their sail dates                     : 2027-03-29 .. 2027-08-29
+  rows with an Oct-Dec 2026 sail date  : 0
+  tiers collected so far               : ['weekly-full']

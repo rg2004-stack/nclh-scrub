@@ -153,7 +153,7 @@ class TestAvailability:
         cases = {
             "AVAILABLE": norm.AVAIL_AVAILABLE,
             "SOLD_OUT": norm.AVAIL_SOLD_OUT,
-            "SOLO_GUEST_ONLY": norm.AVAIL_LIMITED,
+            "SOLO_GUEST_ONLY": norm.AVAIL_SOLO_ONLY,
             "SOMETHING_NEW": norm.AVAIL_UNKNOWN,
         }
         for raw_status, expected in cases.items():
@@ -166,6 +166,28 @@ class TestAvailability:
             assert rows[0].availability_status == expected
             # verbatim value is never lost
             assert rows[0].availability_status_raw == raw_status
+
+    def test_solo_guest_only_is_not_treated_as_scarcity(self, ncl_line_cfg):
+        """SOLO_GUEST_ONLY marks single-occupancy Studio cabins.
+
+        It is a property of the product, not a signal that inventory is running
+        down, and it must stay out of any depletion measure. Mapping it to
+        `limited` put 43% of NCL's Caribbean inside cells into a "closing"
+        bucket that contained no closing at all.
+        """
+        base = {
+            "sailId": "1", "packageId": "p", "stateroomType": "STUDIO",
+            "sailStartDate": "2027-03-01T00:00", "sailEndDate": "2027-03-04T00:00",
+            "currencyCode": "USD", "combinedPrice": 100,
+            "status": "SOLO_GUEST_ONLY",
+        }
+        payload = {"itineraryCode": "T",
+                   "itineraryDetails": {"destinations": [{"code": "CARIBBEAN"}]},
+                   "pricingStateRooms": [base]}
+        rows, _ = parse(payload, ncl_line_cfg)
+        assert rows[0].availability_status == norm.AVAIL_SOLO_ONLY
+        assert rows[0].availability_status not in norm.AVAIL_CLOSED
+        assert rows[0].availability_status_raw == "SOLO_GUEST_ONLY"
 
     def test_units_remaining_is_null_because_ncl_exposes_no_count(
             self, sailings_payload, ncl_line_cfg):

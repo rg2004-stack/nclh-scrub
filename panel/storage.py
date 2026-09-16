@@ -39,7 +39,9 @@ class Observation:
     package_id: str | None = None
     sail_date: str | None = None
     return_date: str | None = None
-    nights: int | None = None
+    nights: int | None = None            # cruise nights
+    is_package: int | None = None        # 1 = land+cruise package; NULL = unknown
+    itinerary_nights: int | None = None  # total package length where published
     itinerary_name: str | None = None
     embark_port: str | None = None
     disembark_port: str | None = None

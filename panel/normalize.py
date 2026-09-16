@@ -16,11 +16,25 @@ from typing import Any, Iterable, Mapping, Sequence
 
 STANDARD_CATEGORIES = ("inside", "oceanview", "balcony", "suite")
 
-# availability_status vocabulary written to the DB
+# availability_status vocabulary written to the DB.
+#
+# `solo_only` is deliberately NOT `limited`. NCL returns SOLO_GUEST_ONLY on its
+# Studio cabins, which are single-occupancy staterooms: the restriction is a
+# property of the product, not a sign that inventory is running down. In the
+# 2026-09-15 panel every one of the 291 SOLO_GUEST_ONLY cells was a STUDIO and
+# no STUDIO was ever AVAILABLE, which is what a structural attribute looks like
+# rather than scarcity. Folding it into `limited` put 43% of NCL's Caribbean
+# "inside" cells into a depletion bucket that contained no depletion at all.
 AVAIL_AVAILABLE = "available"
-AVAIL_LIMITED = "limited"
+AVAIL_LIMITED = "limited"       # genuinely scarce: vendor says few left
+AVAIL_SOLO_ONLY = "solo_only"   # bookable, but single occupancy only
 AVAIL_SOLD_OUT = "sold_out"
 AVAIL_UNKNOWN = "unknown"
+
+# States that mean "a two-person booking cannot freely be made here". Used by
+# analysis to build a depletion share; solo_only is excluded from both sides of
+# that ratio because it was never open to the panel's 2-pax basis.
+AVAIL_CLOSED = (AVAIL_LIMITED, AVAIL_SOLD_OUT)
 
 
 class UnmappedCabinLabel(Exception):

@@ -1,0 +1,16 @@
+# [weekly-full] sail 2027-01-02..2027-08-30 | regions: Caribbean | observed 2026-09-15 | 2579 obs / 543 sailings | granularity: category
+"# CAVEAT: weekly-full is the Jan-Aug 2027 book across all configured regions; it is a forward-book cross-section, not a near-term depletion series."
+"# CAVEAT: PEER-COMPARABLE REGIONS in this basis: Caribbean. Single-line only (no peer rows, so no cross-line claim can rest on them): none."
+# CAVEAT: SINGLE-REGION BASIS: every row here is Caribbean. Do not generalise this to the other regions in the panel.
+"# CAVEAT: price_pppn is per person per night, taxes and fees excluded on every line. Vendor base fields differ (NCL combinedPrice, Carnival per-person fare), so levels are comparable in direction and spread more safely than in absolute cents."
+"# CAVEAT: PRODUCT FILTER: cruise-only. Of 2663 priced rows in scope, 2579 are cruise-only, 84 are land+cruise packages (excluded), 0 are unclassified."
+# note: treatment: Norwegian Cruise Line; peers: Carnival Cruise Line.
+"# note: compared at 'category' -- the finest level ['carnival', 'ncl'] all genuinely publish."
+"# note: Medians, not minima: the whole point of the panel is that the minimum is contaminated by inventory mix."
+# note: gap_pct > 0 means the treatment line prices above the peer set.
+
+region,category,treatment_n,peer_n,treatment_median_pppn,peer_median_pppn,treatment_p25_pppn,treatment_p75_pppn,peer_p25_pppn,peer_p75_pppn,gap_pppn,gap_pct,status
+Caribbean,balcony,593,245,176.33,178.0,149.75,229.8,143.4,207.25,-1.67,-0.94,ok
+Caribbean,inside,297,246,126.33,103.62,107.0,155.8,83.4,130.67,22.71,21.91,ok
+Caribbean,oceanview,285,246,139.8,125.7,119.75,177.0,104.5,159.0,14.1,11.22,ok
+Caribbean,suite,427,240,499.75,257.42,417.0,594.0,226.75,291.5,242.33,94.14,ok

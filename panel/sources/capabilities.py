@@ -40,7 +40,7 @@ CAPABILITIES: dict[str, SourceCapability] = {
         key="ncl",
         line="Norwegian Cruise Line",
         granularity="category",
-        availability_states=("available", "limited", "sold_out"),
+        availability_states=("available", "solo_only", "sold_out"),
         exposes_units_remaining=False,
         # Verified absent: `taxesAndFees` is on 0 of 1,276 archived pricing rows
         # and on no NCL endpoint we can reach, in USD or CAD. NCL's own
@@ -49,7 +49,10 @@ CAPABILITIES: dict[str, SourceCapability] = {
         exposes_tax_amount=False,
         exposes_promo_detail=True,
         notes=("cabin_subcategory is the stateroom type (INSIDE/BALCONY/...), "
-               "which is category-level. No vendor sub-category or rate code."),
+               "which is category-level. No vendor sub-category or rate code. "
+               "Emits no 'limited' state: the only non-binary status NCL "
+               "returns is SOLO_GUEST_ONLY on Studio cabins, which is a "
+               "single-occupancy restriction, not scarcity."),
     ),
     "carnival": SourceCapability(
         key="carnival",

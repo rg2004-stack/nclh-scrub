@@ -174,6 +174,13 @@ def parse_search(
                     sail_date=str(sail_date)[:10] if sail_date else None,
                     return_date=str(return_date)[:10] if return_date else None,
                     nights=nights,
+                    # The cruise search returns cruise-only voyages: every
+                    # sailing cell is a ship fare with no land segment, and the
+                    # payload carries no package product. Stated as 0 rather
+                    # than left NULL so Carnival rows survive a cruise-only
+                    # filter instead of being dropped as "unknown product".
+                    is_package=0,
+                    itinerary_nights=nights,
                     itinerary_name=title,
                     embark_port=embark_name or embark_code,
                     disembark_port=embark_name if itinerary.get("roundtrip") else None,

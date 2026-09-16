@@ -25,6 +25,12 @@ on:
         default: weekly-full
         type: choice
         options: [weekly-full, daily-marker]
+      line:
+        description: "Which line to collect (all = every configured line)"
+        required: false
+        default: all
+        type: choice
+        options: [all, ncl, carnival]
       limit_itineraries:
         description: "Cap NCL itineraries (smoke test; blank = no cap)"
         required: false
@@ -94,6 +100,12 @@ jobs:
       - name: Collect
         run: |
           args="--tier ${{ steps.tier.outputs.tier }}"
+          # A single-line run backfills one source without re-collecting the
+          # others; scheduled runs always cover every configured line.
+          if [ -n "${{ github.event.inputs.line }}" ] \
+             && [ "${{ github.event.inputs.line }}" != "all" ]; then
+            args="$args --line ${{ github.event.inputs.line }}"
+          fi
           if [ -n "${{ github.event.inputs.limit_itineraries }}" ]; then
             args="$args --limit-itineraries ${{ github.event.inputs.limit_itineraries }}"
           fi

@@ -22,12 +22,13 @@ Every design decision below protects those two properties.
 | 2. Schema, storage, logging | done |
 | 3. Norwegian end-to-end, weekly-full, tested | done |
 | 4. Generalize to remaining lines | **Carnival done; RC/Celebrity blocked, see gaps** |
-| 5. daily-marker tier | scheduled; marker sailing list still empty |
-| 6. Analysis module | not started |
+| 5. daily-marker tier | **done; 26 markers selected from the near-term universe** |
+| 6. Analysis module | **done; 5 spec functions + availability snapshot** |
 
-162 tests pass. Live runs collected 260 NCL observations and 2,128 Carnival
-observations with zero errors, zero unmapped cabin labels and zero unmapped
-regions.
+193 tests pass. The 2026-09-15 weekly-full run on GitHub Actions collected 3,475
+NCL and 1,276 Carnival observations, 100% USD / market=US, zero unmapped cabin
+labels and zero unmapped regions. (That Carnival figure is one search page per
+destination -- see gaps.)
 
 ## Quick start
 
@@ -61,14 +62,66 @@ panel/
   config.py        YAML loading
   collect.py       CLI (--tier)
   export.py        JSONL export / rebuild -- the durable artifact
+  analysis.py      the 5 spec analyses + availability snapshot, each carrying
+                   the evidentiary basis it rests on (see below)
   sources/ncl.py   Norwegian: URL building, parsing, collection loop
   sources/carnival.py      Carnival: paged search, parsing, collection loop
   sources/capabilities.py  what each source actually resolves (see below)
 config/panel.yaml  lines, regions, date ranges, rate limits, cabin map
-tests/             162 tests, run against archived real responses in fixtures/
-data/panel.sqlite  the panel
+scripts/
+  verify_us_market.py   gate: confirm the egress resolves USD before collecting
+  probe_sail_dates.py   build data/sail_dates.json, the marker sampling frame
+  pick_markers.py       choose daily-marker itineraries from that frame
+  backfill_packages.py  classify pre-v4 rows as cruise-only vs land+cruise
+tests/             193 tests, run against archived real responses in fixtures/
+data/panel.sqlite  the panel (derived; rebuild with `panel.export rebuild`)
+data/sail_dates.json  itinerary calendar: dates, region, ship, categories,
+                   product type. Committed -- it makes marker selection
+                   reproducible without re-probing.
 data/raw/          every raw response, gzipped by line and date
 ```
+
+## Evidentiary basis: the two tiers are not one sample
+
+Every analysis returns a `Result` carrying the `Basis` it was computed on, and
+`Result.basis.label()` prints it. This is not decoration -- the tiers cover
+different populations:
+
+| | weekly-full | daily-marker |
+|---|---|---|
+| sail window | Jan-Aug 2027 | Oct-Dec 2026 |
+| regions | all five configured | Caribbean-dominated by deployment |
+| cross-line? | yes: Caribbean, Southern Europe, Bermuda | **Caribbean only** |
+
+Measured from the near-term universe on 2026-09-15: Caribbean has 104 eligible
+itineraries (85 NCL / 19 Carnival); Southern Europe has 15, **all NCL**, all
+departing October to early November, **0 in December and 0 on Carnival**;
+Alaska has 0. The Mediterranean season ends and the ships reposition to the
+Caribbean. So the daily tier cannot evidence Southern Europe pricing against a
+peer, and its Southern Europe rows are a single-line October series.
+
+Consequently:
+
+- no function pools tiers; `tier` is a required argument everywhere
+- `combine_bases()` raises on mixed tiers unless `allow_mixed_basis=True`, which
+  stamps a `MIXED EVIDENTIARY BASIS` caveat onto the output
+- regions carrying only one line are named in the basis as not peer-comparable
+
+## Land+cruise packages are a different product
+
+NCL sells "cruisetours" (Denali, London and Reykjavik land tours) at a package
+price while stamping the row with the **cruise segment only** -- a Denali
+itinerary carries `duration {"itinerary": 14, "cruising": 7}`. Dividing that
+package fare by 7 cruise nights reads roughly twice the true nightly cruise
+rate, and puts a bundled land tour up against a peer's ship-only fare.
+
+Left unmarked this inflated NCL's price level by region: before the fix, NCL
+Alaska balcony showed a median $712 pppn against Carnival's $228, which was
+mostly the Denali cruisetours. Schema v4 captures `is_package` and
+`itinerary_nights`; cross-line analysis defaults to `product="cruise_only"` and
+reports how many rows it excluded and how many it could not classify. **The
+price itself is never rewritten** -- prorating would fabricate a cruise-only
+fare NCL never published.
 
 ## What NCL actually exposes
 
@@ -346,20 +399,50 @@ Dropping Oceania and Regent means the panel speaks to **NCL-brand pricing, not
 NCLH consolidated yield**. Both are small in capacity but disproportionate in
 yield mix. Worth stating explicitly in any writeup built on this data.
 
-### 4. daily-marker sailing list is empty
+### 4. daily-marker markers -- selected, with a known limit
 
-The tier works but `marker_itineraries` in `config/panel.yaml` is `[]`. Populate
-it once the weekly panel has run and strata can be chosen: ~20-30 itineraries
-weighted to Southern Europe and Caribbean, spanning all four standard categories,
-plus whatever is open within +/- 14 days of 2026-11-04. With an empty list and
-`marker_only: true` the tier enumerates the near-term window instead.
+26 markers are live in `config/panel.yaml`: 20 NCL + 6 Carnival, all four cabin
+categories, 112 near-term departures and 39 inside the earnings window.
 
-### 5. Analysis module not built
+The sampling frame is `data/sail_dates.json`, **not** the weekly-full panel.
+NCL itinerary codes are season-specific: of the 152 NCL itineraries sailing
+Oct-Dec 2026, only 35 appear anywhere in the Jan-Aug 2027 panel, and in the
+Mediterranean it is 1 of 15. Selecting from the panel produced a list where 14
+of 24 markers had no near-term departure at all and would have collected
+nothing. Re-select with:
 
-`cohort_index`, `depletion_rate`, `peer_gap`, `promo_diff`,
-`earnings_window_compare` are all still to write. The schema supports them:
-`ix_obs_cohort` covers `(line, region, sail_date, cabin_category)` and
-`promo_hash` is ready for week-over-week diffing.
+```bash
+python scripts/probe_sail_dates.py     # refresh the calendar (~310 requests)
+python scripts/pick_markers.py         # propose
+python scripts/pick_markers.py --write # write into config/panel.yaml
+```
+
+Known limit: the Southern Europe markers go dark after early November when the
+Mediterranean season ends. That is deployment, not a collection failure.
+
+### 5. Carnival was collected at one page per destination
+
+The 2026-09-15 weekly-full run passed `limit_pages: 1`, so Carnival landed 46
+itineraries against NCL's 195, and its Southern Europe coverage is 10
+itineraries. Carnival markers are provisional until a full run. `collect.yml`
+now takes a `line` input, so this backfills without re-collecting NCL:
+Actions -> Collect panel -> Run workflow -> tier `weekly-full`, line `carnival`.
+
+## Running an analysis
+
+```bash
+python -m panel.analysis availability    --tier weekly-full
+python -m panel.analysis peer-gap        --tier weekly-full
+python -m panel.analysis cohort-index    --tier weekly-full
+python -m panel.analysis depletion       --tier daily-marker
+python -m panel.analysis promo-diff      --tier weekly-full
+python -m panel.analysis earnings-window --tier daily-marker
+```
+
+Each prints its basis and caveats above the table; `--json` emits the same
+structure for downstream use. A function that cannot be computed on the data
+available says so -- `depletion_rate` with one collection date returns
+`NOT COMPUTABLE` -- rather than returning a fabricated figure.
 
 ## Conduct
 

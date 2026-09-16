@@ -41,9 +41,34 @@ tiers:
     # near-term window, which is NOT the intended behaviour -- it collects
     # arbitrary sailings rather than chosen strata.
     marker_itineraries:
-      ncl: []
-      carnival: []
-
+      ncl:
+        - EPIC7CIVSALCTALIVVLFMRSBCN
+        - GEM7RAVSPUDBVKOTCFUMSNSALCIV
+        - DAWN7BCNPMIALCMOTGIBCADPRMLIS
+        - PEARL7PIRJTRKAKCFUKOTDBVKOPRAV
+        - STAR11BCNMOTCADCASAGAACESCTFNCLXOLIS
+        - VIVA9RAVDBVBARSALCIVSPEVLFPMIBCN
+        - VIVA7GALCZMRTBBPICMAGAL
+        - AQUA7MIAPOPSTTTOVNPIMIA
+        - ESCAPE7PCVPOPSTTTOVNPIPCV
+        - GETAWAY5PCVPOPNPIPCV
+        - SUN10HELTLLNYNRIXKLJGDYWARCPHSOU
+        - SUN12SOULEHCOBBFSSYNHALNYC
+        - BREAKAWAY7BOSHALWRFBOS
+        - PEARL7PHLWRFPHL
+        - AQUA5NYCWRFNYC
+        - STAR11LISLPASCTSCPFNCLXOLCGLEHSOU
+        - EPIC7BCNMRSVLFLIVMSNSALCIV
+        - GEM7CIVSALCTACFUKOTZADVCERAV
+        - DAWN7BCNPMIVLCMOTGIBCADPRMLIS
+        - DAWN7LISCADMOTGIBIBZPMIBCN
+      carnival:
+        - CW6
+        - GLB
+        - WC2
+        - BAW
+        - BM6
+        - BRD
 lines:
   ncl:
     line: "Norwegian Cruise Line"

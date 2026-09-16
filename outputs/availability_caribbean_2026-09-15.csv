@@ -1,0 +1,18 @@
+# [weekly-full] sail 2027-01-02..2027-08-30 | regions: Caribbean | observed 2026-09-15 | 2824 obs / 543 sailings | granularity: category
+"# CAVEAT: weekly-full is the Jan-Aug 2027 book across all configured regions; it is a forward-book cross-section, not a near-term depletion series."
+"# CAVEAT: PEER-COMPARABLE REGIONS in this basis: Caribbean. Single-line only (no peer rows, so no cross-line claim can rest on them): none."
+# CAVEAT: SINGLE-REGION BASIS: every row here is Caribbean. Do not generalise this to the other regions in the panel.
+"# note: closed_share = (limited + sold_out) / bookable cells, where bookable excludes solo_only."
+"# note: solo_only is NCL's SOLO_GUEST_ONLY on Studio cabins: single occupancy by design, so it is a product attribute and not depletion. It is reported but kept out of both sides of the ratio."
+"# note: Carnival publishes no 'limited' state (soldOut is a boolean), so its limited count is structurally 0 and its closed_share is a strict sold-out share. Compare closed_share within a line over time, and sold_out_share across lines."
+"# note: An unpriced cell is a cell the vendor declined to quote, usually because it is sold out; priced_share is therefore a second, independent read on depletion."
+
+line,region,cabin_category,cells,bookable_cells,available,limited,solo_only,sold_out,unknown,closed_share,sold_out_share,priced_share,mean_pppn,min_pppn
+Carnival Cruise Line,Caribbean,balcony,246,246,245,0,0,1,0,0.0041,0.0041,0.9959,176.22,92.0
+Carnival Cruise Line,Caribbean,inside,246,246,246,0,0,0,0,0.0,0.0,1.0,106.95,55.4
+Carnival Cruise Line,Caribbean,oceanview,246,246,246,0,0,0,0,0.0,0.0,1.0,133.43,69.2
+Carnival Cruise Line,Caribbean,suite,246,246,240,0,0,6,0,0.0244,0.0244,0.9756,261.94,177.6
+Norwegian Cruise Line,Caribbean,balcony,594,594,593,0,0,1,0,0.0017,0.0017,0.9983,197.66,104.75
+Norwegian Cruise Line,Caribbean,inside,520,297,297,0,223,0,0,0.0,0.0,1.0,135.07,71.9
+Norwegian Cruise Line,Caribbean,oceanview,297,297,285,0,0,12,0,0.0404,0.0404,0.9596,152.92,84.9
+Norwegian Cruise Line,Caribbean,suite,429,429,427,0,0,2,0,0.0047,0.0047,0.9953,504.86,249.75

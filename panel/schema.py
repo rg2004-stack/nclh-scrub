@@ -6,7 +6,7 @@ The natural key deliberately truncates scrape_ts_utc to a date so that re-runnin
 a tier on the same day updates rather than duplicates.
 """
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 
 DDL = """
 CREATE TABLE IF NOT EXISTS observations (
@@ -22,7 +22,16 @@ CREATE TABLE IF NOT EXISTS observations (
     package_id             TEXT,
     sail_date              TEXT,
     return_date            TEXT,
-    nights                 INTEGER,
+    nights                 INTEGER,            -- CRUISE nights, always
+
+    -- Land+cruise packages (NCL "cruisetours": Denali, London/Reykjavik tours)
+    -- are a different product sold at a package price. NCL stamps them with the
+    -- cruise segment length, so a naive price/nights overstates the nightly
+    -- cruise fare by roughly the ratio of package days to cruise nights, and
+    -- compares a bundled land tour against a peer's cruise-only fare. Captured
+    -- so analysis can separate the products instead of averaging across them.
+    is_package             INTEGER,            -- 1 = land+cruise package, NULL = unknown
+    itinerary_nights       INTEGER,            -- total package length where published
     itinerary_name         TEXT,
     embark_port            TEXT,
     disembark_port         TEXT,
@@ -134,4 +143,6 @@ MIGRATIONS = [
     (2, "observations", "vendor_category_code", "TEXT"),
     (2, "observations", "rate_code", "TEXT"),
     (2, "observations", "offer_id", "TEXT"),
+    (4, "observations", "is_package", "INTEGER"),
+    (4, "observations", "itinerary_nights", "INTEGER"),
 ]

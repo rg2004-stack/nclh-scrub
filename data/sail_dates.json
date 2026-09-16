@@ -1,0 +1,7992 @@
+{
+ "AQUA2MIANPIMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 2,
+  "dates": [
+   "2026-10-16"
+  ],
+  "destinations": [
+   "BAHAMAS",
+   "WEEKEND"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 2,
+  "region": "Caribbean",
+  "ship": "Norwegian Aqua",
+  "unmapped_cabin_labels": []
+ },
+ "AQUA5NYCWRFNYC": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2026-09-18",
+   "2026-09-23",
+   "2026-10-03"
+  ],
+  "destinations": [
+   "BERMUDA"
+  ],
+  "embark_port": "NYC",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Bermuda",
+  "ship": "Norwegian Aqua",
+  "unmapped_cabin_labels": []
+ },
+ "AQUA6MIAPOPSJUNPIMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 6,
+  "dates": [
+   "2027-04-18"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 6,
+  "region": "Caribbean",
+  "ship": "Norwegian Aqua",
+  "unmapped_cabin_labels": []
+ },
+ "AQUA7MIABPIRTBCZMCMAMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-11-01"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Aqua",
+  "unmapped_cabin_labels": []
+ },
+ "AQUA7MIAPOPSTTTOVNPIMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-11-08",
+   "2026-11-15",
+   "2026-11-22",
+   "2026-11-29",
+   "2026-12-06",
+   "2026-12-13",
+   "2026-12-20",
+   "2026-12-27",
+   "2027-01-03",
+   "2027-01-10",
+   "2027-01-17",
+   "2027-01-24",
+   "2027-01-31",
+   "2027-02-07",
+   "2027-02-14",
+   "2027-02-21",
+   "2027-02-28",
+   "2027-03-07",
+   "2027-03-14",
+   "2027-03-21",
+   "2027-03-28",
+   "2027-04-04",
+   "2027-04-11"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Aqua",
+  "unmapped_cabin_labels": []
+ },
+ "AQUA7MIARTBBPICZMNPIMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-10-18",
+   "2026-10-25"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Aqua",
+  "unmapped_cabin_labels": []
+ },
+ "AQUA7PCVNPIFMHGECCZMPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-09",
+   "2027-05-23",
+   "2027-06-06",
+   "2027-06-20",
+   "2027-07-04",
+   "2027-07-18",
+   "2027-08-01",
+   "2027-08-15",
+   "2027-08-29",
+   "2027-09-12",
+   "2027-09-26",
+   "2027-10-10",
+   "2027-10-24",
+   "2027-11-07",
+   "2027-11-21",
+   "2027-12-05",
+   "2027-12-19",
+   "2028-01-16",
+   "2028-01-30",
+   "2028-02-13",
+   "2028-02-27",
+   "2028-03-12",
+   "2028-03-26",
+   "2028-04-02",
+   "2028-04-09"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Aqua",
+  "unmapped_cabin_labels": []
+ },
+ "AQUA7PCVNPIOCJGECCZMPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-04-25",
+   "2027-10-31",
+   "2027-11-14",
+   "2027-11-28",
+   "2027-12-26",
+   "2028-02-20",
+   "2028-03-05",
+   "2028-04-16"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Aqua",
+  "unmapped_cabin_labels": []
+ },
+ "AQUA7PCVPOPSTTTOVNPIPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-02",
+   "2027-05-16",
+   "2027-05-30",
+   "2027-06-13",
+   "2027-06-27",
+   "2027-07-11",
+   "2027-07-25",
+   "2027-08-08",
+   "2027-08-22",
+   "2027-09-05",
+   "2027-09-19",
+   "2027-10-03",
+   "2027-10-17"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Aqua",
+  "unmapped_cabin_labels": []
+ },
+ "ATHENSCRUISET20GEM7PIRJTRKAKCFUKOTBRIKOPRAV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-06-20"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "PIR",
+  "is_package": 1,
+  "itinerary_nights": 10,
+  "region": "Southern Europe",
+  "ship": "Norwegian Gem",
+  "unmapped_cabin_labels": []
+ },
+ "ATHENSCRUISET20GEM7PIRJTRKAKCFUKOTSPUKOPRAV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-09",
+   "2027-07-18"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "PIR",
+  "is_package": 1,
+  "itinerary_nights": 10,
+  "region": "Southern Europe",
+  "ship": "Norwegian Gem",
+  "unmapped_cabin_labels": []
+ },
+ "ATHENSCRUISET20GEM7PIRJTRKAKCFUKOTZADKOPRAV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-23",
+   "2027-06-06",
+   "2027-07-04",
+   "2027-08-01",
+   "2027-08-29",
+   "2027-10-10"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "PIR",
+  "is_package": 1,
+  "itinerary_nights": 10,
+  "region": "Southern Europe",
+  "ship": "Norwegian Gem",
+  "unmapped_cabin_labels": []
+ },
+ "AURA5MIAPOPNPIMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2027-06-14"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Caribbean",
+  "ship": "Norwegian Aura",
+  "unmapped_cabin_labels": []
+ },
+ "AURA7MIAPOPSTTTOVNPIMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-06-19",
+   "2027-06-26",
+   "2027-07-03",
+   "2027-07-10",
+   "2027-07-17",
+   "2027-07-24",
+   "2027-07-31",
+   "2027-08-07",
+   "2027-08-14",
+   "2027-08-21",
+   "2027-08-28",
+   "2027-09-04",
+   "2027-09-11",
+   "2027-09-18",
+   "2027-09-25",
+   "2027-10-02",
+   "2027-10-09",
+   "2027-10-16",
+   "2027-10-23",
+   "2028-04-08",
+   "2028-04-15",
+   "2028-04-22",
+   "2028-04-29",
+   "2028-05-06",
+   "2028-05-13",
+   "2028-05-20",
+   "2028-05-27",
+   "2028-06-03",
+   "2028-06-10",
+   "2028-06-17",
+   "2028-06-24",
+   "2028-07-01",
+   "2028-07-08",
+   "2028-07-15",
+   "2028-07-22",
+   "2028-07-29",
+   "2028-08-05",
+   "2028-08-12",
+   "2028-08-19",
+   "2028-08-26",
+   "2028-09-02",
+   "2028-09-09",
+   "2028-09-16",
+   "2028-09-23",
+   "2028-09-30",
+   "2028-10-07",
+   "2028-10-14",
+   "2028-10-21"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Aura",
+  "unmapped_cabin_labels": []
+ },
+ "AURA7VCEMLASALCIVTAR": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-21"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "VCE",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Southern Europe",
+  "ship": "Norwegian Aura",
+  "unmapped_cabin_labels": []
+ },
+ "BCNCRUISETOUR25DAWN7BCNPMIALCMOTGIBCADPRMLIS": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-23"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "BCN",
+  "is_package": 1,
+  "itinerary_nights": 11,
+  "region": "Southern Europe",
+  "ship": "Norwegian Dawn",
+  "unmapped_cabin_labels": []
+ },
+ "BCNCRUISETOUR25DAWN7BCNPMIVLCMOTGIBCADPRMLIS": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-09",
+   "2027-06-20",
+   "2027-07-04",
+   "2027-07-18",
+   "2027-08-01"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "BCN",
+  "is_package": 1,
+  "itinerary_nights": 11,
+  "region": "Southern Europe",
+  "ship": "Norwegian Dawn",
+  "unmapped_cabin_labels": []
+ },
+ "BCNCRUISETOUR33DAWN7BCNPMIVLCMOTGIBCADPRMLIS": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-08-29"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "BCN",
+  "is_package": 1,
+  "itinerary_nights": 11,
+  "region": "Southern Europe",
+  "ship": "Norwegian Dawn",
+  "unmapped_cabin_labels": []
+ },
+ "BCNCRUISETOUR35VIVA9BCNVLFLIVCIVSALCTACFUBARSPURAV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 9,
+  "dates": [
+   "2027-06-04"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "BCN",
+  "is_package": 1,
+  "itinerary_nights": 13,
+  "region": "Southern Europe",
+  "ship": "Norwegian Viva",
+  "unmapped_cabin_labels": []
+ },
+ "BCNCRUISETOUR35VIVA9BCNVLFLIVCIVSALMSNCFUBARSPURAV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 9,
+  "dates": [
+   "2027-07-30"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "BCN",
+  "is_package": 1,
+  "itinerary_nights": 13,
+  "region": "Southern Europe",
+  "ship": "Norwegian Viva",
+  "unmapped_cabin_labels": []
+ },
+ "BCNCRUISETOUR38EPIC7BCNMRSVLFLIVMSNSALCIV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-30",
+   "2027-06-27",
+   "2027-07-11",
+   "2027-07-25",
+   "2027-08-08",
+   "2027-08-22",
+   "2027-09-05",
+   "2027-10-03"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "BCN",
+  "is_package": 1,
+  "itinerary_nights": 11,
+  "region": "Southern Europe",
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "BCNCRUISETOUR38EPIC7BCNPMIMRSLIVCTASALCIV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-06-13"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "BCN",
+  "is_package": 1,
+  "itinerary_nights": 11,
+  "region": "Southern Europe",
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "BLISS12NYCPOPSJUBASPHISTTTOVNYC": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 12,
+  "dates": [
+   "2026-11-09",
+   "2026-11-29",
+   "2026-12-11",
+   "2026-12-23",
+   "2027-01-04",
+   "2027-02-01",
+   "2027-03-01",
+   "2027-11-08",
+   "2027-11-28",
+   "2027-12-10",
+   "2028-02-07",
+   "2028-03-06"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "NYC",
+  "is_package": 0,
+  "itinerary_nights": 12,
+  "region": "Caribbean",
+  "ship": "Norwegian Bliss",
+  "unmapped_cabin_labels": []
+ },
+ "BLISS16LAXCSLACAPRQPCLPCTCTGFMHMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 16,
+  "dates": [
+   "2026-10-13"
+  ],
+  "destinations": [
+   "PANAMA_CANAL"
+  ],
+  "embark_port": "LAX",
+  "is_package": 0,
+  "itinerary_nights": 16,
+  "region": null,
+  "ship": "Norwegian Bliss",
+  "unmapped_cabin_labels": []
+ },
+ "BLISS19LAXCSLACAPRQPCLPCTCTGFMHMIANYC": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 19,
+  "dates": [
+   "2026-10-13"
+  ],
+  "destinations": [
+   "PANAMA_CANAL"
+  ],
+  "embark_port": "LAX",
+  "is_package": 0,
+  "itinerary_nights": 19,
+  "region": null,
+  "ship": "Norwegian Bliss",
+  "unmapped_cabin_labels": []
+ },
+ "BLISS19NYCPOPCTGCLNPCLPRQACAPVRCSLSFO": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 19,
+  "dates": [
+   "2027-04-09"
+  ],
+  "destinations": [
+   "CARIBBEAN",
+   "PANAMA_CANAL"
+  ],
+  "embark_port": "NYC",
+  "is_package": 0,
+  "itinerary_nights": 19,
+  "region": "Caribbean",
+  "ship": "Norwegian Bliss",
+  "unmapped_cabin_labels": []
+ },
+ "BLISS5NYCWRFNYC": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2027-04-04",
+   "2028-04-09"
+  ],
+  "destinations": [
+   "BERMUDA"
+  ],
+  "embark_port": "NYC",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Bermuda",
+  "ship": "Norwegian Bliss",
+  "unmapped_cabin_labels": []
+ },
+ "BLISS7NYCWRFNYC": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-03-21",
+   "2027-03-28",
+   "2028-03-26",
+   "2028-04-02"
+  ],
+  "destinations": [
+   "BERMUDA"
+  ],
+  "embark_port": "NYC",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Bermuda",
+  "ship": "Norwegian Bliss",
+  "unmapped_cabin_labels": []
+ },
+ "BLISS7SEASITJNUICYKTNVICSEA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-01",
+   "2027-05-08",
+   "2027-05-15",
+   "2027-05-22",
+   "2027-05-29",
+   "2027-06-05",
+   "2027-06-12",
+   "2027-06-19",
+   "2027-06-26",
+   "2027-07-03",
+   "2027-07-10",
+   "2027-07-17",
+   "2027-07-24",
+   "2027-07-31",
+   "2027-08-07",
+   "2027-08-14",
+   "2027-08-21",
+   "2027-08-28",
+   "2027-09-04",
+   "2027-09-11",
+   "2027-09-18",
+   "2027-09-25",
+   "2027-10-02",
+   "2027-10-09",
+   "2028-05-13",
+   "2028-05-20",
+   "2028-05-27",
+   "2028-06-10",
+   "2028-06-17",
+   "2028-06-24",
+   "2028-07-01",
+   "2028-07-15",
+   "2028-07-22",
+   "2028-07-29",
+   "2028-08-05",
+   "2028-08-12",
+   "2028-08-19",
+   "2028-09-02",
+   "2028-09-09",
+   "2028-09-16"
+  ],
+  "destinations": [
+   "ALASKA"
+  ],
+  "embark_port": "SEA",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Alaska",
+  "ship": "Norwegian Bliss",
+  "unmapped_cabin_labels": []
+ },
+ "BLISS8NYCPCVNPINASNYC": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 8,
+  "dates": [
+   "2026-11-01",
+   "2026-11-21",
+   "2027-01-16",
+   "2027-01-24",
+   "2027-02-13",
+   "2027-02-21",
+   "2027-03-13",
+   "2027-11-20",
+   "2028-02-27",
+   "2028-03-18"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "NYC",
+  "is_package": 0,
+  "itinerary_nights": 8,
+  "region": "Caribbean",
+  "ship": "Norwegian Bliss",
+  "unmapped_cabin_labels": []
+ },
+ "BREAKAWAY14BOSSTTSLUSTGWILORJGECMSY": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 14,
+  "dates": [
+   "2026-11-08"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "BOS",
+  "is_package": 0,
+  "itinerary_nights": 14,
+  "region": "Caribbean",
+  "ship": "Norwegian Breakaway",
+  "unmapped_cabin_labels": []
+ },
+ "BREAKAWAY14MSYGECORJWILKRASTGSLUTOVBOS": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 14,
+  "dates": [
+   "2027-04-04"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "MSY",
+  "is_package": 0,
+  "itinerary_nights": 14,
+  "region": "Caribbean",
+  "ship": "Norwegian Breakaway",
+  "unmapped_cabin_labels": []
+ },
+ "BREAKAWAY7BOSHALWRFBOS": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-10-18",
+   "2026-10-25",
+   "2026-11-01",
+   "2027-04-18",
+   "2027-04-25",
+   "2027-05-02",
+   "2027-05-09",
+   "2027-05-16",
+   "2027-05-23",
+   "2027-05-30",
+   "2027-06-06",
+   "2027-06-13",
+   "2027-06-20",
+   "2027-06-27",
+   "2027-07-04",
+   "2027-07-11",
+   "2027-07-18",
+   "2027-07-25",
+   "2027-08-01",
+   "2027-08-08",
+   "2027-08-15",
+   "2027-08-22",
+   "2027-10-24",
+   "2027-10-31"
+  ],
+  "destinations": [
+   "BERMUDA",
+   "CANADA_NEW_ENGL"
+  ],
+  "embark_port": "BOS",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Bermuda",
+  "ship": "Norwegian Breakaway",
+  "unmapped_cabin_labels": []
+ },
+ "BREAKAWAY7BOSNPOBHBSJBHALBOS": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-10-11"
+  ],
+  "destinations": [
+   "CANADA_NEW_ENGL"
+  ],
+  "embark_port": "BOS",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": null,
+  "ship": "Norwegian Breakaway",
+  "unmapped_cabin_labels": []
+ },
+ "BREAKAWAY7MSYCZMRTBBPICMAMSY": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-11-22",
+   "2026-11-29",
+   "2026-12-13",
+   "2026-12-20",
+   "2026-12-27",
+   "2027-01-03",
+   "2027-01-10",
+   "2027-01-17",
+   "2027-01-31",
+   "2027-02-07",
+   "2027-02-14",
+   "2027-02-21",
+   "2027-02-28",
+   "2027-03-07",
+   "2027-03-14",
+   "2027-03-21",
+   "2027-03-28"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "MSY",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Breakaway",
+  "unmapped_cabin_labels": []
+ },
+ "BREAKAWAY7MSYCZMRTBBPIMSY": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-12-06"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "MSY",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Breakaway",
+  "unmapped_cabin_labels": []
+ },
+ "BREAKAWAY7MSYCZMRTBBZECMAMSY": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-01-24"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "MSY",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Breakaway",
+  "unmapped_cabin_labels": []
+ },
+ "CPHCRUISETOUR21JEWEL9CPHGDYWARRNNKLJRIXNYNTLLHEL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 9,
+  "dates": [
+   "2027-06-04"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "CPH",
+  "is_package": 1,
+  "itinerary_nights": 13,
+  "region": "Northern Europe",
+  "ship": "Norwegian Jewel",
+  "unmapped_cabin_labels": []
+ },
+ "CPHCRUISETOUR23JEWEL7CPHWARRNNGDYRIXNYNTLLHEL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-07-24"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "CPH",
+  "is_package": 1,
+  "itinerary_nights": 11,
+  "region": "Northern Europe",
+  "ship": "Norwegian Jewel",
+  "unmapped_cabin_labels": []
+ },
+ "CPHCRUISETOUR24STAR7CPHHAMIJMZEELEHSOU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-16"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "CPH",
+  "is_package": 1,
+  "itinerary_nights": 11,
+  "region": "Northern Europe",
+  "ship": "Norwegian Star",
+  "unmapped_cabin_labels": []
+ },
+ "DAWN10BCNMRSLIVSPECIVSALCTAIBZPMIBCN": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-08-19"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "BCN",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Southern Europe",
+  "ship": "Norwegian Dawn",
+  "unmapped_cabin_labels": []
+ },
+ "DAWN10CIVSALMSNMLALGNPMOLIVMRSPMIBCN": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-04-29"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "CIV",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Southern Europe",
+  "ship": "Norwegian Dawn",
+  "unmapped_cabin_labels": []
+ },
+ "DAWN11LISPRMCADMOTGIBIBZPMIMRSSPELIVBCN": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 11,
+  "dates": [
+   "2027-08-08"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "LIS",
+  "is_package": 0,
+  "itinerary_nights": 11,
+  "region": "Southern Europe",
+  "ship": "Norwegian Dawn",
+  "unmapped_cabin_labels": []
+ },
+ "DAWN14LISCADCASPDLNPIJAX": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 14,
+  "dates": [
+   "2026-11-01"
+  ],
+  "destinations": [
+   "TRANSATLANTIC"
+  ],
+  "embark_port": "LIS",
+  "is_package": 0,
+  "itinerary_nights": 14,
+  "region": null,
+  "ship": "Norwegian Dawn",
+  "unmapped_cabin_labels": []
+ },
+ "DAWN4JAXFPOJAX": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 4,
+  "dates": [
+   "2027-01-07"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "JAX",
+  "is_package": 0,
+  "itinerary_nights": 4,
+  "region": "Caribbean",
+  "ship": "Norwegian Dawn",
+  "unmapped_cabin_labels": []
+ },
+ "DAWN4JAXFPONASJAX": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 4,
+  "dates": [
+   "2026-12-10",
+   "2027-02-03"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "JAX",
+  "is_package": 0,
+  "itinerary_nights": 4,
+  "region": "Caribbean",
+  "ship": "Norwegian Dawn",
+  "unmapped_cabin_labels": []
+ },
+ "DAWN4JAXFPONPIJAX": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 4,
+  "dates": [
+   "2026-12-24",
+   "2027-01-11",
+   "2027-01-15",
+   "2027-02-12",
+   "2027-02-26",
+   "2027-03-12",
+   "2027-03-26",
+   "2028-01-14",
+   "2028-02-17",
+   "2028-03-02",
+   "2028-03-16",
+   "2028-03-30",
+   "2028-04-13"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "JAX",
+  "is_package": 0,
+  "itinerary_nights": 4,
+  "region": "Caribbean",
+  "ship": "Norwegian Dawn",
+  "unmapped_cabin_labels": []
+ },
+ "DAWN5JAXEYWNPIJAX": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2026-12-14",
+   "2027-01-19",
+   "2027-03-02",
+   "2027-03-30"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "JAX",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Caribbean",
+  "ship": "Norwegian Dawn",
+  "unmapped_cabin_labels": []
+ },
+ "DAWN5JAXFPONASNPIJAX": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2026-11-25",
+   "2026-12-28",
+   "2027-02-16"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "JAX",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Caribbean",
+  "ship": "Norwegian Dawn",
+  "unmapped_cabin_labels": []
+ },
+ "DAWN5JAXFPONPIEYWJAX": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2026-11-30"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "JAX",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Caribbean",
+  "ship": "Norwegian Dawn",
+  "unmapped_cabin_labels": []
+ },
+ "DAWN5JAXFPONPIJAX": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2026-11-15",
+   "2027-03-21"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "JAX",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Caribbean",
+  "ship": "Norwegian Dawn",
+  "unmapped_cabin_labels": []
+ },
+ "DAWN5JAXFPONPINASJAX": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2026-11-20",
+   "2027-01-24",
+   "2027-01-29",
+   "2027-02-07",
+   "2027-02-21",
+   "2027-03-16",
+   "2027-11-19",
+   "2027-11-24",
+   "2027-12-23",
+   "2027-12-28",
+   "2028-02-21",
+   "2028-03-20",
+   "2028-04-03"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "JAX",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Caribbean",
+  "ship": "Norwegian Dawn",
+  "unmapped_cabin_labels": []
+ },
+ "DAWN5JAXNPIFPOJAX": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2027-01-02",
+   "2027-03-07",
+   "2028-03-06"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "JAX",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Caribbean",
+  "ship": "Norwegian Dawn",
+  "unmapped_cabin_labels": []
+ },
+ "DAWN5JAXNPINASFPOJAX": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2026-12-19"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "JAX",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Caribbean",
+  "ship": "Norwegian Dawn",
+  "unmapped_cabin_labels": []
+ },
+ "DAWN5JAXNPINASJAX": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2026-12-05",
+   "2028-02-26",
+   "2028-04-08"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "JAX",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Caribbean",
+  "ship": "Norwegian Dawn",
+  "unmapped_cabin_labels": []
+ },
+ "DAWN7BCNPMIALCMOTGIBCADPRMLIS": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-10-25",
+   "2027-05-23"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "BCN",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Southern Europe",
+  "ship": "Norwegian Dawn",
+  "unmapped_cabin_labels": []
+ },
+ "DAWN7BCNPMIVLCMOTGIBCADPRMLIS": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-10-11",
+   "2027-05-09",
+   "2027-06-06",
+   "2027-06-20",
+   "2027-07-04",
+   "2027-07-18",
+   "2027-08-01",
+   "2027-08-29",
+   "2027-09-26"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "BCN",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Southern Europe",
+  "ship": "Norwegian Dawn",
+  "unmapped_cabin_labels": []
+ },
+ "DAWN7LISCADMOTGIBIBZPMIBCN": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-10-18"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "LIS",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Southern Europe",
+  "ship": "Norwegian Dawn",
+  "unmapped_cabin_labels": []
+ },
+ "DAWN7TARCADMOTGIBIBZPMIBCN": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-10-04"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "TAR",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Southern Europe",
+  "ship": "Norwegian Dawn",
+  "unmapped_cabin_labels": []
+ },
+ "ENCORE6VANVICSFOLAX": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 6,
+  "dates": [
+   "2026-10-12"
+  ],
+  "destinations": [
+   "PACIFIC_COASTAL"
+  ],
+  "embark_port": "VAN",
+  "is_package": 0,
+  "itinerary_nights": 6,
+  "region": null,
+  "ship": "Norwegian Encore",
+  "unmapped_cabin_labels": []
+ },
+ "ENCORE7LAXCSLMZTPVRLAX": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-10-18",
+   "2026-10-25",
+   "2026-11-01",
+   "2026-11-08",
+   "2026-11-15",
+   "2026-11-22",
+   "2026-11-29",
+   "2026-12-06",
+   "2026-12-13",
+   "2026-12-27",
+   "2027-01-10",
+   "2027-01-17",
+   "2027-01-24",
+   "2027-01-31",
+   "2027-02-07",
+   "2027-02-14",
+   "2027-02-21",
+   "2027-02-28",
+   "2027-03-07",
+   "2027-03-14",
+   "2027-03-21",
+   "2027-03-28",
+   "2027-04-04",
+   "2027-04-11",
+   "2027-10-24",
+   "2027-10-31",
+   "2027-11-21",
+   "2027-12-19",
+   "2027-12-26",
+   "2028-04-02"
+  ],
+  "destinations": [
+   "MEXICAN_RIVIERA"
+  ],
+  "embark_port": "LAX",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": null,
+  "ship": "Norwegian Encore",
+  "unmapped_cabin_labels": []
+ },
+ "ENCORE7LAXMZTPVRCSLLAX": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-12-20",
+   "2027-01-03"
+  ],
+  "destinations": [
+   "MEXICAN_RIVIERA"
+  ],
+  "embark_port": "LAX",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": null,
+  "ship": "Norwegian Encore",
+  "unmapped_cabin_labels": []
+ },
+ "ENCORE7SEAJNUSGYKTNVICSEA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-04-25",
+   "2027-05-02",
+   "2027-05-09",
+   "2027-05-16",
+   "2027-05-23",
+   "2027-05-30",
+   "2027-06-06",
+   "2027-06-13",
+   "2027-06-20",
+   "2027-06-27",
+   "2027-07-04",
+   "2027-07-11",
+   "2027-07-18",
+   "2027-07-25",
+   "2027-08-01",
+   "2027-08-08",
+   "2027-08-15",
+   "2027-08-22",
+   "2027-08-29",
+   "2027-09-05",
+   "2027-09-12",
+   "2027-09-19",
+   "2027-09-26",
+   "2027-10-03",
+   "2027-10-10",
+   "2028-04-16",
+   "2028-04-23",
+   "2028-04-30",
+   "2028-05-07",
+   "2028-05-14",
+   "2028-05-21",
+   "2028-05-28",
+   "2028-06-04",
+   "2028-06-11",
+   "2028-06-18",
+   "2028-06-25",
+   "2028-07-02",
+   "2028-07-09",
+   "2028-07-16",
+   "2028-07-23",
+   "2028-07-30",
+   "2028-08-06",
+   "2028-08-13",
+   "2028-08-20",
+   "2028-08-27",
+   "2028-09-03",
+   "2028-09-10",
+   "2028-09-17",
+   "2028-09-24",
+   "2028-10-01",
+   "2028-10-08"
+  ],
+  "destinations": [
+   "ALASKA"
+  ],
+  "embark_port": "SEA",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Alaska",
+  "ship": "Norwegian Encore",
+  "unmapped_cabin_labels": []
+ },
+ "EPIC14BCNCADSCTSTTNPIPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 14,
+  "dates": [
+   "2026-11-01"
+  ],
+  "destinations": [
+   "TRANSATLANTIC"
+  ],
+  "embark_port": "BCN",
+  "is_package": 0,
+  "itinerary_nights": 14,
+  "region": null,
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "EPIC7BCNMRSVLFLIVCTASALCIV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-16",
+   "2027-09-19"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "BCN",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Southern Europe",
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "EPIC7BCNMRSVLFLIVMSNSALCIV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-10-04",
+   "2026-10-18",
+   "2027-05-30",
+   "2027-06-27",
+   "2027-07-11",
+   "2027-07-25",
+   "2027-08-08",
+   "2027-08-22",
+   "2027-09-05",
+   "2027-10-03"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "BCN",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Southern Europe",
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "EPIC7BCNPMILGNMLAPMONAPCIV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-02",
+   "2027-10-17"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "BCN",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Southern Europe",
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "EPIC7CIVSALCTALIVVLFMRSBCN": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-09-27",
+   "2026-10-11",
+   "2026-10-25",
+   "2027-06-06",
+   "2027-07-18",
+   "2027-08-01",
+   "2027-08-15",
+   "2027-09-12",
+   "2027-09-26",
+   "2027-10-10",
+   "2027-10-24"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "CIV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Southern Europe",
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "EPIC7PCVCMARTBCZMNPIPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-01-31",
+   "2027-02-14"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "EPIC7PCVCZMGECFMHNPIPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-04-04",
+   "2027-04-11"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "EPIC7PCVNASGECFMHNPIPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-02-21"
+  ],
+  "destinations": [
+   "BAHAMAS",
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "EPIC7PCVNASNPIGECCZMPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-12-13"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "EPIC7PCVNPIBZECMACZMPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-12-06",
+   "2027-03-14"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "EPIC7PCVNPIFMHCZMPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-12-20"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "EPIC7PCVNPIGECFALPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-01-10"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "EPIC7PCVNPIMBJGECCZMPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-11-22",
+   "2026-11-29",
+   "2027-01-17",
+   "2027-03-21"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "EPIC7PCVNPIOCJCZMPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-11-15"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "EPIC7PCVNPIOCJGECCZMPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-12-27",
+   "2027-01-24",
+   "2027-02-07",
+   "2027-02-28",
+   "2027-03-07",
+   "2027-03-28"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "EPIC7PCVNPIRTBCMACZMPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-01-03"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "ESCAPE16BCNMRSPMICARMOTCADTNGLPAPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 16,
+  "dates": [
+   "2026-10-28"
+  ],
+  "destinations": [
+   "EXTRAORDINARY_JOURNEYS",
+   "TRANSATLANTIC"
+  ],
+  "embark_port": "BCN",
+  "is_package": 0,
+  "itinerary_nights": 16,
+  "region": null,
+  "ship": "Norwegian Escape",
+  "unmapped_cabin_labels": []
+ },
+ "ESCAPE3PCVNASNPIPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 3,
+  "dates": [
+   "2027-04-16"
+  ],
+  "destinations": [
+   "BAHAMAS",
+   "WEEKEND"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 3,
+  "region": "Caribbean",
+  "ship": "Norwegian Escape",
+  "unmapped_cabin_labels": []
+ },
+ "ESCAPE4PCVNASNPIPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 4,
+  "dates": [
+   "2027-05-03",
+   "2027-05-17",
+   "2027-06-14",
+   "2027-06-28",
+   "2027-07-12",
+   "2027-07-26",
+   "2027-08-09",
+   "2027-08-23",
+   "2027-09-06",
+   "2027-09-20",
+   "2027-10-04",
+   "2027-10-18"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 4,
+  "region": "Caribbean",
+  "ship": "Norwegian Escape",
+  "unmapped_cabin_labels": []
+ },
+ "ESCAPE4PCVNPINASPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 4,
+  "dates": [
+   "2027-04-19",
+   "2027-05-31"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 4,
+  "region": "Caribbean",
+  "ship": "Norwegian Escape",
+  "unmapped_cabin_labels": []
+ },
+ "ESCAPE5PCVCZMNPIPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2026-12-18",
+   "2027-04-23",
+   "2027-05-07",
+   "2027-05-21",
+   "2027-06-04",
+   "2027-06-18",
+   "2027-07-02",
+   "2027-07-16",
+   "2027-07-30",
+   "2027-08-13",
+   "2027-08-27",
+   "2027-09-10",
+   "2027-09-24",
+   "2027-10-08",
+   "2027-10-22"
+  ],
+  "destinations": [
+   "BAHAMAS",
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Caribbean",
+  "ship": "Norwegian Escape",
+  "unmapped_cabin_labels": []
+ },
+ "ESCAPE5PCVNPIPOPPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2027-06-09"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Caribbean",
+  "ship": "Norwegian Escape",
+  "unmapped_cabin_labels": []
+ },
+ "ESCAPE5PCVPOPNPIPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2027-04-28",
+   "2027-05-12",
+   "2027-05-26",
+   "2027-06-23",
+   "2027-07-07",
+   "2027-07-21",
+   "2027-08-04",
+   "2027-08-18",
+   "2027-09-01",
+   "2027-09-15",
+   "2027-09-29",
+   "2027-10-13",
+   "2027-10-27"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Caribbean",
+  "ship": "Norwegian Escape",
+  "unmapped_cabin_labels": []
+ },
+ "ESCAPE7PCVPOPSTTTOVNPIPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-11-13",
+   "2026-11-20",
+   "2026-11-27",
+   "2026-12-04",
+   "2026-12-11",
+   "2026-12-23",
+   "2026-12-30",
+   "2027-01-15",
+   "2027-01-22",
+   "2027-01-29",
+   "2027-02-05",
+   "2027-02-12",
+   "2027-02-19",
+   "2027-02-26",
+   "2027-03-05",
+   "2027-03-12",
+   "2027-03-19",
+   "2027-03-26",
+   "2027-04-02",
+   "2027-04-09",
+   "2028-04-30",
+   "2028-05-14",
+   "2028-05-28",
+   "2028-06-11",
+   "2028-06-25",
+   "2028-07-09",
+   "2028-07-23",
+   "2028-08-06",
+   "2028-08-20",
+   "2028-09-03",
+   "2028-09-17",
+   "2028-10-01"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Escape",
+  "unmapped_cabin_labels": []
+ },
+ "ESCAPE9PCVPOPSJUPHISTTTOVNPIPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 9,
+  "dates": [
+   "2027-01-06"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 9,
+  "region": "Caribbean",
+  "ship": "Norwegian Escape",
+  "unmapped_cabin_labels": []
+ },
+ "GALCRUISETOUR1VIVA7GALCZMRTBBPICMAGAL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-11-28",
+   "2026-12-05",
+   "2026-12-12",
+   "2026-12-19",
+   "2027-01-02",
+   "2027-01-09",
+   "2027-01-16",
+   "2027-01-23",
+   "2027-01-30",
+   "2027-02-06",
+   "2027-02-13",
+   "2027-02-20",
+   "2027-02-27",
+   "2027-03-06",
+   "2027-03-13",
+   "2027-03-20",
+   "2027-03-27",
+   "2027-04-03"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "GAL",
+  "is_package": 1,
+  "itinerary_nights": 10,
+  "region": "Caribbean",
+  "ship": "Norwegian Viva",
+  "unmapped_cabin_labels": []
+ },
+ "GEM10TPACBRWILFMHGECTPA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-01-04"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "TPA",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Caribbean",
+  "ship": "Norwegian Gem",
+  "unmapped_cabin_labels": []
+ },
+ "GEM10TPACBRWILORJFMHGECTPA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-01-18"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "TPA",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Caribbean",
+  "ship": "Norwegian Gem",
+  "unmapped_cabin_labels": []
+ },
+ "GEM10TPACBRWILORJPOPNYC": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-04-03"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "TPA",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Caribbean",
+  "ship": "Norwegian Gem",
+  "unmapped_cabin_labels": []
+ },
+ "GEM11TPANPICBRORJWILFMHGECTPA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 11,
+  "dates": [
+   "2026-12-10",
+   "2027-02-21"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "TPA",
+  "is_package": 0,
+  "itinerary_nights": 11,
+  "region": "Caribbean",
+  "ship": "Norwegian Gem",
+  "unmapped_cabin_labels": []
+ },
+ "GEM12TPASJUTOVBASPHISTTFMHGECTPA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 12,
+  "dates": [
+   "2026-11-28"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "TPA",
+  "is_package": 0,
+  "itinerary_nights": 12,
+  "region": "Caribbean",
+  "ship": "Norwegian Gem",
+  "unmapped_cabin_labels": []
+ },
+ "GEM15CIVMRSBCNCADNASTPA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 15,
+  "dates": [
+   "2026-11-01"
+  ],
+  "destinations": [
+   "TRANSATLANTIC"
+  ],
+  "embark_port": "CIV",
+  "is_package": 0,
+  "itinerary_nights": 15,
+  "region": null,
+  "ship": "Norwegian Gem",
+  "unmapped_cabin_labels": []
+ },
+ "GEM4TPANPITPA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 4,
+  "dates": [
+   "2027-01-14",
+   "2027-01-28",
+   "2027-02-01",
+   "2027-03-04",
+   "2027-03-08"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "TPA",
+  "is_package": 0,
+  "itinerary_nights": 4,
+  "region": "Caribbean",
+  "ship": "Norwegian Gem",
+  "unmapped_cabin_labels": []
+ },
+ "GEM5TPACZMRTBTPA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2026-11-16"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "TPA",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Caribbean",
+  "ship": "Norwegian Gem",
+  "unmapped_cabin_labels": []
+ },
+ "GEM7CIVSALCTACFUKOTZADVCERAV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-09-20",
+   "2026-10-04",
+   "2026-10-18"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "CIV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Southern Europe",
+  "ship": "Norwegian Gem",
+  "unmapped_cabin_labels": []
+ },
+ "GEM7PIRJTRKAKCFUKOTRJKKOPRAV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-08-15"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "PIR",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Southern Europe",
+  "ship": "Norwegian Gem",
+  "unmapped_cabin_labels": []
+ },
+ "GEM7RAVDBVHERKUSISTJMKPIR": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-02",
+   "2027-10-03"
+  ],
+  "destinations": [
+   "GREEK_ISLES"
+  ],
+  "embark_port": "RAV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Southern Europe",
+  "ship": "Norwegian Gem",
+  "unmapped_cabin_labels": []
+ },
+ "GEM7RAVDBVKOTCFUKAKJMKJTRPIR": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-16",
+   "2027-05-30",
+   "2027-06-13",
+   "2027-06-27",
+   "2027-07-11",
+   "2027-07-25",
+   "2027-08-08",
+   "2027-08-22",
+   "2027-09-05",
+   "2027-09-19"
+  ],
+  "destinations": [
+   "GREEK_ISLES",
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "RAV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Southern Europe",
+  "ship": "Norwegian Gem",
+  "unmapped_cabin_labels": []
+ },
+ "GEM7RAVSPUDBVKOTCFUMSNSALCIV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-10-11",
+   "2026-10-25"
+  ],
+  "destinations": [
+   "GREEK_ISLES",
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "RAV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Southern Europe",
+  "ship": "Norwegian Gem",
+  "unmapped_cabin_labels": []
+ },
+ "GEM7TPABPIRTBCZMTPA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-12-21",
+   "2027-03-20",
+   "2027-03-27"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "TPA",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Gem",
+  "unmapped_cabin_labels": []
+ },
+ "GEM7TPACZMMSYTPA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-02-05"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "TPA",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Gem",
+  "unmapped_cabin_labels": []
+ },
+ "GEM7TPARTBBPICZMTPA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-11-21",
+   "2026-12-28"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "TPA",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Gem",
+  "unmapped_cabin_labels": []
+ },
+ "GEM8TPACZMGECFMHNASTPA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 8,
+  "dates": [
+   "2027-03-12"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "TPA",
+  "is_package": 0,
+  "itinerary_nights": 8,
+  "region": "Caribbean",
+  "ship": "Norwegian Gem",
+  "unmapped_cabin_labels": []
+ },
+ "GEM9TPAEYWNPICBRFMHGECTPA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 9,
+  "dates": [
+   "2027-02-12"
+  ],
+  "destinations": [
+   "BAHAMAS",
+   "CARIBBEAN"
+  ],
+  "embark_port": "TPA",
+  "is_package": 0,
+  "itinerary_nights": 9,
+  "region": "Caribbean",
+  "ship": "Norwegian Gem",
+  "unmapped_cabin_labels": []
+ },
+ "GETAWAY2MIANPIMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 2,
+  "dates": [
+   "2027-04-10"
+  ],
+  "destinations": [
+   "BAHAMAS",
+   "WEEKEND"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 2,
+  "region": "Caribbean",
+  "ship": "Norwegian Getaway",
+  "unmapped_cabin_labels": []
+ },
+ "GETAWAY3MIANASNPIMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 3,
+  "dates": [
+   "2026-09-25",
+   "2026-10-02",
+   "2026-10-16",
+   "2027-04-16",
+   "2027-05-07",
+   "2027-05-21",
+   "2027-08-27",
+   "2027-10-08",
+   "2027-10-22"
+  ],
+  "destinations": [
+   "BAHAMAS",
+   "WEEKEND"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 3,
+  "region": "Caribbean",
+  "ship": "Norwegian Getaway",
+  "unmapped_cabin_labels": []
+ },
+ "GETAWAY3MIANPINASMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 3,
+  "dates": [
+   "2026-10-09",
+   "2027-04-23",
+   "2027-04-30",
+   "2027-05-14",
+   "2027-05-28",
+   "2027-06-04",
+   "2027-06-11",
+   "2027-06-18",
+   "2027-06-25",
+   "2027-07-02",
+   "2027-07-09",
+   "2027-07-16",
+   "2027-07-23",
+   "2027-07-30",
+   "2027-08-06",
+   "2027-08-13",
+   "2027-08-20",
+   "2027-09-03",
+   "2027-09-10",
+   "2027-09-17",
+   "2027-09-24",
+   "2027-10-01",
+   "2027-10-15",
+   "2027-10-29",
+   "2027-11-01"
+  ],
+  "destinations": [
+   "BAHAMAS",
+   "WEEKEND"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 3,
+  "region": "Caribbean",
+  "ship": "Norwegian Getaway",
+  "unmapped_cabin_labels": []
+ },
+ "GETAWAY4MIANASNPIMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 4,
+  "dates": [
+   "2027-05-24",
+   "2027-06-21",
+   "2027-08-02",
+   "2027-08-30",
+   "2027-09-13",
+   "2027-10-11"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 4,
+  "region": "Caribbean",
+  "ship": "Norwegian Getaway",
+  "unmapped_cabin_labels": []
+ },
+ "GETAWAY4MIANPINASMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 4,
+  "dates": [
+   "2026-09-21",
+   "2026-09-28",
+   "2026-10-05",
+   "2026-10-12",
+   "2026-10-19",
+   "2026-10-23",
+   "2027-04-12",
+   "2027-04-19",
+   "2027-04-26",
+   "2027-05-03",
+   "2027-05-10",
+   "2027-05-17",
+   "2027-05-31",
+   "2027-06-07",
+   "2027-06-14",
+   "2027-06-28",
+   "2027-07-05",
+   "2027-07-12",
+   "2027-07-19",
+   "2027-07-26",
+   "2027-08-09",
+   "2027-08-16",
+   "2027-08-23",
+   "2027-09-06",
+   "2027-09-20",
+   "2027-09-27",
+   "2027-10-04",
+   "2027-10-18",
+   "2027-10-25"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 4,
+  "region": "Caribbean",
+  "ship": "Norwegian Getaway",
+  "unmapped_cabin_labels": []
+ },
+ "GETAWAY4PCVNASNPIPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 4,
+  "dates": [
+   "2026-11-30",
+   "2027-01-07",
+   "2027-01-11",
+   "2027-02-08",
+   "2027-02-22"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 4,
+  "region": "Caribbean",
+  "ship": "Norwegian Getaway",
+  "unmapped_cabin_labels": []
+ },
+ "GETAWAY4PCVNPINASPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 4,
+  "dates": [
+   "2026-11-02",
+   "2027-01-25",
+   "2027-03-08",
+   "2027-03-22",
+   "2027-04-05"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 4,
+  "region": "Caribbean",
+  "ship": "Norwegian Getaway",
+  "unmapped_cabin_labels": []
+ },
+ "GETAWAY5PCVCZMCMAPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2027-02-12"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Caribbean",
+  "ship": "Norwegian Getaway",
+  "unmapped_cabin_labels": []
+ },
+ "GETAWAY5PCVCZMNPIPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2026-12-04",
+   "2026-12-09",
+   "2027-01-15",
+   "2027-01-29",
+   "2027-02-03",
+   "2027-02-26",
+   "2027-03-12",
+   "2027-03-26"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Caribbean",
+  "ship": "Norwegian Getaway",
+  "unmapped_cabin_labels": []
+ },
+ "GETAWAY5PCVNPIPOPPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2027-03-03"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Caribbean",
+  "ship": "Norwegian Getaway",
+  "unmapped_cabin_labels": []
+ },
+ "GETAWAY5PCVPOPNPIPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2026-10-28",
+   "2026-11-06",
+   "2026-11-11",
+   "2027-01-20",
+   "2027-02-17",
+   "2027-03-17",
+   "2027-03-31"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Caribbean",
+  "ship": "Norwegian Getaway",
+  "unmapped_cabin_labels": []
+ },
+ "GETAWAY7PCVNPIMBJGECCZMPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-11-23"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Getaway",
+  "unmapped_cabin_labels": []
+ },
+ "GETAWAY7PCVNPISTTSJUPOPPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-11-16"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Getaway",
+  "unmapped_cabin_labels": []
+ },
+ "GETAWAY7PCVPOPSTTTOVNPIPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-12-31"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Getaway",
+  "unmapped_cabin_labels": []
+ },
+ "GETAWAY8PCVPOPSJUTOVSTTNPIPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 8,
+  "dates": [
+   "2026-12-14"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 8,
+  "region": "Caribbean",
+  "ship": "Norwegian Getaway",
+  "unmapped_cabin_labels": []
+ },
+ "GETAWAY9PCVPOPSJUPHISTTTOVNPIPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 9,
+  "dates": [
+   "2026-12-22"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 9,
+  "region": "Caribbean",
+  "ship": "Norwegian Getaway",
+  "unmapped_cabin_labels": []
+ },
+ "HELCRUISETOUR4JEWEL7HELTLLNYNRIXWARKIECPH": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-06-13",
+   "2027-07-31"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "HEL",
+  "is_package": 1,
+  "itinerary_nights": 11,
+  "region": "Northern Europe",
+  "ship": "Norwegian Jewel",
+  "unmapped_cabin_labels": []
+ },
+ "HELCRUISETOUR5JEWEL9HELTLLNYNRIXKLJGDYRNNWARCPH": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 9,
+  "dates": [
+   "2027-08-16"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "HEL",
+  "is_package": 1,
+  "itinerary_nights": 13,
+  "region": "Northern Europe",
+  "ship": "Norwegian Jewel",
+  "unmapped_cabin_labels": []
+ },
+ "HELCRUISETOUR5JEWEL9HELTLLNYNRIXVBYGDYWARKIECPH": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 9,
+  "dates": [
+   "2027-06-27",
+   "2027-09-03"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "HEL",
+  "is_package": 1,
+  "itinerary_nights": 13,
+  "region": "Northern Europe",
+  "ship": "Norwegian Jewel",
+  "unmapped_cabin_labels": []
+ },
+ "HKGCRUISETOUR2JADE14HKGCORBORPPSMUASGNLCHKOHSIN": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 14,
+  "dates": [
+   "2026-12-09"
+  ],
+  "destinations": [
+   "ASIA"
+  ],
+  "embark_port": "HKG",
+  "is_package": 1,
+  "itinerary_nights": 18,
+  "region": null,
+  "ship": "Norwegian Jade",
+  "unmapped_cabin_labels": []
+ },
+ "HNLCRUISETOUR10PRIDE_AMER7HNLOGGITOKOANWKHNL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-11-28",
+   "2026-12-05",
+   "2026-12-19",
+   "2027-01-16",
+   "2027-01-30",
+   "2027-02-13",
+   "2027-03-20",
+   "2027-03-27",
+   "2027-04-03",
+   "2027-04-24",
+   "2027-05-01",
+   "2027-05-08",
+   "2027-05-15",
+   "2027-05-29",
+   "2027-06-05",
+   "2027-06-12",
+   "2027-06-19",
+   "2027-06-26",
+   "2027-07-03",
+   "2027-07-10",
+   "2027-07-17",
+   "2027-07-24",
+   "2027-07-31",
+   "2027-08-07",
+   "2027-08-14",
+   "2027-08-21",
+   "2027-08-28",
+   "2027-09-04",
+   "2027-09-11",
+   "2027-09-18",
+   "2027-09-25",
+   "2027-10-02",
+   "2027-10-09",
+   "2027-10-16",
+   "2027-10-23",
+   "2027-10-30",
+   "2027-11-06",
+   "2027-11-13",
+   "2027-11-20",
+   "2027-11-27",
+   "2027-12-04",
+   "2027-12-11",
+   "2027-12-18",
+   "2028-01-08",
+   "2028-01-15",
+   "2028-01-22",
+   "2028-01-29",
+   "2028-02-05",
+   "2028-02-12",
+   "2028-02-19",
+   "2028-02-26",
+   "2028-03-04",
+   "2028-03-11",
+   "2028-03-18",
+   "2028-03-25",
+   "2028-04-01",
+   "2028-04-08",
+   "2028-04-15",
+   "2028-04-22",
+   "2028-04-29",
+   "2028-05-06",
+   "2028-05-13",
+   "2028-05-20",
+   "2028-05-27",
+   "2028-06-03",
+   "2028-06-10",
+   "2028-06-17",
+   "2028-06-24",
+   "2028-07-01",
+   "2028-07-08",
+   "2028-07-15",
+   "2028-07-22",
+   "2028-07-29",
+   "2028-08-05",
+   "2028-08-12",
+   "2028-08-19",
+   "2028-08-26",
+   "2028-09-02",
+   "2028-09-09",
+   "2028-09-16",
+   "2028-09-23",
+   "2028-09-30",
+   "2028-10-14",
+   "2028-10-21"
+  ],
+  "destinations": [
+   "HAWAII"
+  ],
+  "embark_port": "HNL",
+  "is_package": 1,
+  "itinerary_nights": 11,
+  "region": null,
+  "ship": "Pride of America",
+  "unmapped_cabin_labels": []
+ },
+ "HNLCRUISETOUR21PRIDE_AMER7HNLOGGITOKOANWKHNL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-11-28",
+   "2026-12-05",
+   "2026-12-12",
+   "2026-12-19",
+   "2026-12-26",
+   "2027-01-09",
+   "2027-01-16",
+   "2027-01-23",
+   "2027-01-30",
+   "2027-02-13",
+   "2027-02-20",
+   "2027-02-27",
+   "2027-03-06",
+   "2027-03-13",
+   "2027-03-20",
+   "2027-03-27",
+   "2027-04-03",
+   "2027-04-10",
+   "2027-04-17",
+   "2027-04-24",
+   "2027-05-01",
+   "2027-05-08",
+   "2027-05-15",
+   "2027-05-22",
+   "2027-05-29",
+   "2027-06-05",
+   "2027-06-12",
+   "2027-06-19",
+   "2027-06-26",
+   "2027-07-03",
+   "2027-07-10",
+   "2027-07-17",
+   "2027-07-24",
+   "2027-07-31",
+   "2027-08-07",
+   "2027-08-14",
+   "2027-08-21",
+   "2027-08-28",
+   "2027-09-04",
+   "2027-09-18",
+   "2027-09-25",
+   "2027-10-02",
+   "2027-10-09",
+   "2027-10-16",
+   "2027-10-23",
+   "2027-10-30",
+   "2027-11-06",
+   "2027-11-13",
+   "2027-11-20",
+   "2027-11-27",
+   "2027-12-04",
+   "2027-12-11",
+   "2027-12-18",
+   "2028-01-08",
+   "2028-01-15",
+   "2028-01-22",
+   "2028-01-29",
+   "2028-02-05",
+   "2028-02-12",
+   "2028-02-19",
+   "2028-02-26",
+   "2028-03-04",
+   "2028-03-11",
+   "2028-03-18",
+   "2028-03-25",
+   "2028-04-01",
+   "2028-04-08",
+   "2028-04-15",
+   "2028-04-22",
+   "2028-04-29",
+   "2028-05-06",
+   "2028-05-13",
+   "2028-05-20",
+   "2028-05-27",
+   "2028-06-03",
+   "2028-06-10",
+   "2028-06-17",
+   "2028-06-24",
+   "2028-07-01",
+   "2028-07-08",
+   "2028-07-15",
+   "2028-07-22",
+   "2028-07-29",
+   "2028-08-05",
+   "2028-08-12",
+   "2028-08-19",
+   "2028-08-26",
+   "2028-09-02",
+   "2028-09-09",
+   "2028-09-16",
+   "2028-09-23",
+   "2028-09-30",
+   "2028-10-14",
+   "2028-10-21"
+  ],
+  "destinations": [
+   "HAWAII"
+  ],
+  "embark_port": "HNL",
+  "is_package": 1,
+  "itinerary_nights": 12,
+  "region": null,
+  "ship": "Pride of America",
+  "unmapped_cabin_labels": []
+ },
+ "HNLCRUISETOUR22PRIDE_AMER7HNLOGGITOKOANWKHNL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-11-28",
+   "2026-12-05",
+   "2026-12-12",
+   "2026-12-19",
+   "2026-12-26",
+   "2027-01-16",
+   "2027-01-23",
+   "2027-02-06",
+   "2027-02-13",
+   "2027-02-20",
+   "2027-02-27",
+   "2027-03-13",
+   "2027-03-20",
+   "2027-03-27",
+   "2027-04-03",
+   "2027-04-10",
+   "2027-04-24",
+   "2027-05-01",
+   "2027-05-08",
+   "2027-05-22",
+   "2027-05-29",
+   "2027-06-05",
+   "2027-06-12",
+   "2027-06-19",
+   "2027-06-26",
+   "2027-07-03",
+   "2027-07-10",
+   "2027-07-17",
+   "2027-07-24",
+   "2027-07-31",
+   "2027-08-07",
+   "2027-08-14",
+   "2027-08-21",
+   "2027-08-28",
+   "2027-09-04",
+   "2027-09-11",
+   "2027-09-18",
+   "2027-10-02",
+   "2027-10-09",
+   "2027-10-16",
+   "2027-10-23",
+   "2027-10-30",
+   "2027-11-06",
+   "2027-11-13",
+   "2027-11-20",
+   "2027-11-27",
+   "2027-12-04",
+   "2027-12-11",
+   "2027-12-18",
+   "2028-01-08",
+   "2028-01-15",
+   "2028-01-22",
+   "2028-01-29",
+   "2028-02-05",
+   "2028-02-12",
+   "2028-02-19",
+   "2028-02-26",
+   "2028-03-04",
+   "2028-03-11",
+   "2028-03-18",
+   "2028-03-25",
+   "2028-04-01",
+   "2028-04-08",
+   "2028-04-15",
+   "2028-04-22",
+   "2028-04-29",
+   "2028-05-06",
+   "2028-05-13",
+   "2028-05-20",
+   "2028-05-27",
+   "2028-06-03",
+   "2028-06-10",
+   "2028-06-17",
+   "2028-06-24",
+   "2028-07-01",
+   "2028-07-08",
+   "2028-07-15",
+   "2028-07-22",
+   "2028-07-29",
+   "2028-08-05",
+   "2028-08-12",
+   "2028-08-19",
+   "2028-08-26",
+   "2028-09-02",
+   "2028-09-09",
+   "2028-09-16",
+   "2028-09-23",
+   "2028-09-30",
+   "2028-10-14",
+   "2028-10-21"
+  ],
+  "destinations": [
+   "HAWAII"
+  ],
+  "embark_port": "HNL",
+  "is_package": 1,
+  "itinerary_nights": 12,
+  "region": null,
+  "ship": "Pride of America",
+  "unmapped_cabin_labels": []
+ },
+ "HNLCRUISETOUR9PRIDE_AMER7HNLOGGITOKOANWKHNL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-11-28",
+   "2026-12-05",
+   "2026-12-12",
+   "2026-12-19",
+   "2027-01-09",
+   "2027-01-16",
+   "2027-01-23",
+   "2027-01-30",
+   "2027-02-06",
+   "2027-02-13",
+   "2027-02-27",
+   "2027-03-06",
+   "2027-03-13",
+   "2027-03-20",
+   "2027-03-27",
+   "2027-04-03",
+   "2027-04-24",
+   "2027-05-01",
+   "2027-05-08",
+   "2027-05-15",
+   "2027-05-22",
+   "2027-05-29",
+   "2027-06-05",
+   "2027-06-12",
+   "2027-06-19",
+   "2027-06-26",
+   "2027-07-03",
+   "2027-07-10",
+   "2027-07-17",
+   "2027-07-24",
+   "2027-07-31",
+   "2027-08-07",
+   "2027-08-14",
+   "2027-08-21",
+   "2027-08-28",
+   "2027-09-04",
+   "2027-09-11",
+   "2027-09-18",
+   "2027-09-25",
+   "2027-10-02",
+   "2027-10-09",
+   "2027-10-16",
+   "2027-10-23",
+   "2027-10-30",
+   "2027-11-06",
+   "2027-11-13",
+   "2027-11-20",
+   "2027-11-27",
+   "2027-12-04",
+   "2027-12-11",
+   "2027-12-18",
+   "2028-01-08",
+   "2028-01-15",
+   "2028-01-22",
+   "2028-01-29",
+   "2028-02-05",
+   "2028-02-12",
+   "2028-02-19",
+   "2028-02-26",
+   "2028-03-04",
+   "2028-03-11",
+   "2028-03-18",
+   "2028-03-25",
+   "2028-04-01",
+   "2028-04-08",
+   "2028-04-15",
+   "2028-04-22",
+   "2028-04-29",
+   "2028-05-06",
+   "2028-05-13",
+   "2028-05-20",
+   "2028-05-27",
+   "2028-06-03",
+   "2028-06-10",
+   "2028-06-17",
+   "2028-06-24",
+   "2028-07-01",
+   "2028-07-08",
+   "2028-07-15",
+   "2028-07-22",
+   "2028-07-29",
+   "2028-08-05",
+   "2028-08-12",
+   "2028-08-19",
+   "2028-08-26",
+   "2028-09-02",
+   "2028-09-09",
+   "2028-09-16",
+   "2028-09-23",
+   "2028-09-30",
+   "2028-10-14",
+   "2028-10-21"
+  ],
+  "destinations": [
+   "HAWAII"
+  ],
+  "embark_port": "HNL",
+  "is_package": 1,
+  "itinerary_nights": 11,
+  "region": null,
+  "ship": "Pride of America",
+  "unmapped_cabin_labels": []
+ },
+ "JADE11INCSAKKZWAKIAOMHKDSMZOSATOK": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 11,
+  "dates": [
+   "2026-10-18"
+  ],
+  "destinations": [
+   "ASIA"
+  ],
+  "embark_port": "INC",
+  "is_package": 0,
+  "itinerary_nights": 11,
+  "region": null,
+  "ship": "Norwegian Jade",
+  "unmapped_cabin_labels": []
+ },
+ "JADE11SINKOHLCHSGNCMYHANHKG": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 11,
+  "dates": [
+   "2026-12-23"
+  ],
+  "destinations": [
+   "ASIA"
+  ],
+  "embark_port": "SIN",
+  "is_package": 0,
+  "itinerary_nights": 11,
+  "region": null,
+  "ship": "Norwegian Jade",
+  "unmapped_cabin_labels": []
+ },
+ "JADE14HKGCORBORPPSMUASGNLCHKOHSIN": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 14,
+  "dates": [
+   "2026-12-09"
+  ],
+  "destinations": [
+   "ASIA"
+  ],
+  "embark_port": "HKG",
+  "is_package": 0,
+  "itinerary_nights": 14,
+  "region": null,
+  "ship": "Norwegian Jade",
+  "unmapped_cabin_labels": []
+ },
+ "JADE14TOKSDAHKDAOMAKISKTKZWPUSSHIHSMKCZOSANGOSMZYOK": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 14,
+  "dates": [
+   "2026-10-29"
+  ],
+  "destinations": [
+   "ASIA"
+  ],
+  "embark_port": "TOK",
+  "is_package": 0,
+  "itinerary_nights": 14,
+  "region": null,
+  "ship": "Norwegian Jade",
+  "unmapped_cabin_labels": []
+ },
+ "JADE9INCJJUNGSKOJHSMKCZOSANGOSMZYOK": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 9,
+  "dates": [
+   "2026-11-21"
+  ],
+  "destinations": [
+   "ASIA"
+  ],
+  "embark_port": "INC",
+  "is_package": 0,
+  "itinerary_nights": 9,
+  "region": null,
+  "ship": "Norwegian Jade",
+  "unmapped_cabin_labels": []
+ },
+ "JADE9YOKSMZNGOKOBKCZHSMKOJNGSJJUINC": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 9,
+  "dates": [
+   "2026-11-12"
+  ],
+  "destinations": [
+   "ASIA"
+  ],
+  "embark_port": "YOK",
+  "is_package": 0,
+  "itinerary_nights": 9,
+  "region": null,
+  "ship": "Norwegian Jade",
+  "unmapped_cabin_labels": []
+ },
+ "JADE9YOKSMZOSAKCZHSMMIYKEEHKG": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 9,
+  "dates": [
+   "2026-11-30"
+  ],
+  "destinations": [
+   "ASIA"
+  ],
+  "embark_port": "YOK",
+  "is_package": 0,
+  "itinerary_nights": 9,
+  "region": null,
+  "ship": "Norwegian Jade",
+  "unmapped_cabin_labels": []
+ },
+ "JEWEL10CPHOSLWARGDYKLJRIXNYNVBYTLLHEL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-07-06"
+  ],
+  "destinations": [
+   "EXTRAORDINARY_JOURNEYS",
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "CPH",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Northern Europe",
+  "ship": "Norwegian Jewel",
+  "unmapped_cabin_labels": []
+ },
+ "JEWEL10MIANPICBRORJFMHGECMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-01-04",
+   "2028-02-04"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Caribbean",
+  "ship": "Norwegian Jewel",
+  "unmapped_cabin_labels": []
+ },
+ "JEWEL10MIANPICBRORJWILFMHGECMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2026-12-08",
+   "2027-11-29",
+   "2027-12-20",
+   "2028-01-03"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Caribbean",
+  "ship": "Norwegian Jewel",
+  "unmapped_cabin_labels": []
+ },
+ "JEWEL10MIANPICBRWILFMHGECMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-03-19"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Caribbean",
+  "ship": "Norwegian Jewel",
+  "unmapped_cabin_labels": []
+ },
+ "JEWEL10MIANPICBRWILORJFMHGECMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2026-11-28",
+   "2027-11-19"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Caribbean",
+  "ship": "Norwegian Jewel",
+  "unmapped_cabin_labels": []
+ },
+ "JEWEL10QUELBICHASYNHALBHBPWMBOSPHL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2026-09-16",
+   "2026-10-07"
+  ],
+  "destinations": [
+   "CANADA_NEW_ENGL"
+  ],
+  "embark_port": "QUE",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": null,
+  "ship": "Norwegian Jewel",
+  "unmapped_cabin_labels": []
+ },
+ "JEWEL12MIANPICBRORJWILPHITOVSTTPOPMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 12,
+  "dates": [
+   "2026-12-23"
+  ],
+  "destinations": [
+   "CARIBBEAN",
+   "EXTRAORDINARY_JOURNEYS"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 12,
+  "region": "Caribbean",
+  "ship": "Norwegian Jewel",
+  "unmapped_cabin_labels": []
+ },
+ "JEWEL4MIACZMMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 4,
+  "dates": [
+   "2027-01-18",
+   "2027-03-29"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 4,
+  "region": "Caribbean",
+  "ship": "Norwegian Jewel",
+  "unmapped_cabin_labels": []
+ },
+ "JEWEL5MIANPINASMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2026-12-18"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Caribbean",
+  "ship": "Norwegian Jewel",
+  "unmapped_cabin_labels": []
+ },
+ "JEWEL5MIANPIPOPMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2026-11-23"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Caribbean",
+  "ship": "Norwegian Jewel",
+  "unmapped_cabin_labels": []
+ },
+ "JEWEL7CPHWARGDYKLJRIXNYNTLLHEL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-06-20"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "CPH",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Northern Europe",
+  "ship": "Norwegian Jewel",
+  "unmapped_cabin_labels": []
+ },
+ "JEWEL8HELTLLRIXKLJNYNWARCPH": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 8,
+  "dates": [
+   "2027-07-16"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "HEL",
+  "is_package": 0,
+  "itinerary_nights": 8,
+  "region": "Northern Europe",
+  "ship": "Norwegian Jewel",
+  "unmapped_cabin_labels": []
+ },
+ "JEWEL9CPHKIEWARGDYKIJRIXNYNTLLHEL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 9,
+  "dates": [
+   "2027-08-07"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "CPH",
+  "is_package": 0,
+  "itinerary_nights": 9,
+  "region": "Northern Europe",
+  "ship": "Norwegian Jewel",
+  "unmapped_cabin_labels": []
+ },
+ "JEWEL9CPHOSLWARGDYKLJRIXNYNTLLHEL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 9,
+  "dates": [
+   "2027-08-25"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "CPH",
+  "is_package": 0,
+  "itinerary_nights": 9,
+  "region": "Northern Europe",
+  "ship": "Norwegian Jewel",
+  "unmapped_cabin_labels": []
+ },
+ "JOY10SEAICYSITJNUKTNVICSEA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-05-28"
+  ],
+  "destinations": [
+   "ALASKA"
+  ],
+  "embark_port": "SEA",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Alaska",
+  "ship": "Norwegian Joy",
+  "unmapped_cabin_labels": []
+ },
+ "JOY10SEAJNUSGYSITHGCICYKTNVICSEA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-08-20"
+  ],
+  "destinations": [
+   "ALASKA",
+   "EXTRAORDINARY_JOURNEYS"
+  ],
+  "embark_port": "SEA",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Alaska",
+  "ship": "Norwegian Joy",
+  "unmapped_cabin_labels": []
+ },
+ "JOY16LAXCSLACAPRQPCLPCTCTGOCJMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 16,
+  "dates": [
+   "2026-10-07"
+  ],
+  "destinations": [
+   "PANAMA_CANAL"
+  ],
+  "embark_port": "LAX",
+  "is_package": 0,
+  "itinerary_nights": 16,
+  "region": null,
+  "ship": "Norwegian Joy",
+  "unmapped_cabin_labels": []
+ },
+ "JOY3MIABIMNPIMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 3,
+  "dates": [
+   "2027-03-12"
+  ],
+  "destinations": [
+   "BAHAMAS",
+   "WEEKEND"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 3,
+  "region": "Caribbean",
+  "ship": "Norwegian Joy",
+  "unmapped_cabin_labels": []
+ },
+ "JOY3MIANASNPIMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 3,
+  "dates": [
+   "2026-11-20",
+   "2026-11-27",
+   "2026-12-11",
+   "2027-01-08",
+   "2027-01-15",
+   "2027-02-05",
+   "2027-02-12",
+   "2027-02-19",
+   "2027-02-26",
+   "2027-03-05",
+   "2027-03-19",
+   "2027-03-26",
+   "2027-04-02",
+   "2027-04-09",
+   "2027-11-05"
+  ],
+  "destinations": [
+   "BAHAMAS",
+   "WEEKEND"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 3,
+  "region": "Caribbean",
+  "ship": "Norwegian Joy",
+  "unmapped_cabin_labels": []
+ },
+ "JOY4MIANASNPIMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 4,
+  "dates": [
+   "2026-11-23",
+   "2026-12-31",
+   "2027-01-04",
+   "2027-01-11",
+   "2027-01-18",
+   "2027-03-15"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 4,
+  "region": "Caribbean",
+  "ship": "Norwegian Joy",
+  "unmapped_cabin_labels": []
+ },
+ "JOY4MIANPIMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 4,
+  "dates": [
+   "2027-03-01"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 4,
+  "region": "Caribbean",
+  "ship": "Norwegian Joy",
+  "unmapped_cabin_labels": []
+ },
+ "JOY4MIANPINASMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 4,
+  "dates": [
+   "2026-11-16",
+   "2026-11-30",
+   "2026-12-14",
+   "2026-12-18",
+   "2026-12-22",
+   "2027-02-08",
+   "2027-02-15",
+   "2027-02-22",
+   "2027-03-08",
+   "2027-03-22",
+   "2027-03-29",
+   "2027-04-05",
+   "2027-11-01"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 4,
+  "region": "Caribbean",
+  "ship": "Norwegian Joy",
+  "unmapped_cabin_labels": []
+ },
+ "JOY5MIACZMNPIMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2026-12-26"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Caribbean",
+  "ship": "Norwegian Joy",
+  "unmapped_cabin_labels": []
+ },
+ "JOY5MIANPINASMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2027-01-31"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Caribbean",
+  "ship": "Norwegian Joy",
+  "unmapped_cabin_labels": []
+ },
+ "JOY6VANSEAASTSFOLAX": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 6,
+  "dates": [
+   "2026-10-01"
+  ],
+  "destinations": [
+   "PACIFIC_COASTAL"
+  ],
+  "embark_port": "VAN",
+  "is_package": 0,
+  "itinerary_nights": 6,
+  "region": null,
+  "ship": "Norwegian Joy",
+  "unmapped_cabin_labels": []
+ },
+ "JOY7SEAICYSITKTNVICSEA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-07-02",
+   "2027-07-16",
+   "2027-07-23",
+   "2027-07-30",
+   "2027-08-06",
+   "2027-08-13",
+   "2028-06-16",
+   "2028-06-30",
+   "2028-07-14",
+   "2028-07-28",
+   "2028-08-11"
+  ],
+  "destinations": [
+   "ALASKA"
+  ],
+  "embark_port": "SEA",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Alaska",
+  "ship": "Norwegian Joy",
+  "unmapped_cabin_labels": []
+ },
+ "JOY7SEAJNUICYKTNVICSEA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-06-25",
+   "2027-07-09"
+  ],
+  "destinations": [
+   "ALASKA"
+  ],
+  "embark_port": "SEA",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Alaska",
+  "ship": "Norwegian Joy",
+  "unmapped_cabin_labels": []
+ },
+ "JOY9SEAKTNICYSITSGYJNUVICSEA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 9,
+  "dates": [
+   "2027-06-07"
+  ],
+  "destinations": [
+   "ALASKA"
+  ],
+  "embark_port": "SEA",
+  "is_package": 0,
+  "itinerary_nights": 9,
+  "region": "Alaska",
+  "ship": "Norwegian Joy",
+  "unmapped_cabin_labels": []
+ },
+ "JOY9SEAKTNJNUSGYICYSITVICSEA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 9,
+  "dates": [
+   "2027-08-30",
+   "2028-08-28"
+  ],
+  "destinations": [
+   "ALASKA",
+   "EXTRAORDINARY_JOURNEYS"
+  ],
+  "embark_port": "SEA",
+  "is_package": 0,
+  "itinerary_nights": 9,
+  "region": "Alaska",
+  "ship": "Norwegian Joy",
+  "unmapped_cabin_labels": []
+ },
+ "JOY9SEASITSGYICYKTNVICSEA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 9,
+  "dates": [
+   "2027-05-19",
+   "2027-06-16"
+  ],
+  "destinations": [
+   "ALASKA"
+  ],
+  "embark_port": "SEA",
+  "is_package": 0,
+  "itinerary_nights": 9,
+  "region": "Alaska",
+  "ship": "Norwegian Joy",
+  "unmapped_cabin_labels": []
+ },
+ "LISCRUISETOUR17DAWN7LISPRMCADMOTGIBIBZPMIBCN": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-16",
+   "2027-05-30",
+   "2027-06-13",
+   "2027-06-27",
+   "2027-07-11"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "LIS",
+  "is_package": 1,
+  "itinerary_nights": 11,
+  "region": "Southern Europe",
+  "ship": "Norwegian Dawn",
+  "unmapped_cabin_labels": []
+ },
+ "LISCRUISETOUR17DAWN7LISPRMMOTCADGIBIBZPMIBCN": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-07-25"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "LIS",
+  "is_package": 1,
+  "itinerary_nights": 11,
+  "region": "Southern Europe",
+  "ship": "Norwegian Dawn",
+  "unmapped_cabin_labels": []
+ },
+ "LONDONCRUISET29JEWEL9SOULEHZEEIJMOSLAARWARCPH": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 9,
+  "dates": [
+   "2027-05-26"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "SOU",
+  "is_package": 1,
+  "itinerary_nights": 13,
+  "region": "Northern Europe",
+  "ship": "Norwegian Jewel",
+  "unmapped_cabin_labels": []
+ },
+ "LONDONCRUISET30PRIMA11SOUZEEIJMBGOGNRAESAKUISAREY": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 11,
+  "dates": [
+   "2027-06-06",
+   "2027-06-27"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "SOU",
+  "is_package": 1,
+  "itinerary_nights": 15,
+  "region": "Northern Europe",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "LONDONCRUISET30PRIMA11SOUZEEIJMMLYGNRAESAKUISAREY": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 11,
+  "dates": [
+   "2027-08-29"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "SOU",
+  "is_package": 1,
+  "itinerary_nights": 15,
+  "region": "Northern Europe",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "LONDONCRUISET30PRIMA11SOUZEEIJMMLYGNRAESTHOISAREY": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 11,
+  "dates": [
+   "2027-07-18"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "SOU",
+  "is_package": 1,
+  "itinerary_nights": 15,
+  "region": "Northern Europe",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "LONDONCRUISET31PRIMA10SOUZEEIJMBGOGNRAESAKUISAREY": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-08-08"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "SOU",
+  "is_package": 1,
+  "itinerary_nights": 14,
+  "region": "Northern Europe",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "LONDONCRUISET34STAR7SOULEHRTMIJMOSLCPH": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-09"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "SOU",
+  "is_package": 1,
+  "itinerary_nights": 11,
+  "region": "Northern Europe",
+  "ship": "Norwegian Star",
+  "unmapped_cabin_labels": []
+ },
+ "LONDONCRUISET35STAR11SOUDUNBFSPTRIVGNWHTYNIJMZEELEHSOU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 11,
+  "dates": [
+   "2027-06-13",
+   "2027-07-25"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "SOU",
+  "is_package": 1,
+  "itinerary_nights": 15,
+  "region": "Northern Europe",
+  "ship": "Norwegian Star",
+  "unmapped_cabin_labels": []
+ },
+ "LONDONCRUISET35STAR11SOUIJMNWHIVGSTWBFSDUNZEELEHSOU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 11,
+  "dates": [
+   "2027-08-15"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "SOU",
+  "is_package": 1,
+  "itinerary_nights": 15,
+  "region": "Northern Europe",
+  "ship": "Norwegian Star",
+  "unmapped_cabin_labels": []
+ },
+ "LONDONCRUISET35STAR11SOUIPOCOBBFSPTRIVGNWHIJMZEELEHSOU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 11,
+  "dates": [
+   "2027-07-04"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "SOU",
+  "is_package": 1,
+  "itinerary_nights": 15,
+  "region": "Northern Europe",
+  "ship": "Norwegian Star",
+  "unmapped_cabin_labels": []
+ },
+ "LONDONCRUISET35STAR11SOULEHZEEIJMNWHIVGBFSDUNSOU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 11,
+  "dates": [
+   "2027-05-23"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "SOU",
+  "is_package": 1,
+  "itinerary_nights": 15,
+  "region": "Northern Europe",
+  "ship": "Norwegian Star",
+  "unmapped_cabin_labels": []
+ },
+ "LONDONCRUISET37STAR10SOUIPOCOBDUNBFSSTWKWLSOQSOU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-06-24"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "SOU",
+  "is_package": 1,
+  "itinerary_nights": 14,
+  "region": "Northern Europe",
+  "ship": "Norwegian Star",
+  "unmapped_cabin_labels": []
+ },
+ "LONDONCRUISET37STAR10SOUIPORINLVPBFSDUNIVGNWHSOU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-08-05"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "SOU",
+  "is_package": 1,
+  "itinerary_nights": 14,
+  "region": "Northern Europe",
+  "ship": "Norwegian Star",
+  "unmapped_cabin_labels": []
+ },
+ "LONDONCRUISET37STAR10SOUNWHIVGPTRBFSLVPDUNCOBIPOSOU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-07-15"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "SOU",
+  "is_package": 1,
+  "itinerary_nights": 14,
+  "region": "Northern Europe",
+  "ship": "Norwegian Star",
+  "unmapped_cabin_labels": []
+ },
+ "LONDONCRUISET37STAR10SOUNWHIVGPTRRINDUNBFSSOU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-08-26"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "SOU",
+  "is_package": 1,
+  "itinerary_nights": 14,
+  "region": "Northern Europe",
+  "ship": "Norwegian Star",
+  "unmapped_cabin_labels": []
+ },
+ "LUNA4NYCWRFNYC": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 4,
+  "dates": [
+   "2027-04-06"
+  ],
+  "destinations": [
+   "BERMUDA"
+  ],
+  "embark_port": "NYC",
+  "is_package": 0,
+  "itinerary_nights": 4,
+  "region": "Bermuda",
+  "ship": "Norwegian Luna",
+  "unmapped_cabin_labels": []
+ },
+ "LUNA5NYCWRFNYC": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2027-08-28",
+   "2027-09-02",
+   "2027-09-07",
+   "2027-09-12",
+   "2027-09-17",
+   "2027-09-22",
+   "2027-09-27",
+   "2027-10-02",
+   "2027-10-07",
+   "2028-08-26",
+   "2028-08-31",
+   "2028-09-05",
+   "2028-09-10",
+   "2028-09-15",
+   "2028-09-20",
+   "2028-09-25",
+   "2028-09-30",
+   "2028-10-05"
+  ],
+  "destinations": [
+   "BERMUDA"
+  ],
+  "embark_port": "NYC",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Bermuda",
+  "ship": "Norwegian Luna",
+  "unmapped_cabin_labels": []
+ },
+ "LUNA7MIAPOPSTTTOVNPIMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-09-19",
+   "2026-10-03",
+   "2026-10-10",
+   "2026-10-17",
+   "2026-10-24",
+   "2026-10-31",
+   "2027-10-17",
+   "2027-10-24",
+   "2027-10-31",
+   "2027-11-07",
+   "2027-11-14",
+   "2027-11-21",
+   "2027-12-05",
+   "2027-12-12",
+   "2027-12-19",
+   "2028-01-02",
+   "2028-01-09",
+   "2028-01-23",
+   "2028-02-06",
+   "2028-02-20",
+   "2028-02-27",
+   "2028-03-05",
+   "2028-03-12",
+   "2028-03-19",
+   "2028-03-26"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Luna",
+  "unmapped_cabin_labels": []
+ },
+ "LUNA7MIARTBBPICMACZMMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-11-07",
+   "2026-11-21",
+   "2026-11-28",
+   "2026-12-05",
+   "2026-12-12",
+   "2026-12-19",
+   "2027-01-02",
+   "2027-01-09",
+   "2027-01-16",
+   "2027-01-23",
+   "2027-01-30",
+   "2027-02-06",
+   "2027-02-13",
+   "2027-02-20",
+   "2027-02-27",
+   "2027-03-06",
+   "2027-03-13",
+   "2027-03-20",
+   "2027-03-27"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Luna",
+  "unmapped_cabin_labels": []
+ },
+ "LUNA7MIARTBBPICZMCMAMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-12-26"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Luna",
+  "unmapped_cabin_labels": []
+ },
+ "LUNA7MIARTBBPICZMNPIMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-11-14"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Luna",
+  "unmapped_cabin_labels": []
+ },
+ "LUNA7NYCWRFNYC": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-04-10",
+   "2027-04-17",
+   "2027-04-24",
+   "2027-05-01",
+   "2027-05-08",
+   "2027-05-15",
+   "2027-05-22",
+   "2027-05-29",
+   "2027-06-05",
+   "2027-06-12",
+   "2027-06-19",
+   "2027-06-26",
+   "2027-07-03",
+   "2027-07-10",
+   "2027-07-17",
+   "2027-07-24",
+   "2027-07-31",
+   "2027-08-07",
+   "2027-08-14",
+   "2027-08-21",
+   "2028-04-15",
+   "2028-04-22",
+   "2028-04-29",
+   "2028-05-06",
+   "2028-05-13",
+   "2028-05-20",
+   "2028-05-27",
+   "2028-06-03",
+   "2028-06-10",
+   "2028-06-17",
+   "2028-06-24",
+   "2028-07-01",
+   "2028-07-08",
+   "2028-07-15",
+   "2028-07-22",
+   "2028-07-29",
+   "2028-08-05",
+   "2028-08-12",
+   "2028-08-19"
+  ],
+  "destinations": [
+   "BERMUDA"
+  ],
+  "embark_port": "NYC",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Bermuda",
+  "ship": "Norwegian Luna",
+  "unmapped_cabin_labels": []
+ },
+ "MCOCRUISETOUR1EPIC7PCVNASNPIGECCZMPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-12-13"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 1,
+  "itinerary_nights": 10,
+  "region": "Caribbean",
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "MCOCRUISETOUR1EPIC7PCVNPIFMHCZMPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-12-20"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 1,
+  "itinerary_nights": 10,
+  "region": "Caribbean",
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "MCOCRUISETOUR1EPIC7PCVNPIFMHGECCZMPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-12-06"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 1,
+  "itinerary_nights": 10,
+  "region": "Caribbean",
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "MCOCRUISETOUR1EPIC7PCVNPIMBJGECCZMPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-11-29"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 1,
+  "itinerary_nights": 10,
+  "region": "Caribbean",
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "MCOCRUISETOUR1EPIC7PCVNPIOCJGECCZMPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-12-27"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 1,
+  "itinerary_nights": 10,
+  "region": "Caribbean",
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "MCOCRUISETOUR2ESCAPE7PCVPOPSTTTOVNPIPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-12-04",
+   "2026-12-11",
+   "2026-12-23",
+   "2026-12-30"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 1,
+  "itinerary_nights": 10,
+  "region": "Caribbean",
+  "ship": "Norwegian Escape",
+  "unmapped_cabin_labels": []
+ },
+ "MCOCRUISETOUR3ESCAPE5PCVCZMNPIPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2026-12-18"
+  ],
+  "destinations": [
+   "BAHAMAS",
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 1,
+  "itinerary_nights": 8,
+  "region": "Caribbean",
+  "ship": "Norwegian Escape",
+  "unmapped_cabin_labels": []
+ },
+ "MCOCRUISETOUR4GETAWAY4PCVNASNPIPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 4,
+  "dates": [
+   "2026-11-30"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "PCV",
+  "is_package": 1,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Getaway",
+  "unmapped_cabin_labels": []
+ },
+ "MCOCRUISETOUR5GETAWAY5PCVNPICZMPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2026-12-04",
+   "2026-12-09"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 1,
+  "itinerary_nights": 8,
+  "region": "Caribbean",
+  "ship": "Norwegian Getaway",
+  "unmapped_cabin_labels": []
+ },
+ "MCOCRUISETOUR6GETAWAY7PCVCZMNPIPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-12-31"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 1,
+  "itinerary_nights": 10,
+  "region": "Caribbean",
+  "ship": "Norwegian Getaway",
+  "unmapped_cabin_labels": []
+ },
+ "MCOCRUISETOUR7GETAWAY9PCVPOPPHISTTTOVNPIPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 9,
+  "dates": [
+   "2026-12-22"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 1,
+  "itinerary_nights": 12,
+  "region": "Caribbean",
+  "ship": "Norwegian Getaway",
+  "unmapped_cabin_labels": []
+ },
+ "MSYCRUISETOUR5BREAKAWAY7MSYCZMRTBBPICMAMSY": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-11-29",
+   "2026-12-13",
+   "2026-12-20",
+   "2026-12-27"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "MSY",
+  "is_package": 1,
+  "itinerary_nights": 10,
+  "region": "Caribbean",
+  "ship": "Norwegian Breakaway",
+  "unmapped_cabin_labels": []
+ },
+ "MSYCRUISETOUR5BREAKAWAY7MSYCZMRTBBPIMSY": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-12-06"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "MSY",
+  "is_package": 1,
+  "itinerary_nights": 10,
+  "region": "Caribbean",
+  "ship": "Norwegian Breakaway",
+  "unmapped_cabin_labels": []
+ },
+ "NBAUTHENTICJADEJADE7VANKTNJNUSGYICYWQF": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-24",
+   "2027-06-07",
+   "2027-06-21",
+   "2027-07-05",
+   "2027-07-19",
+   "2027-08-02",
+   "2027-08-16"
+  ],
+  "destinations": [
+   "ALASKA"
+  ],
+  "embark_port": "VAN",
+  "is_package": 1,
+  "itinerary_nights": 14,
+  "region": "Alaska",
+  "ship": "Norwegian Jade",
+  "unmapped_cabin_labels": []
+ },
+ "NBDENSEWARDJADEJADE7VANKTNJNUSGYICYWQF": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-10",
+   "2027-05-24",
+   "2027-06-07",
+   "2027-06-21",
+   "2027-07-05",
+   "2027-07-19",
+   "2027-08-02",
+   "2027-08-16",
+   "2027-08-30"
+  ],
+  "destinations": [
+   "ALASKA"
+  ],
+  "embark_port": "VAN",
+  "is_package": 1,
+  "itinerary_nights": 13,
+  "region": "Alaska",
+  "ship": "Norwegian Jade",
+  "unmapped_cabin_labels": []
+ },
+ "NBDENVALDEZJADEJADE7VANKTNJNUSGYICYWQF": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-06-07",
+   "2027-06-21",
+   "2027-07-05",
+   "2027-07-19",
+   "2027-08-02",
+   "2027-08-16"
+  ],
+  "destinations": [
+   "ALASKA"
+  ],
+  "embark_port": "VAN",
+  "is_package": 1,
+  "itinerary_nights": 14,
+  "region": "Alaska",
+  "ship": "Norwegian Jade",
+  "unmapped_cabin_labels": []
+ },
+ "PEARL10PHLPOPSJUSTTTOVPHL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2026-12-08",
+   "2027-02-02",
+   "2027-03-02",
+   "2028-03-07"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PHL",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Caribbean",
+  "ship": "Norwegian Pearl",
+  "unmapped_cabin_labels": []
+ },
+ "PEARL10PHLSJUTOVSTTPHL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-01-03"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PHL",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Caribbean",
+  "ship": "Norwegian Pearl",
+  "unmapped_cabin_labels": []
+ },
+ "PEARL10PHLSTTTOVSJUPOPPHL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-01-13"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PHL",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Caribbean",
+  "ship": "Norwegian Pearl",
+  "unmapped_cabin_labels": []
+ },
+ "PEARL10PHLTOVSTTSJUPOPPHL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2026-11-28",
+   "2027-01-23",
+   "2027-02-20",
+   "2028-02-26"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PHL",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Caribbean",
+  "ship": "Norwegian Pearl",
+  "unmapped_cabin_labels": []
+ },
+ "PEARL11PHLPHISTTTOVSJUPOPPHL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 11,
+  "dates": [
+   "2026-12-23"
+  ],
+  "destinations": [
+   "CARIBBEAN",
+   "EXTRAORDINARY_JOURNEYS"
+  ],
+  "embark_port": "PHL",
+  "is_package": 0,
+  "itinerary_nights": 11,
+  "region": "Caribbean",
+  "ship": "Norwegian Pearl",
+  "unmapped_cabin_labels": []
+ },
+ "PEARL11PHLWRFTOVSTTSJUAMBPHL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 11,
+  "dates": [
+   "2027-03-28"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PHL",
+  "is_package": 0,
+  "itinerary_nights": 11,
+  "region": "Caribbean",
+  "ship": "Norwegian Pearl",
+  "unmapped_cabin_labels": []
+ },
+ "PEARL13RAVMLAALCMOTPHL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 13,
+  "dates": [
+   "2026-11-01"
+  ],
+  "destinations": [
+   "TRANSATLANTIC"
+  ],
+  "embark_port": "RAV",
+  "is_package": 0,
+  "itinerary_nights": 13,
+  "region": null,
+  "ship": "Norwegian Pearl",
+  "unmapped_cabin_labels": []
+ },
+ "PEARL5PHLWRFPHL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2026-12-18",
+   "2027-09-02",
+   "2027-12-08"
+  ],
+  "destinations": [
+   "BERMUDA"
+  ],
+  "embark_port": "PHL",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Bermuda",
+  "ship": "Norwegian Pearl",
+  "unmapped_cabin_labels": []
+ },
+ "PEARL7PHLWRFBOSPHL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-13"
+  ],
+  "destinations": [
+   "BERMUDA"
+  ],
+  "embark_port": "PHL",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Bermuda",
+  "ship": "Norwegian Pearl",
+  "unmapped_cabin_labels": []
+ },
+ "PEARL7PHLWRFORFPHL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-04-08",
+   "2027-04-15",
+   "2027-04-22",
+   "2027-04-29",
+   "2027-05-06",
+   "2027-05-20",
+   "2027-05-27",
+   "2027-06-03",
+   "2027-06-10",
+   "2027-06-17",
+   "2027-06-24",
+   "2027-07-01",
+   "2027-07-08",
+   "2027-07-15",
+   "2027-07-22",
+   "2027-07-29",
+   "2027-08-05",
+   "2027-08-12",
+   "2027-08-19",
+   "2027-08-26",
+   "2028-04-02"
+  ],
+  "destinations": [
+   "BERMUDA"
+  ],
+  "embark_port": "PHL",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Bermuda",
+  "ship": "Norwegian Pearl",
+  "unmapped_cabin_labels": []
+ },
+ "PEARL7PHLWRFPHL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-11-14",
+   "2026-11-21",
+   "2027-10-30",
+   "2027-11-06",
+   "2027-11-13",
+   "2027-11-20"
+  ],
+  "destinations": [
+   "BERMUDA"
+  ],
+  "embark_port": "PHL",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Bermuda",
+  "ship": "Norwegian Pearl",
+  "unmapped_cabin_labels": []
+ },
+ "PEARL7PIRJTRKAKCFUKOTDBVKOPRAV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-10-25"
+  ],
+  "destinations": [
+   "GREEK_ISLES"
+  ],
+  "embark_port": "PIR",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Southern Europe",
+  "ship": "Norwegian Pearl",
+  "unmapped_cabin_labels": []
+ },
+ "PEARL7RAVDBVKOTCFUKAKJMKJTRPIR": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-09-20",
+   "2026-10-18"
+  ],
+  "destinations": [
+   "GREEK_ISLES",
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "RAV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Southern Europe",
+  "ship": "Norwegian Pearl",
+  "unmapped_cabin_labels": []
+ },
+ "PEARL8PHLNASFPOPCVJAXPHL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 8,
+  "dates": [
+   "2027-02-12"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "PHL",
+  "is_package": 0,
+  "itinerary_nights": 8,
+  "region": "Caribbean",
+  "ship": "Norwegian Pearl",
+  "unmapped_cabin_labels": []
+ },
+ "PEARL8PHLNASNPIPCVJAXPHL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 8,
+  "dates": [
+   "2027-03-12"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "PHL",
+  "is_package": 0,
+  "itinerary_nights": 8,
+  "region": "Caribbean",
+  "ship": "Norwegian Pearl",
+  "unmapped_cabin_labels": []
+ },
+ "PEARL8PHLORFPCVFPONPIPHL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 8,
+  "dates": [
+   "2027-03-20"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "PHL",
+  "is_package": 0,
+  "itinerary_nights": 8,
+  "region": "Caribbean",
+  "ship": "Norwegian Pearl",
+  "unmapped_cabin_labels": []
+ },
+ "PRIDE_AMER7HNLOGGITOKOANWKHNL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-09-19",
+   "2026-09-26",
+   "2026-10-03",
+   "2026-10-10",
+   "2026-10-17",
+   "2026-10-24",
+   "2026-10-31",
+   "2026-11-07",
+   "2026-11-14",
+   "2026-11-21",
+   "2026-11-28",
+   "2026-12-05",
+   "2026-12-12",
+   "2026-12-19",
+   "2026-12-26",
+   "2027-01-02",
+   "2027-01-09",
+   "2027-01-16",
+   "2027-01-23",
+   "2027-01-30",
+   "2027-02-06",
+   "2027-02-13",
+   "2027-02-20",
+   "2027-02-27",
+   "2027-03-06",
+   "2027-03-13",
+   "2027-03-20",
+   "2027-03-27",
+   "2027-04-03",
+   "2027-04-10",
+   "2027-04-17",
+   "2027-04-24",
+   "2027-05-01",
+   "2027-05-08",
+   "2027-05-15",
+   "2027-05-22",
+   "2027-05-29",
+   "2027-06-05",
+   "2027-06-12",
+   "2027-06-19",
+   "2027-06-26",
+   "2027-07-03",
+   "2027-07-10",
+   "2027-07-17",
+   "2027-07-24",
+   "2027-07-31",
+   "2027-08-07",
+   "2027-08-14",
+   "2027-08-21",
+   "2027-08-28",
+   "2027-09-04",
+   "2027-09-11",
+   "2027-09-18",
+   "2027-09-25",
+   "2027-10-02",
+   "2027-10-09",
+   "2027-10-16",
+   "2027-10-23",
+   "2027-10-30",
+   "2027-11-06",
+   "2027-11-13",
+   "2027-11-20",
+   "2027-11-27",
+   "2027-12-04",
+   "2027-12-11",
+   "2027-12-18",
+   "2027-12-25",
+   "2028-01-01",
+   "2028-01-08",
+   "2028-01-15",
+   "2028-01-22",
+   "2028-01-29",
+   "2028-02-05",
+   "2028-02-12",
+   "2028-02-19",
+   "2028-02-26",
+   "2028-03-04",
+   "2028-03-11",
+   "2028-03-18",
+   "2028-03-25",
+   "2028-04-01",
+   "2028-04-08",
+   "2028-04-15",
+   "2028-04-22",
+   "2028-04-29",
+   "2028-05-06",
+   "2028-05-13",
+   "2028-05-20",
+   "2028-05-27",
+   "2028-06-03",
+   "2028-06-10",
+   "2028-06-17",
+   "2028-06-24",
+   "2028-07-01",
+   "2028-07-08",
+   "2028-07-15",
+   "2028-07-22",
+   "2028-07-29",
+   "2028-08-05",
+   "2028-08-12",
+   "2028-08-19",
+   "2028-08-26",
+   "2028-09-02",
+   "2028-09-09",
+   "2028-09-16",
+   "2028-09-23",
+   "2028-09-30",
+   "2028-10-14",
+   "2028-10-21"
+  ],
+  "destinations": [
+   "HAWAII"
+  ],
+  "embark_port": "HNL",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": null,
+  "ship": "Pride of America",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA10CIVSALLIVVLFBCNCADLCGSOU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-05-27"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "CIV",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Southern Europe",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA10RAVDBVBARSALLIVTLNPMIBCNCIV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-05-17"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "RAV",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Southern Europe",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA10REYISAAKUAESFLMKRSIJMZEESOU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-07-08"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "REY",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Northern Europe",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA10REYISAAKUAESMLYSVGIJMZEESOU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-06-17"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "REY",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Northern Europe",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA11REYISAAKUAESMLYBGOIJMZEESOU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 11,
+  "dates": [
+   "2027-08-18"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "REY",
+  "is_package": 0,
+  "itinerary_nights": 11,
+  "region": "Northern Europe",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA13CIVPMIBCNVLFLIVCIVSALMSNCFUBARDBVSPURAV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 13,
+  "dates": [
+   "2027-05-04"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "CIV",
+  "is_package": 0,
+  "itinerary_nights": 13,
+  "region": "Southern Europe",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA3CIVPMIBCN": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 3,
+  "dates": [
+   "2027-05-04"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "CIV",
+  "is_package": 0,
+  "itinerary_nights": 3,
+  "region": "Southern Europe",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA3PCVPOPSJU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 3,
+  "dates": [
+   "2026-11-12"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 3,
+  "region": "Caribbean",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA4PCVNPINASPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 4,
+  "dates": [
+   "2026-11-08"
+  ],
+  "destinations": [
+   "BAHAMAS"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 4,
+  "region": "Caribbean",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA7PCVNPIFMHGECCZMPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-09-27",
+   "2026-10-11",
+   "2026-10-25"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA7PCVPOPSTTTOVNPIPCV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-09-20",
+   "2026-10-04",
+   "2026-10-18",
+   "2026-11-01"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "PCV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA7SJUKRAPHISTTTOVSJU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-01-17"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "SJU",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA7SJUORJWILSTTTOVSJU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-12-20"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "SJU",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA7SJUPHIBASBGISLUSTTTOVSJU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-12-27",
+   "2027-02-07"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "SJU",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA7SJUPHIBASBGISLUTOVSTTSJU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-12-13"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "SJU",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA7SJUPHISLUBGIBASSTTTOVSJU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-12-06"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "SJU",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA7SJUTOVANUBGIBASPHISTTSJU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-11-15"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "SJU",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA7SJUTOVBASBGIPHISTTSJU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-03-21",
+   "2028-02-19"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "SJU",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA7SJUTOVBASBGISLUPHISTTSJU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-11-22",
+   "2026-11-29",
+   "2027-01-24",
+   "2027-02-21",
+   "2027-12-18",
+   "2028-01-08",
+   "2028-02-26",
+   "2028-03-04",
+   "2028-03-11",
+   "2028-03-18",
+   "2028-03-25",
+   "2028-04-01",
+   "2028-04-08",
+   "2028-04-15"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "SJU",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA7SJUTOVBGIBASPHISTTSJU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-02-14"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "SJU",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA7SJUTOVORJWILSTTSJU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-01-03",
+   "2028-01-01",
+   "2028-01-29"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "SJU",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA7SJUTOVPHIBGISLUBASSTTSJU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-01-10"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "SJU",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA7SJUTOVRSUBGIPHISTTSJU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-02-28"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "SJU",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA7SJUTOVSTTORJWILSTTSJU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-03-07"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "SJU",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA7SJUTOVSTTSLUORJSJU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-03-28"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "SJU",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA7SJUTOVSTTWILORJSJU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-03-14"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "SJU",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "PRIMA7SJUWILPHISTTTOVSJU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-01-31"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "SJU",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "RAVCRUISETOUR5GEM7RAVDBVKOTCFUKAKJMKJTRPIR": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-06-13",
+   "2027-06-27",
+   "2027-07-11",
+   "2027-07-25",
+   "2027-08-08",
+   "2027-08-22",
+   "2027-09-05"
+  ],
+  "destinations": [
+   "GREEK_ISLES",
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "RAV",
+  "is_package": 1,
+  "itinerary_nights": 11,
+  "region": "Southern Europe",
+  "ship": "Norwegian Gem",
+  "unmapped_cabin_labels": []
+ },
+ "RAVCRUISETOUR8SUN7RAVSPUZADKOTCFUMSNSALCIV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-06-20",
+   "2027-07-04",
+   "2027-07-18"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "RAV",
+  "is_package": 1,
+  "itinerary_nights": 11,
+  "region": "Southern Europe",
+  "ship": "Norwegian Sun",
+  "unmapped_cabin_labels": []
+ },
+ "RAVCRUISETOUR9SUN7RAVDBVKOTCFUKAKJMKJTRPIR": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-08-29"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "RAV",
+  "is_package": 1,
+  "itinerary_nights": 11,
+  "region": "Southern Europe",
+  "ship": "Norwegian Sun",
+  "unmapped_cabin_labels": []
+ },
+ "REYCRUISETOUR5PRIMA10REYISAAKUAESHSYFLMIJMZEESOU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-07-29"
+  ],
+  "destinations": [
+   "EXTRAORDINARY_JOURNEYS",
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "REY",
+  "is_package": 1,
+  "itinerary_nights": 14,
+  "region": "Northern Europe",
+  "ship": "Norwegian Prima",
+  "unmapped_cabin_labels": []
+ },
+ "ROMECRUISETOR34EPIC7CIVSALCTALIVMRSIBZBCN": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-23",
+   "2027-06-20",
+   "2027-07-04",
+   "2027-08-29"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "CIV",
+  "is_package": 1,
+  "itinerary_nights": 10,
+  "region": "Southern Europe",
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "ROMECRUISETOR34EPIC7CIVSALCTALIVMRSPMIBCN": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-09"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "CIV",
+  "is_package": 1,
+  "itinerary_nights": 10,
+  "region": "Southern Europe",
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "ROMECRUISETOR34EPIC7CIVSALCTALIVVLFMRSBCN": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-06-06",
+   "2027-07-18",
+   "2027-08-01",
+   "2027-08-15",
+   "2027-09-12",
+   "2027-09-26",
+   "2027-10-10",
+   "2027-10-24"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "CIV",
+  "is_package": 1,
+  "itinerary_nights": 10,
+  "region": "Southern Europe",
+  "ship": "Norwegian Epic",
+  "unmapped_cabin_labels": []
+ },
+ "ROMECRUISETOR36SUN7CIVSALCTACFUKOTDBVKOPRAV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-08-22"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "CIV",
+  "is_package": 1,
+  "itinerary_nights": 10,
+  "region": "Southern Europe",
+  "ship": "Norwegian Sun",
+  "unmapped_cabin_labels": []
+ },
+ "ROMECRUISETOR36SUN7CIVSALCTACFUKOTZADKOPRAV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-30"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "CIV",
+  "is_package": 1,
+  "itinerary_nights": 10,
+  "region": "Southern Europe",
+  "ship": "Norwegian Sun",
+  "unmapped_cabin_labels": []
+ },
+ "SANCRUISETOUR1STAR7SANCSLPVRMZTSAN": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-01-02",
+   "2027-01-30"
+  ],
+  "destinations": [
+   "MEXICAN_RIVIERA"
+  ],
+  "embark_port": "SAN",
+  "is_package": 1,
+  "itinerary_nights": 10,
+  "region": null,
+  "ship": "Norwegian Star",
+  "unmapped_cabin_labels": []
+ },
+ "SBDENALIEXBLIS2BLISS7SEASITJNUICYKTNVICSEA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-15",
+   "2027-05-22",
+   "2027-05-29",
+   "2027-06-05",
+   "2027-06-12",
+   "2027-06-19",
+   "2027-06-26",
+   "2027-07-03",
+   "2027-07-10",
+   "2027-07-17",
+   "2027-07-24",
+   "2027-07-31",
+   "2027-08-07",
+   "2027-08-14",
+   "2027-08-21",
+   "2027-08-28",
+   "2027-09-04"
+  ],
+  "destinations": [
+   "ALASKA"
+  ],
+  "embark_port": "SEA",
+  "is_package": 1,
+  "itinerary_nights": 12,
+  "region": "Alaska",
+  "ship": "Norwegian Bliss",
+  "unmapped_cabin_labels": []
+ },
+ "SBDENALIEXPENCENCORE7SEAJNUSGYKTNVICSEA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-16",
+   "2027-05-23",
+   "2027-05-30",
+   "2027-06-06",
+   "2027-06-13",
+   "2027-06-20",
+   "2027-06-27",
+   "2027-07-04",
+   "2027-07-11",
+   "2027-07-18",
+   "2027-07-25",
+   "2027-08-01",
+   "2027-08-08",
+   "2027-08-15",
+   "2027-08-29",
+   "2027-09-05"
+  ],
+  "destinations": [
+   "ALASKA"
+  ],
+  "embark_port": "SEA",
+  "is_package": 1,
+  "itinerary_nights": 13,
+  "region": "Alaska",
+  "ship": "Norwegian Encore",
+  "unmapped_cabin_labels": []
+ },
+ "SBDENSEWARDJADEJADE7WQFICYJNUSGYKTNVAN": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-17",
+   "2027-05-31",
+   "2027-06-14",
+   "2027-06-28",
+   "2027-07-12",
+   "2027-07-26",
+   "2027-08-09",
+   "2027-08-23",
+   "2027-09-06"
+  ],
+  "destinations": [
+   "ALASKA"
+  ],
+  "embark_port": "WQF",
+  "is_package": 1,
+  "itinerary_nights": 13,
+  "region": "Alaska",
+  "ship": "Norwegian Jade",
+  "unmapped_cabin_labels": []
+ },
+ "SBDENVALDEZJADEJADE7WQFICYJNUSGYKTNVAN": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-31",
+   "2027-06-14",
+   "2027-06-28",
+   "2027-07-12",
+   "2027-07-26",
+   "2027-08-09",
+   "2027-08-23",
+   "2027-09-06"
+  ],
+  "destinations": [
+   "ALASKA"
+  ],
+  "embark_port": "WQF",
+  "is_package": 1,
+  "itinerary_nights": 14,
+  "region": "Alaska",
+  "ship": "Norwegian Jade",
+  "unmapped_cabin_labels": []
+ },
+ "SPIRIT11SYDHBAADLKANMELSYD": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 11,
+  "dates": [
+   "2026-12-12"
+  ],
+  "destinations": [
+   "AUSTRALIA"
+  ],
+  "embark_port": "SYD",
+  "is_package": 0,
+  "itinerary_nights": 11,
+  "region": null,
+  "ship": "Norwegian Spirit",
+  "unmapped_cabin_labels": []
+ },
+ "SPIRIT12HNLNWKKOABRBRAIMOZPPT": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 12,
+  "dates": [
+   "2026-11-05"
+  ],
+  "destinations": [
+   "HAWAII",
+   "SOUTH_PACIFIC"
+  ],
+  "embark_port": "HNL",
+  "is_package": 0,
+  "itinerary_nights": 12,
+  "region": null,
+  "ship": "Norwegian Spirit",
+  "unmapped_cabin_labels": []
+ },
+ "SPIRIT12LTKDENSVUDRAVLIMYSBNENTLSYD": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 12,
+  "dates": [
+   "2026-11-30"
+  ],
+  "destinations": [
+   "AUSTRALIA",
+   "EXTRAORDINARY_JOURNEYS",
+   "SOUTH_PACIFIC"
+  ],
+  "embark_port": "LTK",
+  "is_package": 0,
+  "itinerary_nights": 12,
+  "region": null,
+  "ship": "Norwegian Spirit",
+  "unmapped_cabin_labels": []
+ },
+ "SPIRIT12LTKDRASUVAPWPPGAPWPPGRARBRBRAIMOZPPT": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 12,
+  "dates": [
+   "2026-10-12"
+  ],
+  "destinations": [
+   "SOUTH_PACIFIC"
+  ],
+  "embark_port": "LTK",
+  "is_package": 0,
+  "itinerary_nights": 12,
+  "region": null,
+  "ship": "Norwegian Spirit",
+  "unmapped_cabin_labels": []
+ },
+ "SPIRIT12PPTMOZRAIBRBITONWKHNL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 12,
+  "dates": [
+   "2026-10-24",
+   "2027-06-17"
+  ],
+  "destinations": [
+   "HAWAII",
+   "SOUTH_PACIFIC"
+  ],
+  "embark_port": "PPT",
+  "is_package": 0,
+  "itinerary_nights": 12,
+  "region": null,
+  "ship": "Norwegian Spirit",
+  "unmapped_cabin_labels": []
+ },
+ "SPIRIT13PPTMOZBRBRAIRARPPGAPWSUVDRALTK": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 13,
+  "dates": [
+   "2026-11-17"
+  ],
+  "destinations": [
+   "EXTRAORDINARY_JOURNEYS",
+   "SOUTH_PACIFIC"
+  ],
+  "embark_port": "PPT",
+  "is_package": 0,
+  "itinerary_nights": 13,
+  "region": null,
+  "ship": "Norwegian Spirit",
+  "unmapped_cabin_labels": []
+ },
+ "SPIRIT14SYDQDNMELORRTMUTAUBYOSYD": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 14,
+  "dates": [
+   "2026-12-23"
+  ],
+  "destinations": [
+   "AUSTRALIA"
+  ],
+  "embark_port": "SYD",
+  "is_package": 0,
+  "itinerary_nights": 14,
+  "region": null,
+  "ship": "Norwegian Spirit",
+  "unmapped_cabin_labels": []
+ },
+ "STAR10BCNMOTCADGIBCASAGAACESCTLIS": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-04-08"
+  ],
+  "destinations": [
+   "AFRICA",
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "BCN",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Southern Europe",
+  "ship": "Norwegian Star",
+  "unmapped_cabin_labels": []
+ },
+ "STAR10BCNMRSLIVCIVSALMSNMLALGNPMIBCN": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-03-29"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "BCN",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Southern Europe",
+  "ship": "Norwegian Star",
+  "unmapped_cabin_labels": []
+ },
+ "STAR10SOUGOTCPHHAMIJMZEELEHSOU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-04-29"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "SOU",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Northern Europe",
+  "ship": "Norwegian Star",
+  "unmapped_cabin_labels": []
+ },
+ "STAR10SOUNWHIVGPTRBFSRINLVPDUNSOU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-06-03"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "SOU",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Northern Europe",
+  "ship": "Norwegian Star",
+  "unmapped_cabin_labels": []
+ },
+ "STAR11BCNMOTCADCASAGAACESCTFNCLXOLIS": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 11,
+  "dates": [
+   "2026-10-29"
+  ],
+  "destinations": [
+   "AFRICA",
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "BCN",
+  "is_package": 0,
+  "itinerary_nights": 11,
+  "region": "Southern Europe",
+  "ship": "Norwegian Star",
+  "unmapped_cabin_labels": []
+ },
+ "STAR11LISLPASCTSCPFNCLXOLCGLEHSOU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 11,
+  "dates": [
+   "2026-11-09"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "LIS",
+  "is_package": 0,
+  "itinerary_nights": 11,
+  "region": "Southern Europe",
+  "ship": "Norwegian Star",
+  "unmapped_cabin_labels": []
+ },
+ "STAR11LISLXOLCGGIJBBOLVNLRHZEEIJMLEHSOU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 11,
+  "dates": [
+   "2027-04-18"
+  ],
+  "destinations": [
+   "MEDITERRANEAN",
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "LIS",
+  "is_package": 0,
+  "itinerary_nights": 11,
+  "region": "Southern Europe",
+  "ship": "Norwegian Star",
+  "unmapped_cabin_labels": []
+ },
+ "STAR11SOUIJMZEETYNNWHIVGPTRBFSDUNLEHSOU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 11,
+  "dates": [
+   "2027-07-25"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "SOU",
+  "is_package": 0,
+  "itinerary_nights": 11,
+  "region": "Northern Europe",
+  "ship": "Norwegian Star",
+  "unmapped_cabin_labels": []
+ },
+ "STAR13LISFNCSCTLPAPDRAGACASTNGMOTGIBCADPRMLIS": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 13,
+  "dates": [
+   "2026-10-07"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "LIS",
+  "is_package": 0,
+  "itinerary_nights": 13,
+  "region": "Southern Europe",
+  "ship": "Norwegian Star",
+  "unmapped_cabin_labels": []
+ },
+ "STAR14SOULEHLCGLXOPDLNPIMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 14,
+  "dates": [
+   "2026-11-20"
+  ],
+  "destinations": [
+   "MEDITERRANEAN",
+   "TRANSATLANTIC"
+  ],
+  "embark_port": "SOU",
+  "is_package": 0,
+  "itinerary_nights": 14,
+  "region": "Southern Europe",
+  "ship": "Norwegian Star",
+  "unmapped_cabin_labels": []
+ },
+ "STAR16MIACTGCLNPASPRQACAPVRCSLSAN": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 16,
+  "dates": [
+   "2026-12-04"
+  ],
+  "destinations": [
+   "PANAMA_CANAL"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 16,
+  "region": null,
+  "ship": "Norwegian Star",
+  "unmapped_cabin_labels": []
+ },
+ "STAR6SANPVRCSLSAN": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 6,
+  "dates": [
+   "2026-12-20"
+  ],
+  "destinations": [
+   "MEXICAN_RIVIERA"
+  ],
+  "embark_port": "SAN",
+  "is_package": 0,
+  "itinerary_nights": 6,
+  "region": null,
+  "ship": "Norwegian Star",
+  "unmapped_cabin_labels": []
+ },
+ "STAR7SANCSLMZTPVRSAN": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-12-26",
+   "2027-02-06"
+  ],
+  "destinations": [
+   "MEXICAN_RIVIERA"
+  ],
+  "embark_port": "SAN",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": null,
+  "ship": "Norwegian Star",
+  "unmapped_cabin_labels": []
+ },
+ "SUN10HELTLLNYNRIXKLJGDYWARCPHSOU": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2026-10-02"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE"
+  ],
+  "embark_port": "HEL",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Northern Europe",
+  "ship": "Norwegian Sun",
+  "unmapped_cabin_labels": []
+ },
+ "SUN11MIAFMHCTGPCGCLNLIOBPICZMMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 11,
+  "dates": [
+   "2026-12-10",
+   "2027-01-02",
+   "2027-03-13"
+  ],
+  "destinations": [
+   "EXTRAORDINARY_JOURNEYS",
+   "PANAMA_CANAL"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 11,
+  "region": null,
+  "ship": "Norwegian Sun",
+  "unmapped_cabin_labels": []
+ },
+ "SUN11MIANPICTGPCGCLNLIOFMHGECMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 11,
+  "dates": [
+   "2026-11-18",
+   "2026-11-29"
+  ],
+  "destinations": [
+   "EXTRAORDINARY_JOURNEYS",
+   "PANAMA_CANAL"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 11,
+  "region": null,
+  "ship": "Norwegian Sun",
+  "unmapped_cabin_labels": []
+ },
+ "SUN12MIANPICBRORJWILCTGPCGCLNLIOMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 12,
+  "dates": [
+   "2026-12-21",
+   "2027-03-01"
+  ],
+  "destinations": [
+   "EXTRAORDINARY_JOURNEYS",
+   "PANAMA_CANAL"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 12,
+  "region": null,
+  "ship": "Norwegian Sun",
+  "unmapped_cabin_labels": []
+ },
+ "SUN12MIANPICBRWILORJPCGCLNLIOGECMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 12,
+  "dates": [
+   "2026-11-06"
+  ],
+  "destinations": [
+   "PANAMA_CANAL"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 12,
+  "region": null,
+  "ship": "Norwegian Sun",
+  "unmapped_cabin_labels": []
+ },
+ "SUN12MIAOCJGECCTGPCGCLNLIOBPICZMMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 12,
+  "dates": [
+   "2027-03-24"
+  ],
+  "destinations": [
+   "CARIBBEAN",
+   "PANAMA_CANAL"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 12,
+  "region": "Caribbean",
+  "ship": "Norwegian Sun",
+  "unmapped_cabin_labels": []
+ },
+ "SUN12SOULEHCOBBFSSYNHALNYC": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 12,
+  "dates": [
+   "2026-10-12"
+  ],
+  "destinations": [
+   "NORTHERN_EUROPE",
+   "TRANSATLANTIC"
+  ],
+  "embark_port": "SOU",
+  "is_package": 0,
+  "itinerary_nights": 12,
+  "region": "Northern Europe",
+  "ship": "Norwegian Sun",
+  "unmapped_cabin_labels": []
+ },
+ "SUN13NYCWRFSJUSTTTOVWILORJCBRNPIMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 13,
+  "dates": [
+   "2026-10-24"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "NYC",
+  "is_package": 0,
+  "itinerary_nights": 13,
+  "region": "Caribbean",
+  "ship": "Norwegian Sun",
+  "unmapped_cabin_labels": []
+ },
+ "SUN7CIVSALCTACFUKOTSPUKOPRAV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-02",
+   "2027-05-16",
+   "2027-06-13",
+   "2027-06-27",
+   "2027-07-11",
+   "2027-07-25",
+   "2027-08-08"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "CIV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Southern Europe",
+  "ship": "Norwegian Sun",
+  "unmapped_cabin_labels": []
+ },
+ "SUN7RAVSPUDBVKOTCFUMSNSALCIV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-05-09",
+   "2027-05-23",
+   "2027-06-06",
+   "2027-08-15"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "RAV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Southern Europe",
+  "ship": "Norwegian Sun",
+  "unmapped_cabin_labels": []
+ },
+ "SUN7RAVZADSPUKOTCFUMSNSALCIV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-08-01"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "RAV",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Southern Europe",
+  "ship": "Norwegian Sun",
+  "unmapped_cabin_labels": []
+ },
+ "SYDCRUISETOUR5SPIRIT11SYDHBAADLKANMELSYD": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 11,
+  "dates": [
+   "2026-12-12"
+  ],
+  "destinations": [
+   "AUSTRALIA"
+  ],
+  "embark_port": "SYD",
+  "is_package": 1,
+  "itinerary_nights": 15,
+  "region": null,
+  "ship": "Norwegian Spirit",
+  "unmapped_cabin_labels": []
+ },
+ "SYDCRUISETOUR6SPIRIT14SYDQDNMELORRTMUTAUBYOSYD": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 14,
+  "dates": [
+   "2026-12-23"
+  ],
+  "destinations": [
+   "AUSTRALIA"
+  ],
+  "embark_port": "SYD",
+  "is_package": 1,
+  "itinerary_nights": 18,
+  "region": null,
+  "ship": "Norwegian Spirit",
+  "unmapped_cabin_labels": []
+ },
+ "TOKYOCRUISETO17JADE9YOKSMZOSAKCZHSMMIYKEEHKG": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 9,
+  "dates": [
+   "2026-11-30"
+  ],
+  "destinations": [
+   "ASIA"
+  ],
+  "embark_port": "YOK",
+  "is_package": 1,
+  "itinerary_nights": 13,
+  "region": null,
+  "ship": "Norwegian Jade",
+  "unmapped_cabin_labels": []
+ },
+ "TOKYOCRUISETO23JADE16YOKSDAHKDICYJNUSGYKTNVAN": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 16,
+  "dates": [
+   "2027-04-24"
+  ],
+  "destinations": [
+   "ALASKA",
+   "EXTRAORDINARY_JOURNEYS"
+  ],
+  "embark_port": "YOK",
+  "is_package": 1,
+  "itinerary_nights": 20,
+  "region": "Alaska",
+  "ship": "Norwegian Jade",
+  "unmapped_cabin_labels": []
+ },
+ "VIVA10ISTIZMJTRJMKPIRKAKCFUDBVBARSPURAV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-07-11"
+  ],
+  "destinations": [
+   "GREEK_ISLES"
+  ],
+  "embark_port": "IST",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Southern Europe",
+  "ship": "Norwegian Viva",
+  "unmapped_cabin_labels": []
+ },
+ "VIVA10ISTKUSJTRJMKPIRKAKMLACTASALLIVCIV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-08-18"
+  ],
+  "destinations": [
+   "GREEK_ISLES",
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "IST",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Southern Europe",
+  "ship": "Norwegian Viva",
+  "unmapped_cabin_labels": []
+ },
+ "VIVA10RAVDBVBARPIRJTRRHOKUSTHEIST": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 10,
+  "dates": [
+   "2027-06-13",
+   "2027-08-08",
+   "2027-10-03",
+   "2028-07-28",
+   "2028-09-22"
+  ],
+  "destinations": [
+   "GREEK_ISLES"
+  ],
+  "embark_port": "RAV",
+  "is_package": 0,
+  "itinerary_nights": 10,
+  "region": "Southern Europe",
+  "ship": "Norwegian Viva",
+  "unmapped_cabin_labels": []
+ },
+ "VIVA17BCNALCMOTFNCPHILRMCBRFMHGAL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 17,
+  "dates": [
+   "2026-10-14"
+  ],
+  "destinations": [
+   "TRANSATLANTIC"
+  ],
+  "embark_port": "BCN",
+  "is_package": 0,
+  "itinerary_nights": 17,
+  "region": null,
+  "ship": "Norwegian Viva",
+  "unmapped_cabin_labels": []
+ },
+ "VIVA5MIANPIPOPMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 5,
+  "dates": [
+   "2027-04-13"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 5,
+  "region": "Caribbean",
+  "ship": "Norwegian Viva",
+  "unmapped_cabin_labels": []
+ },
+ "VIVA7GALCZMRTBBPICMAGAL": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2026-10-31",
+   "2026-11-07",
+   "2026-11-14",
+   "2026-11-21",
+   "2026-11-28",
+   "2026-12-05",
+   "2026-12-12",
+   "2026-12-19",
+   "2026-12-26",
+   "2027-01-02",
+   "2027-01-09",
+   "2027-01-16",
+   "2027-01-23",
+   "2027-01-30",
+   "2027-02-06",
+   "2027-02-13",
+   "2027-02-20",
+   "2027-02-27",
+   "2027-03-06",
+   "2027-03-13",
+   "2027-03-20",
+   "2027-03-27",
+   "2027-04-03"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "GAL",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Viva",
+  "unmapped_cabin_labels": []
+ },
+ "VIVA7MIARTBBPICZMNPIMIA": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 7,
+  "dates": [
+   "2027-04-18",
+   "2027-04-25",
+   "2027-05-02",
+   "2027-05-09",
+   "2027-05-16"
+  ],
+  "destinations": [
+   "CARIBBEAN"
+  ],
+  "embark_port": "MIA",
+  "is_package": 0,
+  "itinerary_nights": 7,
+  "region": "Caribbean",
+  "ship": "Norwegian Viva",
+  "unmapped_cabin_labels": []
+ },
+ "VIVA8CIVSALCTAPIRJTRKUSIST": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 8,
+  "dates": [
+   "2027-08-28"
+  ],
+  "destinations": [
+   "GREEK_ISLES"
+  ],
+  "embark_port": "CIV",
+  "is_package": 0,
+  "itinerary_nights": 8,
+  "region": "Southern Europe",
+  "ship": "Norwegian Viva",
+  "unmapped_cabin_labels": []
+ },
+ "VIVA9CIVSALCTAMLAPIRJTRKUSIST": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 9,
+  "dates": [
+   "2027-07-02",
+   "2028-06-21",
+   "2028-08-16",
+   "2028-10-11"
+  ],
+  "destinations": [
+   "GREEK_ISLES"
+  ],
+  "embark_port": "CIV",
+  "is_package": 0,
+  "itinerary_nights": 9,
+  "region": "Southern Europe",
+  "ship": "Norwegian Viva",
+  "unmapped_cabin_labels": []
+ },
+ "VIVA9ISTKUSPIRJMKJTRKAKMLACTASALCIV": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 9,
+  "dates": [
+   "2027-06-23"
+  ],
+  "destinations": [
+   "GREEK_ISLES"
+  ],
+  "embark_port": "IST",
+  "is_package": 0,
+  "itinerary_nights": 9,
+  "region": "Southern Europe",
+  "ship": "Norwegian Viva",
+  "unmapped_cabin_labels": []
+ },
+ "VIVA9RAVBARSALCIVLIVVLFPMIBCN": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 9,
+  "dates": [
+   "2027-07-21"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "RAV",
+  "is_package": 0,
+  "itinerary_nights": 9,
+  "region": "Southern Europe",
+  "ship": "Norwegian Viva",
+  "unmapped_cabin_labels": []
+ },
+ "VIVA9RAVDBVBARSALCIVSPEVLFPMIBCN": {
+  "categories": [
+   "balcony",
+   "inside",
+   "oceanview",
+   "suite"
+  ],
+  "cruise_nights": 9,
+  "dates": [
+   "2026-10-05"
+  ],
+  "destinations": [
+   "MEDITERRANEAN"
+  ],
+  "embark_port": "RAV",
+  "is_package": 0,
+  "itinerary_nights": 9,
+  "region": "Southern Europe",
+  "ship": "Norwegian Viva",
+  "unmapped_cabin_labels": []
+ }
+}
