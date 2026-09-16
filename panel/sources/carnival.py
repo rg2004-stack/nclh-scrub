@@ -229,23 +229,34 @@ def resolve_region(itinerary: Mapping[str, Any],
     (IB, EC). Any port that serves both regions is deliberately absent from
     the port map rather than guessed at.
 
+    The port fallback fires ONLY when Carnival publishes no regionCode at all.
+    A regionCode that is present but not in our map is an unmapped code, and
+    unmapped means logged, never guessed -- falling through to the port would
+    silently overrule the vendor's own classification. That is not theoretical:
+    Carnival's `ET` (Transatlantic) repositioning crossings embark at
+    Civitavecchia and Barcelona, so a port fallback filed a 13-day Atlantic
+    crossing as a Mediterranean cruise, which would have contaminated the
+    Southern Europe price series exactly the way cruisetours contaminated NCL's.
+
     Returns (region, key_used_for_logging_when_unmapped).
     """
     region_code = itinerary.get("regionCode")
+    port = itinerary.get("departurePortCode")
+
     if region_code:
         mapped = line_cfg.region_map.get(str(region_code).strip().upper())
         if mapped:
             return mapped, None
+        # Present but unmapped: log it, do not fall through to the port.
+        return None, f"regionCode={region_code!r} port={port!r}"
 
     port_map = getattr(line_cfg, "port_region_map", None) or {}
-    port = itinerary.get("departurePortCode")
     if port:
         mapped = port_map.get(str(port).strip().upper())
         if mapped:
             return mapped, None
 
-    key = f"regionCode={region_code!r} port={itinerary.get('departurePortCode')!r}"
-    return None, key
+    return None, f"regionCode={region_code!r} port={port!r}"
 
 
 def _market_for(currency: str | None, expected: str) -> str:

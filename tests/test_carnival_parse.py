@@ -166,12 +166,44 @@ class TestRegionMapping:
         ("CIV", "Southern Europe"),  # Civitavecchia (Rome)
         ("LIS", "Southern Europe"),  # Lisbon
     ])
-    def test_port_fallback_when_region_code_is_unknown(self, port, expected,
-                                                       ccl_line_cfg):
+    def test_port_fallback_only_when_region_code_is_absent(self, port, expected,
+                                                           ccl_line_cfg):
+        """No regionCode at all is the only case the port may answer."""
+        for missing in ({}, {"regionCode": None}, {"regionCode": ""}):
+            region, unmapped = carnival.resolve_region(
+                {**missing, "departurePortCode": port}, ccl_line_cfg)
+            assert region == expected
+            assert unmapped is None
+
+    @pytest.mark.parametrize("port", ["BCN", "CIV", "LIS"])
+    def test_unmapped_region_code_is_logged_not_overruled_by_port(
+            self, port, ccl_line_cfg):
+        """A regionCode we do not map is unmapped, full stop.
+
+        Falling through to the port would let our guess overrule Carnival's own
+        classification. That is how ET (Transatlantic) crossings out of
+        Civitavecchia and Barcelona got filed as Mediterranean cruises.
+        """
         region, unmapped = carnival.resolve_region(
             {"regionCode": "ZZZ", "departurePortCode": port}, ccl_line_cfg)
-        assert region == expected
-        assert unmapped is None
+        assert region is None
+        assert "ZZZ" in unmapped and port in unmapped
+
+    def test_transatlantic_crossing_is_not_southern_europe(self, ccl_line_cfg):
+        """Carnival Legend 2026-11-01 ex-Civitavecchia, Freedom 2026-10-17
+        ex-Barcelona: both regionCode ET, both 13+ day Atlantic crossings.
+
+        They embark at Mediterranean ports but they are not Mediterranean
+        cruises, and pricing them into the Southern Europe series would corrupt
+        the comparison the thesis rests on.
+        """
+        cfg = ccl_line_cfg
+        cfg.region_map["ET"] = "Transatlantic"
+        for port in ("CIV", "BCN"):
+            region, unmapped = carnival.resolve_region(
+                {"regionCode": "ET", "departurePortCode": port}, cfg)
+            assert region == "Transatlantic"
+            assert unmapped is None
 
     def test_region_code_beats_port_when_they_disagree(self, ccl_line_cfg):
         """An Iberian sailing out of Barcelona is Southern either way; the point

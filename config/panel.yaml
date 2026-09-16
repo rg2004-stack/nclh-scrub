@@ -157,11 +157,24 @@ lines:
       CW: Caribbean             # Western Caribbean
       CS: Caribbean             # Southern Caribbean
       BH: Caribbean             # The Bahamas
+      CP: Caribbean             # Caribbean & Panama. JUDGEMENT CALL: a partial
+                                # canal transit calling Caribbean ports. Carnival
+                                # files full Panama Canal runs separately under T,
+                                # which stays out of scope, so CP sits with the
+                                # Caribbean rather than alone.
       # Others
       BM: Bermuda
       GL: Alaska                # Alaska Inside Passage & Glacier Bay
+      # Repositioning crossings. Deliberately NOT Southern Europe even though
+      # they embark at Civitavecchia and Barcelona: these are 13+ day Atlantic
+      # crossings, a different product at a different price, and folding them
+      # into the Med would corrupt the series the thesis rests on. Kept as their
+      # own region so they are visible instead of silently dropped.
+      ET: Transatlantic         # Transatlantic
 
-    # Fallback ONLY, and only for ports that serve exactly one region.
+    # Fallback ONLY when Carnival publishes no regionCode at all, and only for
+    # ports that serve exactly one region. A regionCode that is present but
+    # unmapped is logged, never overruled by the port -- see resolve_region().
     # London (LON) is deliberately absent: it is the embark port for Northern
     # itineraries (EN, ES, BI) *and* Iberian ones (IB, EC), so mapping it either
     # way would silently misclassify the region the thesis depends on.
@@ -170,8 +183,14 @@ lines:
       CIV: Southern Europe      # Civitavecchia (Rome)
       LIS: Southern Europe      # Lisbon
 
-    # Destination filters to page through. Europe is collected in full via E.
-    dest_codes: ["E", "C", "BH", "BM", "A"]
+    # Empty = one unfiltered sweep of the whole search index, which is what we
+    # want. The old dest filter list ["E","C","BH","BM","A"] reached only 402 of
+    # the 482 itinerary records Carnival publishes: the missing 17% included
+    # Carnival Legend's 2026-11-01 Civitavecchia departure and Carnival
+    # Freedom's 2026-10-17 Barcelona departure, which is why Southern Europe
+    # looked empty in the near-term window. Scope is decided by `regions` below,
+    # not by guessing which dest buckets matter.
+    dest_codes: []
 
     regions:
       - Caribbean
@@ -179,3 +198,7 @@ lines:
       - Northern Europe
       - Bermuda
       - Alaska
+      # Collected and reported separately, never counted as Southern Europe.
+      # These are the Civitavecchia/Barcelona October-November 2026 departures:
+      # repositioning crossings, not Mediterranean cruises.
+      - Transatlantic
