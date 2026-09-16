@@ -81,6 +81,49 @@ data/sail_dates.json  itinerary calendar: dates, region, ship, categories,
 data/raw/          every raw response, gzipped by line and date
 ```
 
+## Dated files are immutable, and the code enforces it
+
+`data/observations/YYYY/MM/<date>__<tier>__<line>.jsonl.gz` records what was
+observed that day. A normal export may **add** a dated file; it may not change
+one. If the rows for an existing (date, tier, line) would produce different
+content, `panel.export export` prints what changed, exits 2, and writes nothing
+at all -- a refusal never leaves a half-written export behind.
+
+This is enforced because it was once violated. `export --tier weekly-full`
+selected every (scrape_date, tier, line) group in the database and overwrote
+each path, so correcting rows locally and re-exporting silently rewrote
+2026-09-15. The only trace was an unexplained binary diff.
+
+Correcting history is now an explicit, named, logged action:
+
+```bash
+python -m panel.export export --amend --reason "what changed and why"
+```
+
+`--amend` without a non-blank `--reason` is rejected. An amended write appends
+to a plain-text ledger committed beside the data:
+
+    data/observations/CORRECTIONS.jsonl
+
+Each entry records the UTC timestamp, the reason, the tool, and per file: the
+row count before and after, the sha256 before and after, and which fields
+changed in how many rows. Someone hitting a binary diff in `git log` can read
+that commit's entry and learn what was corrected and why.
+
+Two supporting properties:
+
+- **Deterministic output.** gzip is written with `mtime=0`, so identical rows
+  produce identical bytes. Re-exporting unchanged data is a no-op in git rather
+  than a spurious diff, which is what makes "did this file change?" a
+  meaningful question at all.
+- **Scheduled runs can never amend.** `collect.yml` calls `export` without
+  `--amend`, so a cron run that would rewrite a past day fails the job instead.
+
+The promo index is deliberately exempt: `promos.jsonl.gz` is an index whose
+`last_seen`/`n_seen` counters are meant to move. What is *not* exempt is a
+promo **body** changing under an existing hash, which would mean the same offer
+id now says something different -- that still requires `--amend`.
+
 ## Evidentiary basis: the two tiers are not one sample
 
 Every analysis returns a `Result` carrying the `Basis` it was computed on, and

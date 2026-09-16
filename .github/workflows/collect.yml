@@ -115,6 +115,11 @@ jobs:
           echo "python -m panel.collect $args"
           python -m panel.collect $args
 
+      # No --amend here, deliberately. A scheduled run may only add new dated
+      # files; if it would change an existing day's content the export exits 2
+      # and the job fails loudly rather than rewriting history unannounced.
+      # Corrections are a named, logged action run by hand -- see
+      # data/observations/CORRECTIONS.jsonl.
       - name: Export to JSONL
         run: python -m panel.export export --tier ${{ steps.tier.outputs.tier }}
 
