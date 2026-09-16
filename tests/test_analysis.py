@@ -208,16 +208,62 @@ class TestDepletionRefusesToInventASlope:
         assert any("NOT COMPUTABLE" in c for c in res.basis.caveats)
 
     def test_two_dates_produce_a_slope(self, conn):
+        # The SAME cabin on both dates: depletion is a claim about specific
+        # inventory, so the endpoints must be the same cells.
         insert(conn, [
-            make_row(scrape_date="2026-09-15", availability_status="available"),
-            make_row(scrape_date="2026-09-25", availability_status="sold_out"),
+            make_row(sailing_id="S1", scrape_date="2026-09-15",
+                     availability_status="available"),
+            make_row(sailing_id="S1", scrape_date="2026-09-25",
+                     availability_status="sold_out"),
         ])
-        res = an.depletion_rate(conn, tier="weekly-full")
+        res = an.depletion_rate(conn, tier="weekly-full", min_matched=1)
         assert len(res.rows) == 1
         r = res.rows[0]
         assert r["days"] == 10
         assert r["delta_closed_share"] == 1.0
         assert r["closed_share_per_day"] == 0.1
+        assert r["matched_cells"] == 1
+        assert r["newly_closed_cells"] == 1
+
+    def test_different_cabins_on_each_date_are_not_a_slope(self, conn):
+        """Two collection dates that share no cabin carry no depletion
+        information, however much they look like a before and after."""
+        insert(conn, [
+            make_row(sailing_id="A", scrape_date="2026-09-15",
+                     availability_status="available"),
+            make_row(sailing_id="B", scrape_date="2026-09-25",
+                     availability_status="sold_out"),
+        ])
+        res = an.depletion_rate(conn, tier="weekly-full", min_matched=1)
+        assert res.rows == []
+
+    def test_cells_entering_cannot_create_a_slope(self, conn):
+        """A widened collection scope must not read as depletion."""
+        rows = [make_row(sailing_id=f"S{i}", scrape_date="2026-09-15",
+                         availability_status="available") for i in range(10)]
+        rows += [make_row(sailing_id=f"S{i}", scrape_date="2026-09-25",
+                          availability_status="available") for i in range(10)]
+        rows += [make_row(sailing_id=f"NEW{i}", scrape_date="2026-09-25",
+                          availability_status="sold_out") for i in range(40)]
+        insert(conn, rows)
+        r = an.depletion_rate(conn, tier="weekly-full").rows[0]
+        assert r["delta_closed_share"] == 0.0
+        assert r["entered_cells"] == 40
+        assert r["naive_delta"] == 0.8          # the contaminated read
+        assert r["mix_effect_pp"] == 80.0
+
+    def test_a_sailing_leaving_the_book_is_not_a_sell_out(self, conn):
+        insert(conn, [
+            make_row(sailing_id="GONE", scrape_date="2026-09-15",
+                     availability_status="available"),
+            make_row(sailing_id="STAY", scrape_date="2026-09-15",
+                     availability_status="available"),
+            make_row(sailing_id="STAY", scrape_date="2026-09-25",
+                     availability_status="available"),
+        ])
+        r = an.depletion_rate(conn, tier="weekly-full", min_matched=1).rows[0]
+        assert r["dropped_cells"] == 1
+        assert r["delta_closed_share"] == 0.0
 
 
 class TestEarningsWindow:
@@ -305,12 +351,16 @@ class TestSoloOnlyIsNotDepletion:
 
     def test_depletion_slope_ignores_solo_only_cells(self, conn):
         insert(conn, [
-            make_row(scrape_date="2026-09-15", availability_status="available"),
-            make_row(scrape_date="2026-09-15", availability_status="solo_only"),
-            make_row(scrape_date="2026-09-25", availability_status="sold_out"),
-            make_row(scrape_date="2026-09-25", availability_status="solo_only"),
+            make_row(sailing_id="S1", cabin_subcategory="BALCONY",
+                     scrape_date="2026-09-15", availability_status="available"),
+            make_row(sailing_id="S1", cabin_subcategory="STUDIO",
+                     scrape_date="2026-09-15", availability_status="solo_only"),
+            make_row(sailing_id="S1", cabin_subcategory="BALCONY",
+                     scrape_date="2026-09-25", availability_status="sold_out"),
+            make_row(sailing_id="S1", cabin_subcategory="STUDIO",
+                     scrape_date="2026-09-25", availability_status="solo_only"),
         ])
-        row = an.depletion_rate(conn, tier="weekly-full").rows[0]
+        row = an.depletion_rate(conn, tier="weekly-full", min_matched=1).rows[0]
         assert row["first_closed_share"] == 0.0
         assert row["last_closed_share"] == 1.0
 

@@ -1,6 +1,6 @@
 {
- "digest": "d6ee55f9290413fe567163f3767d151c9e19a4e251597d9bf2efe8a32fe73db6",
- "generated_at_utc": "2026-09-16T06:51:47+00:00",
+ "digest": "f92e5cad439b0676c20d1de1161a942f563e91a1aa7f66bcdb9251faab8ea34b",
+ "generated_at_utc": "2026-09-16T16:45:48+00:00",
  "regions": [
   "Caribbean",
   "Southern Europe",
@@ -17,7 +17,7 @@
   },
   "cohort-index": {
    "rows": 47,
-   "status": "ok"
+   "status": "SINCE INCEPTION = ONE DAY. The panel holds a single collection date (2026-09-16)"
   },
   "depletion": {
    "rows": 0,
@@ -32,7 +32,11 @@
    "status": "ok"
   },
   "promo-diff": {
-   "rows": 2,
+   "rows": 0,
+   "status": "no rows"
+  },
+  "promo-reference": {
+   "rows": 15,
    "status": "ok"
   }
  },

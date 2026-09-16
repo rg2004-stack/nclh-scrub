@@ -56,6 +56,9 @@ REGEN_LEDGER = "REGENERATIONS.jsonl"      # plain text: readable in the GitHub U
 # Scope of each analysis in TIME, which is not the same for all of them.
 CROSS_SECTION = "this scrape date"
 TIME_SERIES = "all scrape dates in the tier"
+# A lookup table, not a measurement: it spans every date because it is the
+# decoder ring for the other sheets, and no drift warning applies to it.
+REFERENCE = "reference (every date in the tier)"
 
 # A time series assumes each collection date sampled the same population. When
 # the collector's own scope changes between dates -- a widened sail window, a
@@ -63,6 +66,22 @@ TIME_SERIES = "all scrape dates in the tier"
 # computed across the break measures the change to the COLLECTOR rather than
 # anything about the market. It still looks exactly like a measurement.
 SCOPE_DRIFT_PCT = 20.0
+
+# Caveat prefixes that mean "this sheet's numbers cannot yet be read as a
+# measurement". They are surfaced in the Index status column and the Actions
+# summary, not only on the sheet itself -- a directory that says "ok" beside a
+# sheet whose every value is 100 by construction is worse than no directory.
+# Renaming a caveat without adding it here is how that regression happens, so
+# tests pin each one to the analysis that emits it.
+BLOCKING_CAVEATS = (
+    "NOT COMPUTABLE",              # depletion_rate, <2 collection dates
+    "NO COVERAGE",                 # earnings_window_compare, no sailings in window
+    "NO HISTORY",                  # cohort_index, no priced rows
+    "SINCE INCEPTION = ONE DAY",   # cohort_index, single collection date
+    "NO COMPARABLE REPRICING",     # cohort_index, no cabin seen twice
+    "MIXED",                       # combine_bases, pooled tiers
+    "COLLECTION SCOPE CHANGED",    # scope_drift
+)
 
 
 @dataclass(frozen=True)
@@ -101,7 +120,13 @@ SUITE: tuple[SheetSpec, ...] = (
               "it reports nothing rather than inventing a slope."),
     SheetSpec("promo-diff", "Promo diff", TIME_SERIES,
               an.promo_diff,
-              "Promo churn per line across collection dates."),
+              "Which offers widened, narrowed, appeared or were withdrawn "
+              "between dates, by reach on cabins seen both times."),
+    SheetSpec("promo-reference", "Promo reference", REFERENCE,
+              an.promo_reference,
+              "The decoder ring: every offer observed, in the vendor's own "
+              "words, with its reach and scope. Read the Promo diff against "
+              "this rather than against a hash."),
 )
 
 
@@ -122,9 +147,7 @@ class SheetResult:
         if not self.rows:
             return "no rows"
         blocking = [c for c in self.result.basis.caveats
-                    if c.startswith(("NOT COMPUTABLE", "NO COVERAGE",
-                                     "ONE SCRAPE DATE", "MIXED",
-                                     "COLLECTION SCOPE CHANGED"))]
+                    if c.startswith(BLOCKING_CAVEATS)]
         return blocking[0].split(",")[0].split(":")[0] if blocking else "ok"
 
 
@@ -169,7 +192,8 @@ def run_suite(conn: sqlite3.Connection, *, tier: str, scrape_date: str | None,
     out: list[SheetResult] = []
     for spec in SUITE:
         kwargs: dict[str, Any] = {"tier": tier, "regions": list(regions)}
-        if spec.scope is CROSS_SECTION and scrape_date and spec.key != "earnings-window":
+        if (spec.scope is CROSS_SECTION and scrape_date
+                and spec.key != "earnings-window"):
             kwargs["scrape_date"] = scrape_date
         try:
             res = spec.fn(conn, **kwargs)
@@ -345,7 +369,12 @@ def content_digest(sheets: Sequence[SheetResult]) -> tuple[str, dict[str, Any]]:
     indistinguishable from noise, so the comparison is on the payload.
     """
     payload = {
-        s.spec.key: (s.result.to_dict() if s.result else {"error": s.error})
+        s.spec.key: {
+            "result": s.result.to_dict() if s.result else {"error": s.error},
+            # The Index status is rendered into the workbook, so a change to it
+            # is a change to the file even when every number is identical.
+            "status": s.status,
+        }
         for s in sheets
     }
     body = json.dumps(payload, sort_keys=True, ensure_ascii=False,
@@ -586,6 +615,16 @@ def write_report(db_path: str, *, tier: str, scrape_date: str | None = None,
         coverage = region_coverage(conn, tier, scrape_date, regions)
     finally:
         conn.close()
+
+    if scrape_date is None:
+        # An empty tier has nothing to report on. Writing an `all-dates` file
+        # here would commit a workbook of empty sheets whose name implies it
+        # covers everything, which is worse than no file.
+        return {"path": None, "tier": tier, "scrape_date": None,
+                "regions": list(regions), "digest": None, "sheets": {},
+                "failed": [], "written": False, "regenerated": False,
+                "ledger": None, "scope_drift": [],
+                "note": f"no observations in tier {tier!r}"}
 
     digest, manifest = content_digest(sheets)
     manifest.update({

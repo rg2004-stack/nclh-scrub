@@ -55,8 +55,6 @@ tiers:
         - VIVA9RAVDBVBARSALCIVSPEVLFPMIBCN
         - VIVA7GALCZMRTBBPICMAGAL
         - AQUA7MIAPOPSTTTOVNPIMIA
-        - ESCAPE7PCVPOPSTTTOVNPIPCV
-        - GETAWAY5PCVPOPNPIPCV
         - SUN10HELTLLNYNRIXKLJGDYWARCPHSOU
         - SUN12SOULEHCOBBFSSYNHALNYC
         - BREAKAWAY7BOSHALWRFBOS
@@ -66,13 +64,15 @@ tiers:
         - EPIC7BCNMRSVLFLIVMSNSALCIV
         - GEM7CIVSALCTACFUKOTZADVCERAV
         - DAWN7BCNPMIVLCMOTGIBCADPRMLIS
-        - DAWN7LISCADMOTGIBIBZPMIBCN
       carnival:
+        - MEP
+        - BME
         - CW6
         - GLB
         - WC2
         - BAW
-        - BM6
+        - BHP
+        - BMW
         - BRD
 lines:
   ncl:
@@ -123,6 +123,65 @@ lines:
       - Northern Europe
       - Bermuda
       - Alaska
+
+  # ---------------------------------------------------------------- control
+  # Royal is a CONTROL line, not a peer: one floor price per sailing -- the
+  # number the published sell-side series carry -- so the panel can show the
+  # floor moving differently from the distribution behind it.
+  #
+  # DISABLED, and the reason is a coverage finding, not an oversight.
+  # Probed 2026-09-16. robots.txt disallows /booking/ and /room-selection/,
+  # the only paths carrying a cabin distribution, so floor-only was always the
+  # ceiling here and that part is fine. The problem is the allowed surface:
+  #
+  #   * /cruises renders NO sailings server-side, with or without a
+  #     ?search=destination:... query. Results are fetched client-side.
+  #   * The destination landing pages do render sailings, but all five return
+  #     the SAME 10 generic "Recommended" departures -- pairwise overlap 10/10.
+  #     The Bermuda page carries zero Bermuda sailings; the Alaska page zero
+  #     Alaska. They are marketing carousels, not a sailing index.
+  #
+  # So the allowed surface yields ~20 mostly-Bahamas sailings that cannot
+  # support a regional floor series aligned with the other two lines. Enabling
+  # this would put generic Caribbean promos into the panel as a control and
+  # invite a comparison the data cannot carry.
+  #
+  # The collector, capability and region mapping are built and tested, so this
+  # becomes a one-line change if a usable allowed endpoint is found. What it
+  # needs is Royal's client-side search API, which has not been located on an
+  # allowed path and would require its own robots check on whatever host it
+  # lives on.
+  royal:
+    line: "Royal Caribbean International"
+    brand: "Royal Caribbean"
+    enabled: false
+    base_url: "https://www.royalcaribbean.com"
+    cabin_map: {}
+    # Region comes from each record's own destinationCode, never from the page
+    # it was found on -- the pages mix destinations freely. Unmapped codes are
+    # dropped and logged, never bucketed by fallback.
+    region_map:
+      CARIB: Caribbean
+      BAHAM: Caribbean
+      BERMU: Bermuda
+      ALASK: Alaska
+      MEDIT: Southern Europe
+      GREEK: Southern Europe
+      EUROP: Northern Europe
+      BALTC: Northern Europe
+      NORWY: Northern Europe
+    regions:
+      - Caribbean
+      - Bermuda
+      - Alaska
+      - Southern Europe
+      - Northern Europe
+    landing_pages:
+      Caribbean: /caribbean-cruises
+      Bermuda: /bermuda-cruises
+      Alaska: /alaska-cruises
+      Southern Europe: /mediterranean-cruises
+      Northern Europe: /european-cruises
 
   carnival:
     line: "Carnival Cruise Line"

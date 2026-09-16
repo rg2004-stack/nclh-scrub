@@ -1,6 +1,6 @@
 {
- "digest": "106dfd31a5c4cb84d3e76684015d2c74c4743ce83157517e0df1c483b1e5b47d",
- "generated_at_utc": "2026-09-16T05:32:40+00:00",
+ "digest": "d505c848029821959debdd67cab94254f774e4b8871378f0ff4329799ede1118",
+ "generated_at_utc": "2026-09-16T16:45:42+00:00",
  "regions": [
   "Caribbean",
   "Southern Europe",
@@ -32,8 +32,12 @@
    "status": "ok"
   },
   "promo-diff": {
-   "rows": 4,
+   "rows": 77,
    "status": "COLLECTION SCOPE CHANGED BETWEEN DATES"
+  },
+  "promo-reference": {
+   "rows": 19,
+   "status": "ok"
   }
  },
  "tier": "weekly-full"

@@ -16,9 +16,15 @@ Any cross-line function (peer_gap in particular) must route through these.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Sequence
 
 # Coarse -> fine. Index order is the comparison lattice.
-GRANULARITIES = ("category", "subcategory", "rate_code")
+#
+# 'floor' is coarser than a cabin grade: one advertised price for a whole
+# sailing, which is what the published sell-side series carry and the reason
+# this panel exists. A source stuck at 'floor' can be compared with another
+# line's floor and with nothing else.
+GRANULARITIES = ("floor", "category", "subcategory", "rate_code")
 
 
 @dataclass(frozen=True)
@@ -32,6 +38,11 @@ class SourceCapability:
     exposes_units_remaining: bool
     exposes_tax_amount: bool
     exposes_promo_detail: bool
+    # A control line is a reference point, never a peer in a fare comparison.
+    # peer_gap builds its default peer set from this flag, so adding a
+    # floor-only source cannot silently drag a cross-line median down to the
+    # floor rung -- it is excluded by role before granularity is consulted.
+    is_control: bool = False
     notes: str = ""
 
 
@@ -67,7 +78,33 @@ CAPABILITIES: dict[str, SourceCapability] = {
                "genuinely published per cell. No 'limited' state: availability "
                "is a soldOut boolean."),
     ),
+    "royal": SourceCapability(
+        key="royal",
+        line="Royal Caribbean International",
+        granularity="floor",
+        availability_states=("available",),
+        exposes_units_remaining=False,
+        # The only source that publishes the tax component. netPrice is
+        # tax-inclusive and taxedAndFees is broken out, so the stored fare is
+        # net of tax and comparable with the other two lines.
+        exposes_tax_amount=True,
+        exposes_promo_detail=False,
+        is_control=True,
+        notes=("FLOOR ONLY: one cheapest advertised fare per sailing, taken "
+               "from destination landing pages. No cabin distribution exists "
+               "on any path robots.txt allows -- /booking/ and "
+               "/room-selection/ are disallowed and are never fetched -- so "
+               "the absence is a deliberate boundary, not a parsing gap. "
+               "Emits no sold-out state: a sailing that stops being listed "
+               "simply leaves the page, which is not the same observation."),
+    ),
 }
+
+
+def peer_keys(exclude: Sequence[str] = ()) -> list[str]:
+    """Source keys usable as fare peers: everything that is not a control."""
+    return [k for k, c in CAPABILITIES.items()
+            if not c.is_control and c.line not in exclude]
 
 
 class GranularityError(ValueError):

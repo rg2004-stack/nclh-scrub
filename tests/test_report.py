@@ -261,14 +261,30 @@ class TestDriftReachesTheSheets:
             if s.spec.scope is rp.CROSS_SECTION:
                 assert note not in s.result.basis.caveats, s.spec.key
 
-    def test_status_column_shows_it(self, drifted):
+    def test_status_column_never_says_ok_on_a_drifted_series(self, drifted):
+        """The Index directory must not label a sheet `ok` when something on it
+        makes the numbers unreadable. Which blocking reason wins does not
+        matter -- a sheet may have a more specific one than the drift, as
+        cohort_index does when no cabin was seen twice -- but `ok` is wrong."""
         note = rp.drift_caveat(rp.scope_drift(conn_for(drifted), "weekly-full"))
         sheets = rp.run_suite(conn_for(drifted), tier="weekly-full",
                               scrape_date="2026-09-22", regions=["Caribbean"],
                               drift_note=note)
         ts = [s for s in sheets if s.spec.scope is rp.TIME_SERIES and s.rows]
-        assert ts and all(s.status == "COLLECTION SCOPE CHANGED BETWEEN DATES"
-                          for s in ts)
+        assert ts
+        for s in ts:
+            assert s.status != "ok", s.spec.key
+            assert s.status.startswith(rp.BLOCKING_CAVEATS), s.status
+
+    def test_every_blocking_prefix_is_reachable_from_some_analysis(self):
+        """Renaming a caveat without updating BLOCKING_CAVEATS is how a sheet
+        silently goes back to reading `ok`. Pin the strings to their source."""
+        import inspect
+        import panel.analysis as a
+        # scope_drift's caveat is emitted here, the rest by the analyses.
+        src = inspect.getsource(a) + inspect.getsource(rp)
+        for prefix in rp.BLOCKING_CAVEATS:
+            assert prefix in src, f"{prefix!r} is no longer emitted anywhere"
 
 
 # -- region coverage --------------------------------------------------------
@@ -357,11 +373,16 @@ class TestWriteReport:
                                 config_path=config, force=True)
         assert again["written"] and again["regenerated"]
 
-    def test_empty_tier_reports_no_scrape_date(self, tmp_path, config):
+    def test_empty_tier_writes_nothing_at_all(self, tmp_path, config):
+        """An `all-dates__*.xlsx` of empty sheets would get committed and read
+        as though it covered the whole panel."""
         empty = write(str(tmp_path / "empty.sqlite"), [])
-        s = rp.write_report(empty, tier="daily-marker",
-                            out_dir=str(tmp_path / "r"), config_path=config)
+        out = tmp_path / "r"
+        s = rp.write_report(empty, tier="daily-marker", out_dir=str(out),
+                            config_path=config)
         assert s["scrape_date"] is None
+        assert s["written"] is False
+        assert not list(out.glob("*.xlsx")) if out.exists() else True
 
 
 # -- the workbook itself ----------------------------------------------------

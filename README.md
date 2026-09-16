@@ -594,6 +594,88 @@ the construction works and to quantify the mix effect. It is not enough to say
 anything about where NCLH fares are going. That changes one point per scheduled
 run.
 
+## Three analyses now measure on common support
+
+`cohort_index`, `depletion_rate` and `promo_diff` all compare two collection
+dates, and all three used to compare whatever the collector happened to return
+on each. That is not a comparison. When the weekly sweep widened on 2026-09-16
+it added 1,047 sailings, and every one of the three then reported a large,
+entirely fabricated move:
+
+| analysis | naive read | on the same cabins |
+|---|---|---|
+| `cohort_index` — Carnival Caribbean suites | **+6.6%** in a day | **-0.6%** |
+| `depletion_rate` — Southern Europe suites | **+23pp** closed share | **0.0** |
+| `promo_diff` — Caribbean `2-For-1 Deposits` | **-23.8pp** reach | **-0.1pp** |
+
+So all three now fix the basket: a cell is one
+`(line, sailing_id, cabin_subcategory, market)`, and only cells observed on
+BOTH dates enter either side. Sailings entering the book cannot move any of
+them, which is what makes them immune to the collector's own scope changing.
+Sailings *leaving* are real information and are reported separately —
+`attrition_pct`, `dropped_cells` — never folded into the measure.
+
+Each keeps its `naive_*` columns and a `mix_effect_pp`, so the size of the
+artefact stays visible instead of being asserted.
+
+## Promotions are read as offers, not hashes
+
+A `promo_hash` identifies a *bundle* of offers. That is the right unit for
+detecting change and the wrong unit for reading one, so `promo_reference` is
+the decoder ring: one row per `(line, offer code)` with the vendor's own title
+and description, its reach, and its scope.
+
+    python -m panel.analysis promo-reference --tier weekly-full
+
+It is what turns the panel's strongest single observation into something
+quotable: **`50-off-all-cruises-offer` — "50% Off All Cruises", Mandatory —
+carries on 88% of NCL's cells.** A headline discount that applies to nearly the
+whole book is a list price, not a promotion.
+
+`promo_diff` then reports which offers widened, narrowed, appeared or were
+withdrawn between dates, by reach, with the titles attached — so a change reads
+as "`Kids Sail Free` went from 30% of Caribbean cells to 36%" rather than
+"3 new, 1 dropped".
+
+Only NCL publishes offer detail. Carnival exposes none and Royal none, so every
+promo output carries a `ONE-SIDED` caveat: this can describe NCLH's promotional
+behaviour and cannot support "NCLH is discounting harder than the peer".
+
+## Royal Caribbean: built, tested, and shipped disabled
+
+Royal is configured as a **control** — floor price only, `is_control=True` in
+capabilities, granularity `floor` (a new, coarsest rung), excluded from
+`peer_gap`'s peer set by role. Comparing NCL's balcony median against a
+sailing floor would be comparing a cabin grade with a marketing headline, and
+`require_granularity` now refuses it.
+
+It is disabled, for a coverage reason found on 2026-09-16 and worth recording:
+
+- robots.txt disallows `/booking/` and `/room-selection/` — the only paths
+  carrying a cabin distribution. Floor-only was always the ceiling, and that
+  part is fine; those paths are never requested.
+- `/cruises` renders **no** sailings server-side, with or without a
+  `?search=destination:...` query. Results are client-side only.
+- The five destination landing pages do render sailings, but all five return
+  the **same 10 generic "Recommended" departures** — pairwise overlap 10/10.
+  The Bermuda page carries zero Bermuda sailings; the Alaska page zero Alaska.
+
+So the allowed surface yields ~20 mostly-Bahamas sailings, which cannot support
+a regional floor series. Enabling it would put generic Caribbean promos into
+the panel labelled as five regions.
+
+The collector is complete and tested against an archived page (24 tests),
+including that region comes from each record's own `destinationCode` and never
+from the page it was found on — the Bermuda-page-serves-Bahamas trap is the
+same error as inferring region from embarkation port, which this project has
+already made once. Enabling becomes a one-line change if Royal's search API is
+found on an allowed path.
+
+One thing Royal gives that neither other line does: it publishes the tax
+component. `netPrice` is tax-inclusive with `taxedAndFees` broken out, so the
+stored fare is `netPrice - taxedAndFees` and `taxes_fees` is kept separately,
+exactly as the spec requires.
+
 ## Every run ends in a workbook
 
 The analysis suite is not something to remember to run. Every scheduled

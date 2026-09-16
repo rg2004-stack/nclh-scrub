@@ -1,15 +1,28 @@
 """SQLite schema.
 
-One row per observation: line x sailing x cabin subcategory x market x scrape day.
+One row per observation:
+tier x line x sailing x cabin subcategory x market x scrape day.
 
-The natural key deliberately truncates scrape_ts_utc to a date so that re-running
-a tier on the same day updates rather than duplicates.
+The natural key truncates scrape_ts_utc to a date so that re-running a tier on
+the same day updates rather than duplicates.
+
+`tier` is IN the key, and has to be. The two tiers deliberately overlap: since
+the weekly sweep was widened to start 2026-10-01 it covers the same near-term
+sailings that daily-marker re-reads every day. Without `tier` in the key those
+are the same row, so whichever tier was written last silently overwrote the
+other -- and because the upsert updates every non-key column, including `tier`
+itself, the losing tier's observations did not merely go stale, they ceased to
+exist. On 2026-09-16 that destroyed all 562 daily-marker rows on rebuild.
+
+They are separate evidentiary bases that are never pooled, which is precisely
+what "different identity" means. The JSONL archive was always keyed by
+(date, tier, line) and so was never affected; only the derived database was.
 """
 
-SCHEMA_VERSION = 4
+SCHEMA_VERSION = 5
 
-DDL = """
-CREATE TABLE IF NOT EXISTS observations (
+OBSERVATIONS_DDL = """
+CREATE TABLE IF NOT EXISTS {table} (
     id                     INTEGER PRIMARY KEY AUTOINCREMENT,
     scrape_ts_utc          TEXT    NOT NULL,
     scrape_date            TEXT    NOT NULL,   -- UTC date, part of the natural key
@@ -71,9 +84,14 @@ CREATE TABLE IF NOT EXISTS observations (
     source_url             TEXT,
     raw_response_path      TEXT,
 
-    UNIQUE (line, sailing_id, cabin_subcategory, market, scrape_date)
+    UNIQUE (tier, line, sailing_id, cabin_subcategory, market, scrape_date)
 );
+"""
 
+NATURAL_KEY = ("tier", "line", "sailing_id", "cabin_subcategory", "market",
+               "scrape_date")
+
+DDL = OBSERVATIONS_DDL.format(table="observations") + """
 CREATE INDEX IF NOT EXISTS ix_obs_cohort
     ON observations (line, region, sail_date, cabin_category);
 CREATE INDEX IF NOT EXISTS ix_obs_sailing
@@ -139,6 +157,11 @@ CREATE TABLE IF NOT EXISTS meta (
 
 # Additive migrations, applied in order for databases created before the
 # current SCHEMA_VERSION. Each entry is (version_introduced, table, column, ddl).
+# v5 is not an ADD COLUMN: it changes the UNIQUE constraint, which SQLite can
+# only do by rebuilding the table. Storage._migrate detects the old key and
+# does that. Rows lost to the old key are not recoverable from the database --
+# they come back from the JSONL with `panel.export rebuild`, which is why the
+# archive, not the database, is the record.
 MIGRATIONS = [
     (2, "observations", "vendor_category_code", "TEXT"),
     (2, "observations", "rate_code", "TEXT"),

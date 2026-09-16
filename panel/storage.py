@@ -11,7 +11,8 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Iterable, Sequence
 
-from .schema import DDL, MIGRATIONS, SCHEMA_VERSION
+from .schema import (DDL, MIGRATIONS, NATURAL_KEY, OBSERVATIONS_DDL,
+                     SCHEMA_VERSION)
 
 
 def utcnow() -> datetime:
@@ -78,9 +79,8 @@ _COLUMNS: Sequence[str] = tuple(
 _UPSERT = f"""
 INSERT INTO observations ({", ".join(_COLUMNS)})
 VALUES ({", ".join("?" for _ in _COLUMNS)})
-ON CONFLICT (line, sailing_id, cabin_subcategory, market, scrape_date) DO UPDATE SET
-  {", ".join(f"{c}=excluded.{c}" for c in _COLUMNS
-             if c not in ("line", "sailing_id", "cabin_subcategory", "market", "scrape_date"))}
+ON CONFLICT ({", ".join(NATURAL_KEY)}) DO UPDATE SET
+  {", ".join(f"{c}=excluded.{c}" for c in _COLUMNS if c not in NATURAL_KEY)}
 """
 
 
@@ -104,6 +104,43 @@ class Store:
         )
         self.conn.commit()
 
+    def _observations_key(self) -> tuple[str, ...] | None:
+        """The columns of the table-level UNIQUE constraint, if there is one."""
+        for idx in self.conn.execute("PRAGMA index_list(observations)"):
+            if idx["unique"] and idx["origin"] == "u":
+                return tuple(r[2] for r in self.conn.execute(
+                    f"PRAGMA index_info({idx['name']})"))
+        return None
+
+    def _migrate_natural_key(self) -> None:
+        """v5: rebuild `observations` when its key predates `tier`.
+
+        SQLite cannot alter a UNIQUE constraint, so the table is recreated and
+        copied. The old key is strictly coarser than the new one, so every
+        surviving row is still unique under it and the copy cannot conflict.
+
+        What the copy CANNOT do is bring back rows the old key already
+        destroyed: a daily-marker observation that was overwritten by a
+        weekly-full one is simply not in this database any more. Those come
+        back from the JSONL archive via `panel.export rebuild`, which is the
+        whole reason the archive rather than the database is the record.
+        """
+        key = self._observations_key()
+        if key is None or "tier" in key:
+            return
+        self.conn.execute("PRAGMA foreign_keys=OFF")
+        self.conn.executescript(
+            OBSERVATIONS_DDL.format(table="observations_v5")
+            .replace("IF NOT EXISTS ", ""))
+        cols = [r[1] for r in self.conn.execute("PRAGMA table_info(observations)")
+                if r[1] != "id"]
+        self.conn.execute(
+            f"INSERT INTO observations_v5 ({', '.join(cols)}) "
+            f"SELECT {', '.join(cols)} FROM observations")
+        self.conn.execute("DROP TABLE observations")
+        self.conn.execute("ALTER TABLE observations_v5 RENAME TO observations")
+        self.conn.commit()
+
     def _migrate(self) -> None:
         """Apply additive column migrations to a database built by an older version.
 
@@ -116,6 +153,8 @@ class Store:
                 f"PRAGMA table_info({table})").fetchall()}
             if column not in cols:
                 self.conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {ddl}")
+
+        self._migrate_natural_key()
 
         # v3: move promo bodies out of observations into `promos`.
         cols = {r[1] for r in self.conn.execute(

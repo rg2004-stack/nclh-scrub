@@ -45,9 +45,11 @@ import statistics
 from dataclasses import dataclass, field, replace
 from typing import Any, Iterable, Mapping, Sequence
 
+from panel.normalize import AVAIL_CLOSED, AVAIL_SOLO_ONLY
 from panel.sources.capabilities import (
     CAPABILITIES,
     comparison_column,
+    peer_keys,
     require_granularity,
     shared_granularity,
 )
@@ -505,8 +507,11 @@ def peer_gap(conn: sqlite3.Connection, *, tier: str,
     itinerary geography; pooling regions would make the gap a function of where
     each line happens to deploy rather than of how it prices.
     """
-    peer_lines = list(peer_lines or [c.line for c in CAPABILITIES.values()
-                                     if c.line != treatment_line])
+    # Controls (Royal: floor only) are reference points, not fare peers. They
+    # are excluded by role here rather than left to require_granularity, which
+    # would otherwise drag every cross-line comparison down to the floor rung.
+    peer_lines = list(peer_lines or [CAPABILITIES[k].line for k in peer_keys()
+                                     if CAPABILITIES[k].line != treatment_line])
     lines = [treatment_line, *peer_lines]
     keys = [LINE_BY_NAME[l] for l in lines if l in LINE_BY_NAME]
     unknown = [l for l in lines if l not in LINE_BY_NAME]
@@ -812,11 +817,24 @@ def depletion_rate(conn: sqlite3.Connection, *, tier: str,
                    lines: Sequence[str] | None = None,
                    regions: Sequence[str] | None = None,
                    by: Sequence[str] = ("line", "region", "cabin_category"),
-                   min_dates: int = 2) -> Result:
-    """Change in closed share per day, per group.
+                   min_dates: int = 2, min_matched: int = 5) -> Result:
+    """Change in closed share per day, measured on the SAME cabins both times.
 
-    Requires at least two collection dates in the tier. Returns an empty result
-    with an explicit caveat rather than a fabricated slope when it has one.
+    Depletion is a statement about specific inventory: these cabins were
+    bookable, now they are not. Computing it over whatever the collector
+    happened to return on each date measures something else entirely -- when
+    the weekly sweep widened on 2026-09-16 it added 1,047 sailings, and a
+    closed-share "slope" across that break is mostly the new arrivals' mix.
+
+    So the endpoints are restricted to common support: a cell is one
+    (line, sailing_id, cabin_subcategory, market), and only cells observed on
+    BOTH endpoint dates enter either share. Cells that entered in between
+    cannot move the number; cells that vanished are counted separately as
+    `dropped_cells`, because a sailing leaving the book is not the same event
+    as a cabin selling out and must not be silently read as one.
+
+    `naive_*` columns are the unrestricted version, reported so the size of
+    the artefact is visible rather than merely asserted.
     """
     clause, args = _where(tier, lines=lines, regions=regions)
     basis = _basis(conn, tier, clause, args)
@@ -831,97 +849,376 @@ def depletion_rate(conn: sqlite3.Connection, *, tier: str,
 
     group_cols = list(by)
     rows = conn.execute(
-        f"""SELECT {', '.join(group_cols)}, scrape_date,
-                   SUM(availability_status != 'solo_only'
-                       OR availability_status IS NULL) AS cells,
-                   SUM(availability_status IN ('limited','sold_out')) AS closed
-            FROM observations WHERE {clause}
-            GROUP BY {', '.join(group_cols)}, scrape_date
-            ORDER BY {', '.join(group_cols)}, scrape_date""",
-        args).fetchall()
+        f"""SELECT {', '.join(group_cols)}, scrape_date, availability_status,
+                   line AS _line, sailing_id AS _sid,
+                   cabin_subcategory AS _sub, market AS _mkt
+            FROM observations WHERE {clause}""", args).fetchall()
 
-    series: dict[tuple, list[tuple[str, float, int]]] = collections.defaultdict(list)
+    # (group) -> date -> {cell key: availability status}
+    book: dict[tuple, dict[str, dict[tuple, str | None]]] = (
+        collections.defaultdict(lambda: collections.defaultdict(dict)))
     for r in rows:
-        if not r["cells"]:
-            continue
-        series[tuple(r[g] for g in group_cols)].append(
-            (r["scrape_date"], (r["closed"] or 0) / r["cells"], r["cells"]))
+        key = tuple(r[g] for g in group_cols)
+        book[key][r["scrape_date"]][
+            (r["_line"], r["_sid"], r["_sub"], r["_mkt"])] = r["availability_status"]
+
+    def shares(cells: dict[tuple, str | None], keys) -> tuple[int, int]:
+        """(bookable, closed) over the given keys. solo_only is not scarcity."""
+        bookable = closed = 0
+        for k in keys:
+            st = cells.get(k)
+            if st == AVAIL_SOLO_ONLY:
+                continue
+            bookable += 1
+            if st in AVAIL_CLOSED:
+                closed += 1
+        return bookable, closed
 
     out = []
-    for key, points in sorted(series.items(), key=lambda kv: tuple(map(str, kv[0]))):
-        if len(points) < min_dates:
+    for key in sorted(book, key=lambda k: tuple(map(str, k))):
+        dates = sorted(book[key])
+        if len(dates) < min_dates:
             continue
-        (d0, s0, n0), (d1, s1, n1) = points[0], points[-1]
-        days = (datetime.date.fromisoformat(d1) - datetime.date.fromisoformat(d0)).days
+        d0, d1 = dates[0], dates[-1]
+        first, last = book[key][d0], book[key][d1]
+        matched = set(first) & set(last)
+
+        m_book0, m_closed0 = shares(first, matched)
+        m_book1, m_closed1 = shares(last, matched)
+        n_book0, n_closed0 = shares(first, first)
+        n_book1, n_closed1 = shares(last, last)
+        if not m_book0 or not m_book1:
+            continue
+
+        s0 = m_closed0 / m_book0
+        s1 = m_closed1 / m_book1
+        days = (datetime.date.fromisoformat(d1)
+                - datetime.date.fromisoformat(d0)).days
+        naive0 = n_closed0 / n_book0 if n_book0 else None
+        naive1 = n_closed1 / n_book1 if n_book1 else None
+
         d = dict(zip(group_cols, key))
         d.update({
             "first_date": d0, "last_date": d1, "days": days,
-            "first_closed_share": round(s0, 4), "last_closed_share": round(s1, 4),
+            "matched_cells": len(matched),
+            "first_closed_share": round(s0, 4),
+            "last_closed_share": round(s1, 4),
             "delta_closed_share": round(s1 - s0, 4),
             "closed_share_per_day": round((s1 - s0) / days, 5) if days else None,
-            "observations": len(points), "first_cells": n0, "last_cells": n1,
+            "newly_closed_cells": sum(
+                1 for k in matched
+                if first.get(k) not in AVAIL_CLOSED
+                and first.get(k) != AVAIL_SOLO_ONLY
+                and last.get(k) in AVAIL_CLOSED),
+            "reopened_cells": sum(
+                1 for k in matched
+                if first.get(k) in AVAIL_CLOSED
+                and last.get(k) not in AVAIL_CLOSED
+                and last.get(k) != AVAIL_SOLO_ONLY),
+            "dropped_cells": len(set(first) - matched),
+            "entered_cells": len(set(last) - matched),
+            "naive_first_closed_share": round(naive0, 4) if naive0 is not None else None,
+            "naive_last_closed_share": round(naive1, 4) if naive1 is not None else None,
+            "naive_delta": (round(naive1 - naive0, 4)
+                            if naive0 is not None and naive1 is not None else None),
+            "mix_effect_pp": (round(((naive1 - naive0) - (s1 - s0)) * 100, 2)
+                              if naive0 is not None and naive1 is not None else None),
+            "observations": len(dates),
         })
+        low = min(m_book0, m_book1)
+        d["sample"] = ("INSUFFICIENT" if low < min_matched
+                       else "VERY THIN" if low < VERY_THIN_CELLS
+                       else "THIN" if low < THIN_CELLS
+                       else "ok") + f" (n={low})"
         out.append(d)
 
-    return Result("depletion_rate", basis, out,
-                  notes=("closed share = (limited + sold_out) / 2-pax-bookable "
-                         "cells; solo_only cells are excluded from both sides.",
-                         "Endpoint slope, not a fit: with few collection dates a "
-                         "regression would overstate precision.",
-                         "Cell counts are reported because a group whose offered "
-                         "cells shrink is depleting in a way a share can mask."))
+    if out and not any(r["matched_cells"] >= min_matched for r in out):
+        basis = basis.with_caveat(
+            "NO COMMON SUPPORT: no group has enough cabins observed on both "
+            "endpoint dates to measure depletion. More than one collection "
+            "date is not the same as two readings of the same inventory.")
+
+    return Result("depletion_rate", basis, out, notes=(
+        "COMMON SUPPORT: both shares are computed over the same cells -- those "
+        "observed on the first AND last date. Cells that entered in between "
+        "cannot move the slope, so a widened collection scope cannot be read "
+        "as depletion.",
+        "closed share = (limited + sold_out) / bookable cells; solo_only is a "
+        "product restriction, not scarcity, and is excluded from both sides.",
+        "dropped_cells left the book entirely (sailed, or delisted). That is "
+        "not the same event as selling out and is reported, never folded in.",
+        "newly_closed_cells / reopened_cells are the gross flows behind the "
+        "net delta: a flat share can hide both.",
+        "naive_* is the unrestricted computation over whatever each date "
+        "returned. mix_effect_pp = (naive delta - matched delta) in points.",
+        "Endpoint difference, not a fit: with few collection dates a "
+        "regression would overstate precision.",
+    ))
 
 
 # -- 5. promo diff ----------------------------------------------------------
 
-def promo_diff(conn: sqlite3.Connection, *, tier: str,
-               lines: Sequence[str] | None = None,
-               regions: Sequence[str] | None = None) -> Result:
-    """Promo-hash churn per line across collection dates.
+def decode_promo(promo_text: str | None) -> list[dict[str, Any]]:
+    """Turn a stored promo payload into readable offers.
 
-    Only lines whose capability declares `exposes_promo_detail` carry real
-    signal here; the rest are reported as not-applicable rather than as zero.
+    The payload is the vendor's raw offer array, kept verbatim so the archive
+    stays faithful. A hash identifies a BUNDLE of offers, which is the right
+    unit for detecting that something changed and the wrong unit for reading:
+    nobody can act on `0b0c2413...`. This is the only place that knows the
+    vendor's field names, so a payload shape change breaks here rather than
+    silently emptying a column downstream.
+    """
+    if not promo_text:
+        return []
+    try:
+        payload = json.loads(promo_text)
+    except (TypeError, ValueError):
+        return [{"code": "<unparseable>", "title": "", "description": "",
+                 "inclusion": "", "offer_type": "", "featured": None}]
+    if isinstance(payload, dict):
+        payload = [payload]
+    out = []
+    for offer in payload:
+        if not isinstance(offer, dict):
+            continue
+        out.append({
+            "code": str(offer.get("code") or "").strip() or "<no code>",
+            "title": str(offer.get("shortTitle") or offer.get("title") or "").strip(),
+            "description": str(offer.get("shortDescription")
+                               or offer.get("description") or "").strip(),
+            "inclusion": str(offer.get("inclusion") or "").strip(),
+            "offer_type": str(offer.get("offerType") or "").strip(),
+            "featured": bool(offer.get("isFeatured")) if "isFeatured" in offer else None,
+        })
+    return out
+
+
+def _offer_index(conn: sqlite3.Connection) -> dict[str, list[dict[str, Any]]]:
+    """promo_hash -> decoded offers, read once."""
+    return {r["promo_hash"]: decode_promo(r["promo_text"])
+            for r in conn.execute("SELECT promo_hash, promo_text FROM promos")}
+
+
+def promo_reference(conn: sqlite3.Connection, *, tier: str,
+                    lines: Sequence[str] | None = None,
+                    regions: Sequence[str] | None = None) -> Result:
+    """One row per distinct OFFER actually observed, in readable form.
+
+    This is the lookup table for everything else that mentions a promo. It is
+    keyed by the vendor's own offer code and carries the title and description
+    verbatim, so a figure like "38% of Caribbean cells carried
+    `50-off-all-cruises-offer`" can be checked against what the offer says.
+
+    Scope columns matter as much as the text: an offer that only ever appears
+    on one ship in one region is not a fleet-wide promotion, and the raw hash
+    gave no way to tell the difference.
     """
     clause, args = _where(tier, lines=lines, regions=regions)
     basis = _basis(conn, tier, clause, args)
+    offers = _offer_index(conn)
 
     rows = conn.execute(
-        f"""SELECT line, scrape_date,
-                   COUNT(*) AS cells,
-                   SUM(promo_hash IS NOT NULL) AS with_promo,
-                   COUNT(DISTINCT promo_hash) AS distinct_promos
-            FROM observations WHERE {clause}
-            GROUP BY line, scrape_date ORDER BY line, scrape_date""",
-        args).fetchall()
+        f"""SELECT promo_hash, line, region, cabin_category, ship,
+                   scrape_date, sail_date, COUNT(*) AS n
+            FROM observations WHERE {clause} AND promo_hash IS NOT NULL
+            GROUP BY promo_hash, line, region, cabin_category, ship,
+                     scrape_date, sail_date""", args).fetchall()
+
+    agg: dict[tuple, dict[str, Any]] = {}
+    for r in rows:
+        for offer in offers.get(r["promo_hash"], []):
+            key = (r["line"], offer["code"])
+            a = agg.setdefault(key, {
+                "line": r["line"], "code": offer["code"],
+                "title": offer["title"], "description": offer["description"],
+                "inclusion": offer["inclusion"], "offer_type": offer["offer_type"],
+                "featured": offer["featured"],
+                "_cells": 0, "_regions": set(), "_cats": set(), "_ships": set(),
+                "_dates": set(), "_sail": [], "_hashes": set(),
+            })
+            a["_cells"] += r["n"]
+            a["_regions"].add(r["region"])
+            a["_cats"].add(r["cabin_category"])
+            a["_ships"].add(r["ship"])
+            a["_dates"].add(r["scrape_date"])
+            a["_sail"].append(r["sail_date"])
+            a["_hashes"].add(r["promo_hash"])
+
+    total_by_line = dict(conn.execute(
+        f"SELECT line, COUNT(*) FROM observations WHERE {clause} GROUP BY line",
+        args))
 
     out = []
-    prev: dict[str, set[str]] = {}
-    for r in rows:
-        key = LINE_BY_NAME.get(r["line"])
-        exposes = bool(key and CAPABILITIES[key].exposes_promo_detail)
-        hashes = {h[0] for h in conn.execute(
-            f"SELECT DISTINCT promo_hash FROM observations WHERE {clause} "
-            "AND line = ? AND scrape_date = ? AND promo_hash IS NOT NULL",
-            [*args, r["line"], r["scrape_date"]])}
-        before = prev.get(r["line"])
+    for key in sorted(agg, key=lambda k: (k[0], -agg[k]["_cells"])):
+        a = agg[key]
+        total = total_by_line.get(a["line"]) or 0
+        sail = [d for d in a["_sail"] if d]
         out.append({
-            "line": r["line"], "scrape_date": r["scrape_date"],
-            "cells": r["cells"],
-            "promo_share": round((r["with_promo"] or 0) / r["cells"], 4)
-                           if r["cells"] else None,
-            "distinct_promos": r["distinct_promos"],
-            "new_promos": len(hashes - before) if before is not None else None,
-            "dropped_promos": len(before - hashes) if before is not None else None,
-            "status": "ok" if exposes else "line does not expose promo detail",
+            "line": a["line"], "code": a["code"], "title": a["title"],
+            "inclusion": a["inclusion"], "offer_type": a["offer_type"],
+            "featured": a["featured"],
+            "cells": a["_cells"],
+            "share_of_line_cells": round(a["_cells"] / total, 4) if total else None,
+            "regions": ", ".join(sorted(x for x in a["_regions"] if x)),
+            "cabin_categories": ", ".join(sorted(x for x in a["_cats"] if x)),
+            "n_ships": len(a["_ships"]),
+            "bundles": len(a["_hashes"]),
+            "first_scrape": min(a["_dates"]), "last_scrape": max(a["_dates"]),
+            "sail_from": min(sail) if sail else None,
+            "sail_to": max(sail) if sail else None,
+            "description": a["description"],
         })
-        prev[r["line"]] = hashes
 
-    return Result("promo_diff", basis, out,
-                  notes=("promo_hash is a stable hash of the sorted (code, title, "
-                         "inclusion) triples, so churn means the offer really "
-                         "changed, not that the payload was reordered.",
-                         "Bodies are in the `promos` table; Store.promo_text(hash) "
-                         "resolves one."))
+    silent = [c.line for k, c in CAPABILITIES.items()
+              if not c.exposes_promo_detail]
+    if silent:
+        basis = basis.with_caveat(
+            f"NOT ALL LINES PUBLISH OFFERS: {', '.join(sorted(silent))} expose "
+            "no promo detail at all, so their absence from this table is a gap "
+            "in the source, not evidence that they are not discounting. Any "
+            "cross-line read on promotion intensity is one-sided.")
+    return Result("promo_reference", basis, out, notes=(
+        "One row per (line, offer code). A promo_hash is a bundle of offers, "
+        "so one bundle contributes to several rows; `bundles` counts how many "
+        "distinct bundles carried this offer.",
+        "share_of_line_cells is out of ALL that line's cells in scope, priced "
+        "or not, so it reads as reach across the book.",
+        "`inclusion` = Mandatory means the vendor applies it automatically; it "
+        "is a headline fare condition, not an opt-in the shopper chose.",
+        "Text is the vendor's own, verbatim from the archived payload.",
+    ))
+
+
+def promo_diff(conn: sqlite3.Connection, *, tier: str,
+               lines: Sequence[str] | None = None,
+               regions: Sequence[str] | None = None,
+               by: Sequence[str] = ("line", "region"),
+               min_cells: int = 20) -> Result:
+    """Which offers appeared, widened, narrowed or disappeared between dates.
+
+    The previous version counted hashes: "3 new, 1 dropped". That tells you
+    something moved and not what, which is unusable in a note -- you cannot
+    write "NCLH added a promotion" and leave it there. This reports the offer
+    codes and titles themselves, with the share of cells carrying each, so a
+    change reads as "`Kids Sail Free` went from 30% of Caribbean cells to 36%".
+
+    Reach is the measure, not count: an offer on every sailing and an offer on
+    one ship are both "one promo", and promotional intensity is the difference
+    between them.
+
+    Reach is computed on COMMON SUPPORT -- the cabins observed on both dates --
+    for the same reason as depletion_rate and cohort_index. Share-of-the-book
+    moves when the book changes, so over the 2026-09-15/16 scope widening the
+    unrestricted figures show `2-For-1 Deposits` collapsing 24 points in a day.
+    It did not; the near-term sailings that entered simply carry it less often.
+    The `naive_*` columns keep that contaminated version visible beside the
+    matched one rather than quietly discarding it.
+    """
+    clause, args = _where(tier, lines=lines, regions=regions)
+    basis = _basis(conn, tier, clause, args)
+    offers = _offer_index(conn)
+    group_cols = list(by)
+
+    rows = conn.execute(
+        f"""SELECT {', '.join(group_cols)}, scrape_date, promo_hash,
+                   line AS _line, sailing_id AS _sid,
+                   cabin_subcategory AS _sub, market AS _mkt
+            FROM observations WHERE {clause}""", args).fetchall()
+
+    # (group) -> date -> {cell key: frozenset of offer codes}
+    book: dict[tuple, dict[str, dict[tuple, frozenset]]] = (
+        collections.defaultdict(lambda: collections.defaultdict(dict)))
+    titles: dict[str, dict[str, str]] = {}
+    for r in rows:
+        decoded = offers.get(r["promo_hash"], [])
+        for offer in decoded:
+            titles.setdefault(offer["code"], offer)
+        book[tuple(r[g] for g in group_cols)][r["scrape_date"]][
+            (r["_line"], r["_sid"], r["_sub"], r["_mkt"])] = frozenset(
+                o["code"] for o in decoded)
+
+    def reach(cells: dict[tuple, frozenset], keys, code: str) -> int:
+        return sum(1 for k in keys if code in cells.get(k, ()))
+
+    out = []
+    for key in sorted(book, key=lambda k: tuple(map(str, k))):
+        dates = sorted(book[key])
+        for prev_d, cur_d in zip(dates, dates[1:]):
+            prev, cur = book[key][prev_d], book[key][cur_d]
+            matched = set(prev) & set(cur)
+            if not matched:
+                continue
+            codes = {c for k in matched for c in prev.get(k, ())} | \
+                    {c for k in matched for c in cur.get(k, ())}
+            n_m = len(matched)
+            for code in sorted(codes):
+                m_before = reach(prev, matched, code)
+                m_after = reach(cur, matched, code)
+                s_before, s_after = m_before / n_m, m_after / n_m
+                delta = s_after - s_before
+
+                n_before, n_after = len(prev), len(cur)
+                nv_before = reach(prev, prev, code) / n_before if n_before else None
+                nv_after = reach(cur, cur, code) / n_after if n_after else None
+
+                if m_before == 0:
+                    status = "NEW"
+                elif m_after == 0:
+                    status = "WITHDRAWN"
+                else:
+                    status = ("widened" if delta > 0.02 else
+                              "narrowed" if delta < -0.02 else "unchanged")
+
+                d = dict(zip(group_cols, key))
+                offer = titles.get(code, {})
+                d.update({
+                    "from_date": prev_d, "to_date": cur_d,
+                    "code": code, "title": offer.get("title", ""),
+                    "inclusion": offer.get("inclusion", ""),
+                    "matched_cells": n_m,
+                    "cells_before": m_before, "cells_after": m_after,
+                    "share_before": round(s_before, 4),
+                    "share_after": round(s_after, 4),
+                    "delta_share_pp": round(delta * 100, 2),
+                    "status": status,
+                    "naive_share_before": (round(nv_before, 4)
+                                           if nv_before is not None else None),
+                    "naive_share_after": (round(nv_after, 4)
+                                          if nv_after is not None else None),
+                    "mix_effect_pp": (round(((nv_after - nv_before) - delta) * 100, 2)
+                                      if nv_before is not None
+                                      and nv_after is not None else None),
+                    "sample": ("THIN" if n_m < min_cells else "ok") + f" (n={n_m})",
+                })
+                out.append(d)
+
+    quiet = sorted(c.line for c in CAPABILITIES.values()
+                   if not c.exposes_promo_detail)
+    if quiet:
+        basis = basis.with_caveat(
+            f"ONE-SIDED: {', '.join(quiet)} publish no offer detail, so this "
+            "table can only describe NCLH's promotional behaviour. It cannot "
+            "support 'NCLH is discounting harder than the peer' -- the peer's "
+            "discounting is not observable here at all.")
+    if not out:
+        basis = basis.with_caveat(
+            "NO CHURN OBSERVABLE: no group has cabins carrying offer data on "
+            "two collection dates in this scope, so nothing can have changed "
+            "yet. More than one collection date is not the same as two "
+            "readings of the same inventory.")
+    return Result("promo_diff", basis, out, notes=(
+        "COMMON SUPPORT: shares are the fraction of cabins observed on BOTH "
+        "dates that carried the offer. Sailings entering the book cannot move "
+        "them, so a widened collection scope cannot read as a promo change.",
+        "naive_* is share of everything each date returned; mix_effect_pp is "
+        "how many points of the naive move are composition rather than offer.",
+        "Reach, not count: an offer on one ship and an offer fleet-wide are "
+        "both 'one promo', and the difference is the whole signal.",
+        "status: NEW / WITHDRAWN are appearance and disappearance on matched "
+        "cabins; widened and narrowed are reach moves beyond 2 points.",
+        "A promotion that deepens without widening does not show here: this "
+        "measures reach, not discount depth. Depth is in the fare.",
+    ))
 
 
 # -- 6. earnings window compare --------------------------------------------
@@ -1023,6 +1320,7 @@ def _fmt(v: Any) -> str:
 
 ANALYSES = {
     "availability": availability_snapshot,
+    "promo-reference": promo_reference,
     "peer-gap": peer_gap,
     "cohort-index": cohort_index,
     "depletion": depletion_rate,

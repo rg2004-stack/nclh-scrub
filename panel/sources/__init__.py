@@ -9,11 +9,14 @@ from .capabilities import (
 )
 from .carnival import CarnivalSource
 from .ncl import NCLSource
+from .royal import RoyalSource
 
-SOURCES = {"ncl": NCLSource, "carnival": CarnivalSource}
+SOURCES = {"ncl": NCLSource, "carnival": CarnivalSource,
+           "royal": RoyalSource}
 
 __all__ = [
-    "Source", "CollectResult", "NCLSource", "CarnivalSource", "SOURCES",
+    "Source", "CollectResult", "NCLSource", "CarnivalSource", "RoyalSource",
+    "SOURCES",
     "CAPABILITIES", "capability", "shared_granularity", "require_granularity",
     "comparison_column", "GranularityError",
 ]

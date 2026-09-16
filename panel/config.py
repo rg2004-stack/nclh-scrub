@@ -47,6 +47,10 @@ class LineConfig:
     # ports that serve exactly one region. Ambiguous ports are deliberately absent.
     port_region_map: dict[str, str] = field(default_factory=dict)
     dest_codes: list[str] = field(default_factory=list)
+    # Royal only: region -> allowed landing-page path carrying the sailing
+    # floor. Cabin-level paths are disallowed by robots.txt and are absent
+    # from this map by design, not by oversight.
+    landing_pages: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass
@@ -102,6 +106,8 @@ def load_config(path: str | os.PathLike[str] = DEFAULT_CONFIG_PATH) -> Config:
             max_pages=raw.get("max_pages"),
             port_region_map=_upper_keys(raw.get("port_region_map")),
             dest_codes=list(raw.get("dest_codes") or []),
+            landing_pages={str(k): str(v) for k, v
+                           in (raw.get("landing_pages") or {}).items()},
         )
 
     tiers: dict[str, TierConfig] = {}
