@@ -528,6 +528,72 @@ structure for downstream use. A function that cannot be computed on the data
 available says so -- `depletion_rate` with one collection date returns
 `NOT COMPUTABLE` -- rather than returning a fabricated figure.
 
+## The cohort index is a matched basket, and that is the whole argument
+
+`cohort_index` is the panel's answer to the series it exists to replace, so it
+is worth being precise about how it is built.
+
+A cell is one `(line, sailing_id, cabin_subcategory, market)` -- one cabin
+grade on one departure. At each cell group's **inception**, the first date this
+panel ever saw it priced, the basket is fixed. On every later date the index
+reprices *that same basket*, using only cells priced on both dates:
+
+    index_matched = 100 x (basket value now) / (same basket at base)
+
+Two things follow, and both matter.
+
+**Cells entering the book cannot move it.** A sailing that was not in the
+basket at the base date has no base price, so it cannot enter the ratio at any
+price. This is what makes the index immune to the collector's own scope
+changing -- a widened sail window cannot masquerade as a price move. Cells
+*leaving* the basket are a different matter: that is depletion, which is
+signal, and it is reported as `attrition_pct`.
+
+**The contaminated construction is reported beside it.** `index_naive` is the
+same ratio computed over whatever happened to be priced on each date -- i.e.
+the way a mean-of-current-inventory series works. `mix_effect_pp =
+index_naive - index_matched` is the difference in index points, which is to say
+the part of the naive move that is composition rather than price.
+
+On the current panel that column is not theoretical:
+
+| line | region | cabin | cohort | matched | `index_matched` | `index_naive` | `mix_effect_pp` | entered |
+|---|---|---|---|---|---|---|---|---|
+| Carnival | Caribbean | suite | 2027-04 | 31 | **99.42** | **106.63** | **+7.21** | 63 |
+| Carnival | Caribbean | suite | 2027-05 | 30 | 100.38 | 107.43 | +7.05 | 67 |
+| Carnival | Caribbean | inside | 2027-03 | 33 | 99.78 | 102.72 | +2.94 | 80 |
+
+The naive read on Carnival Caribbean suites is *up 6.6% in a day*. The same
+cabins are *down 0.6%*. All 7.2 points are 63 new cells entering the sample.
+
+That specific example is an artefact of fixing the Carnival destination sweep
+on 2026-09-16, not of the market -- but it is the mechanism, measured, in this
+panel's own data, and it is the mechanism the pitch is about.
+
+Other columns: `median_cell_change_pct` is the median per-cabin change, a check
+on whether the basket ratio is being driven by a few expensive cells;
+`base_date` and `days_since_base` are on every row because groups that entered
+the panel at different times are indexed to different bases and are therefore
+not comparable to each other *in levels*. `base_scrape_date=` pins a common
+base instead. Packages are excluded by default, as in `peer_gap`.
+
+### History is thin, and the output says so every time
+
+Every `cohort_index` result carries a caveat stating exactly how many
+collection dates exist, spanning how many days, and how many intervals that
+gives. With one date it reads `SINCE INCEPTION = ONE DAY` and says the index is
+100 by construction and measures nothing. Under 14 days it says the window is
+too short to read a trend from. There is no arrangement of the data that
+produces an index without that sentence attached, because the failure mode
+being guarded against is a reader assuming a run of history behind a number
+that has two points.
+
+As of 2026-09-16 the honest statement is: two collection dates, one day apart,
+one interval. 3,601 cabins have been observed on both. That is enough to prove
+the construction works and to quantify the mix effect. It is not enough to say
+anything about where NCLH fares are going. That changes one point per scheduled
+run.
+
 ## Every run ends in a workbook
 
 The analysis suite is not something to remember to run. Every scheduled

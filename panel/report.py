@@ -91,8 +91,10 @@ SUITE: tuple[SheetSpec, ...] = (
               "Split on sail date, not collection date."),
     SheetSpec("cohort-index", "Cohort index", TIME_SERIES,
               an.cohort_index,
-              "Price level per sail-month cohort, indexed to the first "
-              "collection date. Needs >=2 dates to carry information."),
+              "Since-inception index on a MATCHED BASKET of cabins, with the "
+              "naive all-rows index beside it. index_matched cannot be moved "
+              "by sailings entering the book; mix_effect_pp is how much of the "
+              "naive move is composition rather than price."),
     SheetSpec("depletion", "Depletion", TIME_SERIES,
               an.depletion_rate,
               "Change in closed share per day. Needs >=2 collection dates or "

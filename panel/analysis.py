@@ -103,6 +103,11 @@ VERY_THIN_CELLS = 10   # below this, treat it as an anecdote
 # is not just small, it is a different population from the headline row count.
 HEAVY_EXCLUSION_PCT = 40.0
 
+# Below this span, a cohort index has points but no direction. Fares move on
+# booking-curve and promotional timescales, so a few days of history is a
+# starting value, not a trend.
+MIN_TREND_DAYS = 14
+
 
 def sample_flag(treatment_n: int, peer_n: int, min_cells: int) -> str:
     """One short verdict on whether this row can carry weight."""
@@ -615,63 +620,190 @@ def peer_gap(conn: sqlite3.Connection, *, tier: str,
 
 # -- 3. cohort index --------------------------------------------------------
 
+def _history_note(dates: Sequence[str]) -> str:
+    """State exactly how much history exists, in the output, every time.
+
+    The whole point of this panel is a series nobody else has, which means for
+    a while it is a series almost nobody has YET. An index printed without its
+    own history length invites the reader to assume a run of observations
+    behind it. There is not one, and this sentence is how the output says so.
+    """
+    n = len(dates)
+    if n == 0:
+        return "NO HISTORY: no priced rows in scope, so there is no series."
+    if n == 1:
+        return (
+            f"SINCE INCEPTION = ONE DAY. The panel holds a single collection "
+            f"date ({dates[0]}), so every index below is 100 by construction "
+            "and measures nothing. This is the first observation of a series, "
+            "not a series. It becomes informative from the second scheduled "
+            "run onward."
+        )
+    span = (datetime.date.fromisoformat(dates[-1])
+            - datetime.date.fromisoformat(dates[0])).days
+    head = (f"HISTORY IS {n} COLLECTION DATES ({dates[0]}..{dates[-1]}, "
+            f"{span} day{'s' if span != 1 else ''} end to end, "
+            f"{n - 1} interval{'s' if n - 1 != 1 else ''}).")
+    if span < MIN_TREND_DAYS:
+        return (
+            f"{head} That is too short a window to read a trend from: fares "
+            "move on booking-curve and promotional timescales measured in "
+            "weeks. Read these as the first points of a series, not as a "
+            "direction of travel. The window lengthens by one point per "
+            "scheduled run."
+        )
+    return (f"{head} Still early: treat direction as provisional until several "
+            "weeks of scheduled runs have accumulated.")
+
+
 def cohort_index(conn: sqlite3.Connection, *, tier: str,
                  lines: Sequence[str] | None = None,
                  regions: Sequence[str] | None = None,
                  base_scrape_date: str | None = None,
+                 product: str | None = "cruise_only",
                  by: Sequence[str] = ("line", "region", "cabin_category"),
-                 ) -> Result:
-    """Price level per sail-month cohort, indexed to a base scrape date.
+                 min_matched: int = 5) -> Result:
+    """Since-inception price index on a MATCHED BASKET of cabins.
 
-    Holding the cohort fixed is what stops a rising mean from being read as
-    price strength when it is really the near-dated, cheaper sailings leaving
-    the book.
+    The index is built the way an index has to be built if it is going to mean
+    anything: fix the basket at the base date, then reprice that same basket.
+    A cell is one (line, sailing_id, cabin_subcategory, market) -- one physical
+    cabin grade on one departure -- and only cells priced on BOTH the base date
+    and the comparison date enter the ratio.
+
+    That constraint is the entire point, for two reasons.
+
+    First, it is the panel's own thesis turned on itself. A mean over whatever
+    happens to be priced today rises when the cheap cabins sell out, which is
+    exactly the artefact the minimum-fare series suffers from and exactly what
+    this panel exists to avoid publishing. `index_naive` below is that
+    contaminated number, reported beside the matched one so the difference can
+    be read off directly: `mix_effect_pp` is how many index points of the naive
+    move are composition rather than price.
+
+    Second, it makes the index immune to the collector's own scope changing.
+    Sailings that were not in the book at the base date cannot enter a fixed
+    basket, so widening the sail window cannot move `index_matched`. Cells
+    LEAVING the basket still matter and are reported as `attrition_pct` --
+    that is inventory depletion, which is signal, not contamination.
+
+    The base is per (group, cohort): its inception, meaning the first date this
+    panel ever saw that cell group priced. Coverage started at different times
+    for different regions, so a single global base would silently discard
+    everything that entered later. `base_date` and `days_since_base` are on
+    every row because rows indexed to different bases are not comparable to
+    each other in levels. Pass `base_scrape_date` to pin a common base instead.
     """
-    clause, args = _where(tier, lines=lines, regions=regions, priced_only=True)
+    clause, args = _where(tier, lines=lines, regions=regions,
+                          priced_only=True, product=product)
     basis = _basis(conn, tier, clause, args)
-    if not basis.scrape_dates:
-        return Result("cohort_index", basis, [],
-                      notes=("no priced rows in scope",))
-    base = base_scrape_date or basis.scrape_dates[0]
+    if product == "cruise_only":
+        basis = basis.with_caveat(_product_filter_caveat(
+            conn, tier, lines=lines, regions=regions, product="cruise_only"))
 
     group_cols = list(by)
     rows = conn.execute(
-        f"""SELECT {', '.join(group_cols)}, substr(sail_date,1,7) AS cohort,
-                   scrape_date, AVG(price_pppn) AS mean_pppn,
-                   COUNT(*) AS cells
-            FROM observations WHERE {clause}
-            GROUP BY {', '.join(group_cols)}, cohort, scrape_date
-            ORDER BY {', '.join(group_cols)}, cohort, scrape_date""",
-        args).fetchall()
+        f"""SELECT {', '.join(group_cols)}, substr(sail_date, 1, 7) AS cohort,
+                   scrape_date, line AS _line, sailing_id AS _sid,
+                   cabin_subcategory AS _sub, market AS _mkt, price_pppn
+            FROM observations WHERE {clause}""", args).fetchall()
 
-    baseline: dict[tuple, float] = {}
-    for r in rows:
-        if r["scrape_date"] == base:
-            baseline[tuple(r[g] for g in group_cols) + (r["cohort"],)] = r["mean_pppn"]
+    history = _history_note(list(basis.scrape_dates))
+    basis = basis.with_caveat(history)
+    if not rows:
+        return Result("cohort_index", basis, [], notes=("no priced rows in scope",))
 
-    out = []
+    # (group, cohort) -> scrape_date -> {cell key: price}
+    book: dict[tuple, dict[str, dict[tuple, float]]] = collections.defaultdict(
+        lambda: collections.defaultdict(dict))
     for r in rows:
         key = tuple(r[g] for g in group_cols) + (r["cohort"],)
-        b = baseline.get(key)
-        d = {g: r[g] for g in group_cols}
-        d.update({
-            "cohort": r["cohort"], "scrape_date": r["scrape_date"],
-            "cells": r["cells"],
-            "mean_pppn": round(r["mean_pppn"], 2),
-            "base_mean_pppn": round(b, 2) if b else None,
-            "index": round(r["mean_pppn"] / b * 100, 2) if b else None,
-        })
-        out.append(d)
+        book[key][r["scrape_date"]][
+            (r["_line"], r["_sid"], r["_sub"], r["_mkt"])] = r["price_pppn"]
 
-    single = len(basis.scrape_dates) == 1
-    if single:
-        basis = basis.with_caveat(
-            "ONE SCRAPE DATE: every index is 100 by construction. A cohort "
-            "index needs at least two collection dates to carry information.")
-    return Result("cohort_index", basis, out,
-                  notes=(f"base scrape date: {base}; index = 100 at base.",
-                         "Cohort = sail month, so the same forward book is "
-                         "compared with itself across collection dates."))
+    out: list[dict[str, Any]] = []
+    for key in sorted(book, key=lambda k: tuple(map(str, k))):
+        dates = sorted(book[key])
+        base = base_scrape_date if base_scrape_date in book[key] else dates[0]
+        base_prices = book[key][base]
+        base_d = datetime.date.fromisoformat(base)
+        base_naive = statistics.fmean(base_prices.values()) if base_prices else None
+
+        for date in dates:
+            now = book[key][date]
+            matched = set(base_prices) & set(now)
+            basket_base = sum(base_prices[k] for k in matched)
+            basket_now = sum(now[k] for k in matched)
+            relatives = sorted((now[k] / base_prices[k] - 1) * 100
+                               for k in matched if base_prices[k])
+            naive_now = statistics.fmean(now.values()) if now else None
+            idx_matched = (round(100 * basket_now / basket_base, 2)
+                           if basket_base else None)
+            idx_naive = (round(100 * naive_now / base_naive, 2)
+                         if base_naive and naive_now is not None else None)
+
+            d = dict(zip(group_cols, key[:-1]))
+            d.update({
+                "cohort": key[-1],
+                "base_date": base,
+                "scrape_date": date,
+                "days_since_base": (datetime.date.fromisoformat(date) - base_d).days,
+                "base_cells": len(base_prices),
+                "cells_now": len(now),
+                "matched_cells": len(matched),
+                "index_matched": idx_matched,
+                "median_cell_change_pct": (round(statistics.median(relatives), 2)
+                                           if relatives else None),
+                "index_naive": idx_naive,
+                "mix_effect_pp": (round(idx_naive - idx_matched, 2)
+                                  if idx_naive is not None
+                                  and idx_matched is not None else None),
+                "attrition_pct": (round(100 * (len(base_prices) - len(matched))
+                                        / len(base_prices), 1)
+                                  if base_prices else None),
+                "entered_cells": len(set(now) - set(base_prices)),
+                "basket_base_pppn": round(basket_base / len(matched), 2) if matched else None,
+                "basket_now_pppn": round(basket_now / len(matched), 2) if matched else None,
+            })
+            if date == base:
+                d["sample"] = f"BASE (n={len(matched)})"
+            elif len(matched) < min_matched:
+                d["sample"] = f"INSUFFICIENT (matched {len(matched)} < {min_matched})"
+            elif len(matched) < VERY_THIN_CELLS:
+                d["sample"] = f"VERY THIN (n={len(matched)})"
+            elif len(matched) < THIN_CELLS:
+                d["sample"] = f"THIN (n={len(matched)})"
+            else:
+                d["sample"] = "ok"
+            out.append(d)
+
+    if len(basis.scrape_dates) > 1:
+        moved = [r for r in out
+                 if r["days_since_base"] > 0 and r["index_matched"] is not None
+                 and not r["sample"].startswith("INSUFFICIENT")]
+        if not moved:
+            basis = basis.with_caveat(
+                "NO COMPARABLE REPRICING YET: every cell group either sits on "
+                "its own base date or has too few cabins observed on two dates "
+                "to form a basket. The panel has more than one collection date "
+                "but not yet two readings of the same cabins.")
+
+    return Result("cohort_index", basis, out, notes=(
+        "index_matched = 100 x (basket value now) / (same basket at base), "
+        "over cells priced on BOTH dates. 100 = unchanged.",
+        "index_naive is the same ratio over whatever was priced on each date "
+        "-- the contaminated construction this panel exists to replace. "
+        "mix_effect_pp = index_naive - index_matched is the composition "
+        "artefact in index points.",
+        "attrition_pct is the share of the base basket no longer priced: "
+        "depletion, and the reason a matched index eventually thins out.",
+        "entered_cells never affects index_matched. A fixed basket is why a "
+        "widened sail window cannot masquerade as a price move.",
+        "median_cell_change_pct is the median per-cabin change, a check on "
+        "whether the basket ratio is driven by a few expensive cells.",
+        "base = inception per (group, cohort), so rows with different "
+        "base_date values are not comparable to each other in levels.",
+    ))
 
 
 # -- 4. depletion rate ------------------------------------------------------
