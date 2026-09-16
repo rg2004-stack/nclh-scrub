@@ -1,0 +1,40 @@
+{
+ "digest": "d6ee55f9290413fe567163f3767d151c9e19a4e251597d9bf2efe8a32fe73db6",
+ "generated_at_utc": "2026-09-16T06:51:47+00:00",
+ "regions": [
+  "Caribbean",
+  "Southern Europe",
+  "Northern Europe",
+  "Bermuda",
+  "Alaska",
+  "Transatlantic"
+ ],
+ "scrape_date": "2026-09-16",
+ "sheets": {
+  "availability": {
+   "rows": 24,
+   "status": "ok"
+  },
+  "cohort-index": {
+   "rows": 47,
+   "status": "ok"
+  },
+  "depletion": {
+   "rows": 0,
+   "status": "no rows"
+  },
+  "earnings-window": {
+   "rows": 24,
+   "status": "ok"
+  },
+  "peer-gap": {
+   "rows": 16,
+   "status": "ok"
+  },
+  "promo-diff": {
+   "rows": 2,
+   "status": "ok"
+  }
+ },
+ "tier": "daily-marker"
+}
