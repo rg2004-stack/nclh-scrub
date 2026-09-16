@@ -147,7 +147,7 @@ class TestPeerGapGuards:
             *[make_row(line=CCL, price_pppn=100.0) for _ in range(5)],
         ])
         res = an.peer_gap(conn, tier="weekly-full", min_cells=5)
-        row = next(r for r in res.rows if r["status"] == "ok")
+        row = next(r for r in res.rows if r["status"].startswith("ok"))
         assert row["gap_pppn"] == 100.0
         assert row["gap_pct"] == 100.0
 
@@ -169,7 +169,7 @@ class TestProductFilter:
             *[make_row(line=CCL, price_pppn=100.0) for _ in range(5)],
         ])
         res = an.peer_gap(conn, tier="weekly-full", min_cells=5)
-        row = next(r for r in res.rows if r["status"] == "ok")
+        row = next(r for r in res.rows if r["status"].startswith("ok"))
         assert row["treatment_median_pppn"] == 200.0
         assert row["treatment_n"] == 5
 
@@ -180,7 +180,7 @@ class TestProductFilter:
             *[make_row(line=CCL, price_pppn=100.0) for _ in range(5)],
         ])
         res = an.peer_gap(conn, tier="weekly-full", min_cells=5)
-        row = next(r for r in res.rows if r["status"] == "ok")
+        row = next(r for r in res.rows if r["status"].startswith("ok"))
         assert row["treatment_median_pppn"] == 200.0
         assert any("3 are unclassified" in c for c in res.basis.caveats)
 
@@ -191,7 +191,7 @@ class TestProductFilter:
             *[make_row(line=CCL, price_pppn=100.0) for _ in range(5)],
         ])
         res = an.peer_gap(conn, tier="weekly-full", min_cells=5, product="all")
-        row = next(r for r in res.rows if r["status"] == "ok")
+        row = next(r for r in res.rows if r["status"].startswith("ok"))
         assert row["treatment_n"] == 10
 
     def test_unknown_product_filter_is_rejected(self, conn):
@@ -324,3 +324,87 @@ class TestSoloOnlyIsNotDepletion:
                                           product="cruise_only")
         assert allp.rows[0]["cells"] == 8
         assert cruise.rows[0]["cells"] == 3
+
+
+class TestSampleCaveatsTravelWithTheRow:
+    """A caveat in the footer gets separated from the number when someone
+    copies a row into a deck. These live in the row."""
+
+    def test_thin_and_very_thin_are_graded(self):
+        assert an.sample_flag(100, 100, 5) == "ok"
+        assert an.sample_flag(100, 25, 5).startswith("THIN")
+        assert an.sample_flag(8, 100, 5).startswith("VERY THIN")
+        assert an.sample_flag(3, 100, 5).startswith("INSUFFICIENT")
+
+    def test_flag_grades_the_smaller_side(self):
+        """A 900-row treatment against 6 peer rows is a 6-row comparison."""
+        assert an.sample_flag(900, 6, 5).startswith("VERY THIN")
+
+    def test_peer_gap_rows_carry_a_sample_grade(self, conn):
+        insert(conn, [
+            *[make_row(price_pppn=200.0) for _ in range(6)],
+            *[make_row(line=CCL, price_pppn=100.0) for _ in range(6)],
+        ])
+        res = an.peer_gap(conn, tier="weekly-full", min_cells=5)
+        row = next(r for r in res.rows if r["status"].startswith("ok"))
+        assert row["sample"].startswith("VERY THIN")
+
+    def test_peer_gap_reports_what_the_product_filter_removed(self, conn):
+        insert(conn, [
+            *[make_row(price_pppn=200.0) for _ in range(6)],
+            *[make_row(price_pppn=800.0, is_package=1) for _ in range(14)],
+            *[make_row(line=CCL, price_pppn=100.0) for _ in range(6)],
+        ])
+        res = an.peer_gap(conn, tier="weekly-full", min_cells=5)
+        row = next(r for r in res.rows if r["status"].startswith("ok"))
+        assert row["pkg_excluded_t"] == 14
+        assert row["pkg_excluded_pct_t"] == 70.0
+        # Heavy exclusion is said out loud in the status, not just the number.
+        assert "70.0% of treatment rows were packages" in row["status"]
+
+    def test_light_exclusion_does_not_clutter_the_status(self, conn):
+        insert(conn, [
+            *[make_row(price_pppn=200.0) for _ in range(40)],
+            *[make_row(price_pppn=800.0, is_package=1) for _ in range(2)],
+            *[make_row(line=CCL, price_pppn=100.0) for _ in range(40)],
+        ])
+        res = an.peer_gap(conn, tier="weekly-full", min_cells=5)
+        row = next(r for r in res.rows if r["status"].startswith("ok"))
+        assert row["status"] == "ok"
+        assert row["sample"] == "ok"
+
+    def test_availability_rows_carry_a_sample_grade(self, conn):
+        insert(conn, [make_row() for _ in range(7)])
+        res = an.availability_snapshot(conn, tier="weekly-full")
+        assert res.rows[0]["sample"].startswith("VERY THIN")
+
+    def test_availability_reports_excluded_packages_per_row(self, conn):
+        insert(conn, [
+            *[make_row() for _ in range(10)],
+            *[make_row(is_package=1) for _ in range(30)],
+        ])
+        res = an.availability_snapshot(conn, tier="weekly-full",
+                                       product="cruise_only")
+        row = res.rows[0]
+        assert row["cells"] == 10
+        assert row["pkg_excluded"] == 30
+        assert row["pkg_excluded_pct"] == 75.0
+
+    def test_no_exclusion_columns_when_no_product_filter(self, conn):
+        insert(conn, [make_row()])
+        res = an.availability_snapshot(conn, tier="weekly-full")
+        assert "pkg_excluded" not in res.rows[0]
+
+    def test_insufficient_rows_still_report_what_was_excluded(self, conn):
+        """A cell too thin to compare is exactly where you want to know that
+        most of its rows were a product you filtered out."""
+        insert(conn, [
+            *[make_row(price_pppn=200.0) for _ in range(2)],
+            *[make_row(price_pppn=800.0, is_package=1) for _ in range(18)],
+            *[make_row(line=CCL, price_pppn=100.0) for _ in range(2)],
+        ])
+        res = an.peer_gap(conn, tier="weekly-full", min_cells=5)
+        row = res.rows[0]
+        assert "insufficient" in row["status"]
+        assert row["pkg_excluded_t"] == 18
+        assert row["pkg_excluded_pct_t"] == 90.0

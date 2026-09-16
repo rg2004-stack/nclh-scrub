@@ -123,17 +123,42 @@ jobs:
       - name: Export to JSONL
         run: python -m panel.export export --tier ${{ steps.tier.outputs.tier }}
 
+      # The whole analysis suite, every configured region, into one workbook
+      # committed in the same commit as the JSONL it was computed from. The
+      # evidence and the read on it travel together or the read goes stale.
+      #
+      # continue-on-error so a broken analysis cannot cost us the observations:
+      # the raw data still commits below, and "Fail if the report broke" at the
+      # end of the job turns the run red so the breakage is not silently worn.
+      - name: Build the analysis report
+        id: report
+        continue-on-error: true
+        run: |
+          python -m panel.report \
+            --tier ${{ steps.tier.outputs.tier }} \
+            --reason "scheduled ${{ steps.tier.outputs.tier }} run, GH run ${{ github.run_id }}" \
+            --github-summary \
+            --fail-on-analysis-error
+
       - name: Commit the export
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/observations
+          # The report step is continue-on-error, so reports/ may not exist if
+          # it died early. A missing pathspec must not cost us the observations.
+          if [ -d reports ]; then git add reports; fi
           if git diff --cached --quiet; then
             echo "no new observations to commit"
             exit 0
           fi
           n=$(git diff --cached --numstat | wc -l)
-          git commit -m "panel: ${{ steps.tier.outputs.tier }} $(date -u +%Y-%m-%d) ($n files)"
+          git commit -m "panel: ${{ steps.tier.outputs.tier }} $(date -u +%Y-%m-%d) ($n files)
+
+          Observations and the analysis workbook computed from them, in one
+          commit. A rewritten workbook is explained in reports/REGENERATIONS.jsonl.
+
+          Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
           # Another run may have landed while this one collected.
           for attempt in 1 2 3; do
             git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && break
@@ -173,6 +198,15 @@ jobs:
               echo "No database produced."
             fi
           } >> "$GITHUB_STEP_SUMMARY"
+
+      # Last, so the data is already committed and pushed. The job still goes
+      # red: a report that stopped building is a real regression, not a warning.
+      - name: Fail if the report broke
+        if: steps.report.outcome == 'failure'
+        run: |
+          echo "::error::the analysis report failed to build; observations were"
+          echo "::error::still committed. Re-run locally: python -m panel.report --tier ${{ steps.tier.outputs.tier }}"
+          exit 1
 
       - name: Upload raw archive
         if: always()

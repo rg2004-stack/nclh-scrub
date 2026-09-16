@@ -93,6 +93,28 @@ PRICE_BASIS_NOTE = (
 
 LINE_BY_NAME: dict[str, str] = {c.line: k for k, c in CAPABILITIES.items()}
 
+# Sample-size bands, reported PER ROW rather than as a footnote. A caveat that
+# lives at the bottom of the output gets separated from the number the moment
+# anyone copies a row into a deck, and these numbers are going into a deck.
+THIN_CELLS = 30        # below this, a median is indicative at best
+VERY_THIN_CELLS = 10   # below this, treat it as an anecdote
+
+# Where a product filter removed most of a region's rows, the surviving sample
+# is not just small, it is a different population from the headline row count.
+HEAVY_EXCLUSION_PCT = 40.0
+
+
+def sample_flag(treatment_n: int, peer_n: int, min_cells: int) -> str:
+    """One short verdict on whether this row can carry weight."""
+    low = min(treatment_n, peer_n)
+    if low < min_cells:
+        return f"INSUFFICIENT (n={low} < {min_cells})"
+    if low < VERY_THIN_CELLS:
+        return f"VERY THIN (n={low})"
+    if low < THIN_CELLS:
+        return f"THIN (n={low})"
+    return "ok"
+
 
 class BasisError(ValueError):
     """Raised when results resting on different evidence would be blended."""
@@ -365,6 +387,21 @@ def availability_snapshot(conn: sqlite3.Connection, *, tier: str,
                           scrape_date=scrape_date, product=product)
     basis = _basis(conn, tier, clause, args)
 
+    # Rows the product filter removed, keyed the same way as the output, so the
+    # exclusion travels in the row instead of sitting in a footnote.
+    excluded: dict[tuple, int] = {}
+    if product == "cruise_only":
+        ex_clause, ex_args = _where(tier, lines=lines, regions=regions,
+                                    scrape_date=scrape_date,
+                                    product="package_only")
+        for r in conn.execute(
+                f"""SELECT {', '.join(cols)}, COUNT(*) n
+                    FROM observations WHERE {ex_clause}
+                    GROUP BY {', '.join(str(i + 1) for i in range(len(cols)))}""",
+                ex_args):
+            key = tuple(r[g if g != "sail_month" else "sail_month"] for g in group_by)
+            excluded[key] = r["n"]
+
     rows = conn.execute(
         f"""SELECT {', '.join(cols)},
                    COUNT(*) AS cells,
@@ -410,6 +447,17 @@ def availability_snapshot(conn: sqlite3.Connection, *, tier: str,
             "mean_pppn": round(r["mean_pppn"], 2) if r["mean_pppn"] is not None else None,
             "min_pppn": round(r["min_pppn"], 2) if r["min_pppn"] is not None else None,
         })
+        if product == "cruise_only":
+            key = tuple(d[g] for g in group_by)
+            n_ex = excluded.get(key, 0)
+            d["pkg_excluded"] = n_ex
+            d["pkg_excluded_pct"] = (round(100.0 * n_ex / (cells + n_ex), 1)
+                                     if (cells + n_ex) else 0.0)
+        # Graded per row: a closed_share computed on 9 cells is an anecdote,
+        # and it should say so next to itself rather than in the notes.
+        d["sample"] = ("VERY THIN" if bookable < VERY_THIN_CELLS
+                       else "THIN" if bookable < THIN_CELLS
+                       else "ok") + f" (n={bookable})"
         out.append(d)
 
     return Result(
@@ -427,6 +475,11 @@ def availability_snapshot(conn: sqlite3.Connection, *, tier: str,
             "An unpriced cell is a cell the vendor declined to quote, usually "
             "because it is sold out; priced_share is therefore a second, "
             "independent read on depletion.",
+            f"`sample` grades each row on its bookable cell count: THIN below "
+            f"{THIN_CELLS}, VERY THIN below {VERY_THIN_CELLS}.",
+            "`pkg_excluded` is the land+cruise rows the cruise-only filter "
+            "removed from that group; where it dominates, the row describes a "
+            "much smaller product set than the region's raw size suggests.",
         ))
 
 
@@ -471,6 +524,23 @@ def peer_gap(conn: sqlite3.Connection, *, tier: str,
             FROM observations WHERE {clause} AND {col} IS NOT NULL""",
         args).fetchall()
 
+    # How many rows the product filter removed, per cell, so the reader can see
+    # the difference between "this region is small" and "this region is mostly
+    # a product we excluded". In Alaska 71% of NCL's priced rows are cruisetours.
+    excl_clause, excl_args = _where(tier, lines=lines, regions=regions,
+                                    scrape_date=scrape_date, priced_only=True,
+                                    product="package_only")
+    if nights_band:
+        excl_clause += " AND nights BETWEEN ? AND ?"
+        excl_args = [*excl_args, nights_band[0], nights_band[1]]
+    excluded: dict[tuple, int] = {}
+    if product == "cruise_only":
+        for r in conn.execute(
+                f"""SELECT line, region, {col} AS bucket, COUNT(*) n
+                    FROM observations WHERE {excl_clause} AND {col} IS NOT NULL
+                    GROUP BY line, region, bucket""", excl_args):
+            excluded[(r["line"], r["region"], r["bucket"])] = r["n"]
+
     grouped: dict[tuple[str, str], dict[str, list[float]]] = collections.defaultdict(
         lambda: collections.defaultdict(list))
     for r in rows:
@@ -481,6 +551,10 @@ def peer_gap(conn: sqlite3.Connection, *, tier: str,
                                             key=lambda kv: (str(kv[0][0]), str(kv[0][1]))):
         t = by_line.get(treatment_line, [])
         peers = [v for l in peer_lines for v in by_line.get(l, [])]
+        t_excl = excluded.get((treatment_line, region, bucket), 0)
+        p_excl = sum(excluded.get((l, region, bucket), 0) for l in peer_lines)
+        t_pct = round(100.0 * t_excl / (len(t) + t_excl), 1) if (len(t) + t_excl) else 0.0
+
         if len(t) < min_cells or len(peers) < min_cells:
             # Reported, not dropped: a thin cell is information about coverage.
             out.append({
@@ -488,6 +562,8 @@ def peer_gap(conn: sqlite3.Connection, *, tier: str,
                 "treatment_n": len(t), "peer_n": len(peers),
                 "treatment_median_pppn": None, "peer_median_pppn": None,
                 "gap_pppn": None, "gap_pct": None,
+                "pkg_excluded_t": t_excl, "pkg_excluded_pct_t": t_pct,
+                "sample": sample_flag(len(t), len(peers), min_cells),
                 "status": f"insufficient cells (need >= {min_cells} each side)",
             })
             continue
@@ -504,7 +580,10 @@ def peer_gap(conn: sqlite3.Connection, *, tier: str,
             "peer_p75_pppn": _stats(peers)["p75"],
             "gap_pppn": round(tm - pm, 2),
             "gap_pct": round((tm - pm) / pm * 100, 2) if pm else None,
-            "status": "ok",
+            "pkg_excluded_t": t_excl, "pkg_excluded_pct_t": t_pct,
+            "sample": sample_flag(len(t), len(peers), min_cells),
+            "status": ("ok" if t_pct < HEAVY_EXCLUSION_PCT
+                       else f"ok; {t_pct}% of treatment rows were packages"),
         })
 
     basis = basis.with_caveat(PRICE_BASIS_NOTE)
@@ -524,6 +603,13 @@ def peer_gap(conn: sqlite3.Connection, *, tier: str,
             "Medians, not minima: the whole point of the panel is that the "
             "minimum is contaminated by inventory mix.",
             "gap_pct > 0 means the treatment line prices above the peer set.",
+            f"`sample` grades the smaller side of each row: THIN below "
+            f"{THIN_CELLS} cells, VERY THIN below {VERY_THIN_CELLS}. It is a "
+            f"per-row column, not a footnote, so it travels with the number.",
+            "`pkg_excluded_t` / `pkg_excluded_pct_t` are the treatment rows the "
+            "cruise-only filter removed from that cell. A high percentage means "
+            "the surviving sample is a different product mix from the region's "
+            "headline row count.",
         ))
 
 

@@ -233,3 +233,7 @@ db18945684e433afeaacc7d1f39c16c89b6dea71
 
 # Derived selection inputs: rebuildable with scripts/probe_sail_dates.py
 data/sail_dates.json.bak
+
+# Ad-hoc self-serve CSV slices (panel.export csv). Regenerable on demand;
+# the committed artifacts are data/observations/ and reports/.
+outputs/

@@ -64,6 +64,8 @@ panel/
   export.py        JSONL export / rebuild -- the durable artifact
   analysis.py      the 5 spec analyses + availability snapshot, each carrying
                    the evidentiary basis it rests on (see below)
+  report.py        runs the whole suite and writes one XLSX per collection;
+                   every scheduled run ends here
   sources/ncl.py   Norwegian: URL building, parsing, collection loop
   sources/carnival.py      Carnival: paged search, parsing, collection loop
   sources/capabilities.py  what each source actually resolves (see below)
@@ -73,7 +75,10 @@ scripts/
   probe_sail_dates.py   build data/sail_dates.json, the marker sampling frame
   pick_markers.py       choose daily-marker itineraries from that frame
   backfill_packages.py  classify pre-v4 rows as cruise-only vs land+cruise
-tests/             193 tests, run against archived real responses in fixtures/
+tests/             296 tests, run against archived real responses in fixtures/
+reports/           one workbook per collection, committed with the JSONL it was
+                   computed from. Derived, regenerable, and never rewritten
+                   silently -- see REGENERATIONS.jsonl
 data/panel.sqlite  the panel (derived; rebuild with `panel.export rebuild`)
 data/sail_dates.json  itinerary calendar: dates, region, ship, categories,
                    product type. Committed -- it makes marker selection
@@ -487,6 +492,26 @@ itineraries. Carnival markers are provisional until a full run. `collect.yml`
 now takes a `line` input, so this backfills without re-collecting NCL:
 Actions -> Collect panel -> Run workflow -> tier `weekly-full`, line `carnival`.
 
+## Getting raw rows out
+
+```bash
+python -m panel.export csv --date 2026-09-16
+python -m panel.export csv --date 2026-09-16 --region "Southern Europe"        --line "Norwegian Cruise Line" --product cruise_only
+python -m panel.export csv --region Alaska --with-promos        --columns line,ship,sail_date,nights,cabin_category,price_pppn
+```
+
+Filters: `--tier --date --line --region --category --product --sail-from
+--sail-to --columns --with-promos`. `--line` / `--region` / `--category` repeat
+and OR together. `--product cruise_only` applies the same strict rule as the
+analysis module: `is_package = 0`, never "not 1", so an unclassified row is
+excluded rather than assumed to be a cruise.
+
+The CSV is deliberately plain -- a bare header row, UTF-8 BOM so Excel reads it
+without a text-import dance, and no comment preamble. Provenance goes to a
+`<name>.meta.json` sidecar recording the filters, row count, columns and exact
+SQL, because a filtered slice detached from what produced it is how a regional
+subset ends up quoted as though it were the whole panel. `--no-meta` skips it.
+
 ## Running an analysis
 
 ```bash
@@ -502,6 +527,67 @@ Each prints its basis and caveats above the table; `--json` emits the same
 structure for downstream use. A function that cannot be computed on the data
 available says so -- `depletion_rate` with one collection date returns
 `NOT COMPUTABLE` -- rather than returning a fabricated figure.
+
+## Every run ends in a workbook
+
+The analysis suite is not something to remember to run. Every scheduled
+collection finishes by running all six analyses across every configured region
+and committing the result next to the JSONL it was computed from, in the same
+commit:
+
+    reports/2026-09-16__weekly-full.xlsx
+    reports/2026-09-16__weekly-full.manifest.json
+
+An `Index` sheet carries the provenance (row counts, collection dates present,
+currencies, markets, sail window), a directory of the six sheets, region
+coverage **including regions that returned nothing**, and the scope
+comparability table described below. Then one sheet per analysis, each with its
+basis line and caveats above a frozen, auto-filtered table.
+
+By hand:
+
+```bash
+python -m panel.report --tier weekly-full
+python -m panel.report --tier daily-marker --scrape-date 2026-11-04
+```
+
+**Only half the workbook is about the date in its name.** The three
+cross-sectional analyses are pinned to that scrape date; the three time-series
+analyses span every collection date in the tier, because that is what makes
+them series. Every sheet states which it is, and the Index says so in a warning
+row, because a file called `2026-09-16__weekly-full.xlsx` otherwise invites the
+reading that all of it describes 16 September.
+
+### Reports are derived, so they may be regenerated -- but never silently
+
+`data/observations/*.jsonl.gz` is the observed record and is immutable. A
+report is a pure function of that record plus this code, so regenerating it is
+legitimate: a same-day single-line backfill, or a corrected analysis, genuinely
+*should* move the numbers. The rule is that the movement has to be visible.
+
+- The workbook is rewritten only when its **content** changes, compared through
+  a digest of the result rows rather than of the file bytes. An XLSX is a zip
+  whose bytes differ on every write, so a byte comparison would make every
+  rerun a diff and make a real change indistinguishable from noise.
+- When content does change, the per-sheet row-count deltas are appended to
+  `reports/REGENERATIONS.jsonl` with the reason and the before/after digests.
+  A future reader hitting a binary diff in `git log` can look up what moved.
+
+### A time series across a change in scope is not a time series
+
+`scope_drift` compares each pair of adjacent collection dates on what the
+collector actually took: sail window, region set, line set, and sailing count.
+Where those differ, every slope and index spanning the pair is measuring the
+change to the collector as well as the market, and the workbook says so on the
+sheets it invalidates rather than in a footnote.
+
+This is live right now. Between 2026-09-15 and 2026-09-16 the weekly sweep
+gained six months of near-term sailings, a fixed Carnival destination sweep and
+the Transatlantic bucket -- sailings went 887 to 1,934. The Cohort index,
+Depletion and Promo diff sheets are therefore stamped
+`COLLECTION SCOPE CHANGED BETWEEN DATES` and carry no interpretable movement
+until a run of stable-scope dates accumulates. The cross-sectional sheets are
+unaffected: one date is one date.
 
 ## Conduct
 
