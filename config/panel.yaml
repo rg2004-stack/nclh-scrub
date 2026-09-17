@@ -62,33 +62,31 @@ tiers:
     # arbitrary sailings rather than chosen strata.
     marker_itineraries:
       ncl:
+        - AQUA7MIAPOPSTTTOVNPIMIA
+        - ESCAPE7PCVPOPSTTTOVNPIPCV
+        - GETAWAY5PCVPOPNPIPCV
+        - LUNA7MIARTBBPICMACZMMIA
         - EPIC7CIVSALCTALIVVLFMRSBCN
         - GEM7RAVSPUDBVKOTCFUMSNSALCIV
         - DAWN7BCNPMIALCMOTGIBCADPRMLIS
         - PEARL7PIRJTRKAKCFUKOTDBVKOPRAV
         - STAR11BCNMOTCADCASAGAACESCTFNCLXOLIS
+        - PRIMA13CIVPMIBCNVLFLIVCIVSALMSNCFUBARDBVSPURAV
+        - SUN7CIVSALCTACFUKOTSPUKOPRAV
         - VIVA9RAVDBVBARSALCIVSPEVLFPMIBCN
-        - VIVA7GALCZMRTBBPICMAGAL
-        - AQUA7MIAPOPSTTTOVNPIMIA
+        - STAR10SOUGOTCPHHAMIJMZEELEHSOU
         - SUN10HELTLLNYNRIXKLJGDYWARCPHSOU
-        - SUN12SOULEHCOBBFSSYNHALNYC
         - BREAKAWAY7BOSHALWRFBOS
-        - PEARL7PHLWRFPHL
-        - AQUA5NYCWRFNYC
-        - STAR11LISLPASCTSCPFNCLXOLCGLEHSOU
-        - EPIC7BCNMRSVLFLIVMSNSALCIV
-        - GEM7CIVSALCTACFUKOTZADVCERAV
-        - DAWN7BCNPMIVLCMOTGIBCADPRMLIS
+        - ENCORE7SEAJNUSGYKTNVICSEA
       carnival:
-        - MEP
         - BME
         - CW6
         - GLB
         - WC2
-        - BAW
-        - BHP
-        - BMW
-        - BRD
+        - BA9
+        - MEP
+        - BHR
+        - GA2
 lines:
   ncl:
     line: "Norwegian Cruise Line"
@@ -139,6 +137,7 @@ lines:
       - Bermuda
       - Alaska
 
+
   # ---------------------------------------------------------------- control
   # Royal is a CONTROL line, not a peer: one floor price per sailing -- the
   # number the published sell-side series carry -- so the panel can show the
@@ -166,6 +165,32 @@ lines:
   # needs is Royal's client-side search API, which has not been located on an
   # allowed path and would require its own robots check on whatever host it
   # lives on.
+    # Hull class, mapped explicitly. The booking curve controls region,
+    # itinerary length, cabin grade and season; hull class is the remaining
+    # composition axis, and the two fleets are not aged alike.
+    ship_classes:
+      Prima: [Norwegian Prima, Norwegian Viva, Norwegian Aqua, Norwegian Luna,
+              Norwegian Aura]
+      Breakaway-Plus: [Norwegian Escape, Norwegian Joy, Norwegian Bliss,
+                       Norwegian Encore]
+      Breakaway: [Norwegian Breakaway, Norwegian Getaway]
+      Jewel: [Norwegian Jewel, Norwegian Jade, Norwegian Pearl, Norwegian Gem]
+      Dawn: [Norwegian Dawn, Norwegian Star]
+      Sun: [Norwegian Sun]
+      Epic: [Norwegian Epic]
+    # Hull GENERATION is the cross-line-comparable axis: class names never
+    # match between lines (Prima is not Excel), so a class split makes the
+    # peer premium uncomputable. Generation is a judgement, stated here rather
+    # than buried in code, and it is what the ship-mix objection needs.
+    ship_generation:
+      Prima: newest
+      Breakaway-Plus: recent
+      Breakaway: recent
+      Epic: mid
+      Jewel: older
+      Dawn: older
+      Sun: older
+
   royal:
     line: "Royal Caribbean International"
     brand: "Royal Caribbean"
@@ -197,6 +222,7 @@ lines:
       Alaska: /alaska-cruises
       Southern Europe: /mediterranean-cruises
       Northern Europe: /european-cruises
+
 
   carnival:
     line: "Carnival Cruise Line"
@@ -281,3 +307,23 @@ lines:
       # These are the Civitavecchia/Barcelona October-November 2026 departures:
       # repositioning crossings, not Mediterranean cruises.
       - Transatlantic
+
+    ship_classes:
+      Excel: [Mardi Gras, Carnival Celebration, Carnival Jubilee,
+              Carnival Festivale, Carnival Tropicale]
+      Vista: [Carnival Vista, Carnival Horizon, Carnival Panorama,
+              Carnival Firenze, Carnival Venezia, Carnival Luminosa]
+      Dream: [Carnival Dream, Carnival Magic, Carnival Breeze]
+      Conquest: [Carnival Conquest, Carnival Glory, Carnival Valor,
+                 Carnival Liberty, Carnival Freedom, Carnival Sunshine,
+                 Carnival Sunrise]
+      Spirit: [Carnival Spirit, Carnival Pride, Carnival Legend,
+               Carnival Miracle]
+      Fantasy: [Carnival Elation, Carnival Paradise]
+    ship_generation:
+      Excel: newest
+      Vista: recent
+      Dream: mid
+      Conquest: older
+      Spirit: older
+      Fantasy: older

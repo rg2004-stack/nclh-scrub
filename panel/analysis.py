@@ -38,6 +38,7 @@ from __future__ import annotations
 import argparse
 import collections
 import datetime
+import functools
 import json
 import os
 import sqlite3
@@ -1272,6 +1273,58 @@ def dtd_band(days: int | None, edges: Sequence[int] = DTD_EDGES) -> str | None:
     return f"{edges[-1]}+"
 
 
+def ship_class(line: str, ship: str | None) -> str:
+    """Hull class for a ship, from config. "?" when not mapped.
+
+    Region, length, cabin grade and season are controlled elsewhere; hull class
+    is the remaining composition question, because a Prima-class ship is a
+    different product from thirty-year-old tonnage and the two lines' fleets
+    are not aged alike. Mapped explicitly in config/panel.yaml, never guessed
+    from the name -- an unmapped ship reports "?" so it is visible rather than
+    silently pooled.
+    """
+    return _ship_class_map().get((line, (ship or "").strip()), "?")
+
+
+def ship_generation(line: str, ship: str | None) -> str:
+    """Hull generation: the cross-line-comparable version of ship class.
+
+    Class names never match between lines, so grouping on class makes a peer
+    premium uncomputable. Generation ("newest" / "recent" / "mid" / "older")
+    is mapped per line in config and IS comparable, which is what answers the
+    ship-mix objection: Prima-class against Excel-class, not against a blend.
+    """
+    return _ship_generation_map().get(
+        (line, ship_class(line, ship)), "?")
+
+
+@functools.lru_cache(maxsize=1)
+def _ship_generation_map() -> dict[tuple[str, str], str]:
+    from panel.config import DEFAULT_CONFIG_PATH, load_config
+    try:
+        cfg = load_config(DEFAULT_CONFIG_PATH)
+    except (OSError, ValueError):
+        return {}
+    return {(lc.line, klass): gen
+            for lc in cfg.lines.values()
+            for klass, gen in (lc.ship_generation or {}).items()}
+
+
+@functools.lru_cache(maxsize=1)
+def _ship_class_map(config_path: str | None = None) -> dict[tuple[str, str], str]:
+    from panel.config import DEFAULT_CONFIG_PATH, load_config
+    try:
+        cfg = load_config(config_path or DEFAULT_CONFIG_PATH)
+    except (OSError, ValueError):
+        return {}
+    out: dict[tuple[str, str], str] = {}
+    for line_cfg in cfg.lines.values():
+        for klass, ships in (line_cfg.ship_classes or {}).items():
+            for ship in ships:
+                out[(line_cfg.line, ship)] = klass
+    return out
+
+
 def nights_band(nights: int | None, edges: Sequence[int] = NIGHTS_EDGES) -> str:
     """Label the itinerary-length band, or "?" when the length is unknown."""
     if not nights:
@@ -1298,6 +1351,9 @@ def booking_curve(conn: sqlite3.Connection, *, tier: str,
                   edges: Sequence[int] = DTD_EDGES,
                   by_nights: bool = True,
                   by_region: bool = False,
+                  by_ship_class: bool = False,
+                  by_ship_generation: bool = False,
+                  index_base_band: str | None = None,
                   nights: tuple[int, int] | None = None,
                   peer_comparable: bool = True,
                   min_sailings: int = 5) -> Result:
@@ -1364,8 +1420,8 @@ def booking_curve(conn: sqlite3.Connection, *, tier: str,
             "peer_comparable=False to see a line's own book instead.")
 
     rows = conn.execute(
-        f"""SELECT line, sailing_id, sail_date, nights, region, cabin_category,
-                   price_pppn,
+        f"""SELECT line, sailing_id, sail_date, nights, region, ship,
+                   cabin_category, price_pppn,
                    availability_status, promo_hash,
                    CAST(julianday(sail_date) - julianday(scrape_date) AS INTEGER) AS dtd
             FROM observations WHERE {clause}""", args).fetchall()
@@ -1381,7 +1437,7 @@ def booking_curve(conn: sqlite3.Connection, *, tier: str,
             "line": r["line"], "dtd": r["dtd"], "sail_date": r["sail_date"],
             "prices": [], "bookable": 0, "sold_out": 0, "closed": 0,
             "cells": 0, "promo": 0, "nights": r["nights"],
-            "region": r["region"],
+            "region": r["region"], "ship": r["ship"],
         })
         s_["cells"] += 1
         status = r["availability_status"]
@@ -1407,6 +1463,9 @@ def booking_curve(conn: sqlite3.Connection, *, tier: str,
         if band is None:
             continue
         key = ((s_["line"], band)
+               + ((ship_class(s_["line"], s_["ship"]),) if by_ship_class else ())
+               + ((ship_generation(s_["line"], s_["ship"]),)
+                  if by_ship_generation else ())
                + ((s_["region"],) if by_region else ())
                + ((nights_band(s_["nights"]),) if by_nights else ())
                + ((period(s_["sail_date"]),) if split else ()))
@@ -1438,6 +1497,10 @@ def booking_curve(conn: sqlite3.Connection, *, tier: str,
         sail_dates = sorted(x["sail_date"] for x in g)
         nights = sorted(x["nights"] for x in g if x["nights"])
         d = {"line": key[0], "dtd_band": key[1]}
+        if by_ship_class:
+            d["ship_class"] = rest.pop(0)
+        if by_ship_generation:
+            d["ship_generation"] = rest.pop(0)
         if by_region:
             d["region"] = rest.pop(0)
         if by_nights:
@@ -1467,16 +1530,65 @@ def booking_curve(conn: sqlite3.Connection, *, tier: str,
 
     # premium vs peer, within the same band and period
     def cell_key(r):
-        return (r["dtd_band"], r.get("region"), r.get("nights_band"),
-                r.get("sail_period"))
+        return (r["dtd_band"], r.get("ship_class"), r.get("ship_generation"),
+                r.get("region"),
+                r.get("nights_band"), r.get("sail_period"))
 
     peers = {cell_key(r): r for r in out if r["line"] == peer_line}
     for r in out:
-        p = peers.get(cell_key(r))
+        pr = peers.get(cell_key(r))
         r["premium_vs_peer_pct"] = (
-            round(100 * (r["median_pppn"] - p["median_pppn"]) / p["median_pppn"], 1)
-            if r["line"] == treatment_line and p and p["median_pppn"]
+            round(100 * (r["median_pppn"] - pr["median_pppn"]) / pr["median_pppn"], 1)
+            if r["line"] == treatment_line and pr and pr["median_pppn"]
             and r["median_pppn"] else None)
+
+    # -- index each line to its OWN far-out band ---------------------------
+    #
+    # The LEVEL of NCL's premium is contestable: its fare bundles More at Sea,
+    # so part of the gap is inclusions rather than price. Indexing each line to
+    # its own far-out band removes the level entirely and leaves the SHAPE --
+    # how far each line's curve falls as departure approaches. A bundle cannot
+    # explain a line discounting against itself.
+    usable = [r for r in out if r["median_pppn"] and not
+              r["sample"].startswith("INSUFFICIENT")]
+
+    # The base band must be COMMON to every line in a cell, or the two index
+    # columns are rebased to different horizons and cannot be read against each
+    # other -- which is the whole point of the exhibit. Pick the furthest band
+    # where every line present has a usable sample; each line then indexes to
+    # its OWN median in that band.
+    def peer_key(r):
+        return (r.get("ship_class"), r.get("ship_generation"), r.get("region"),
+                r.get("nights_band"), r.get("sail_period"))
+
+    lines_present: dict[tuple, set] = collections.defaultdict(set)
+    for r in usable:
+        lines_present[peer_key(r)].add(r["line"])
+    by_band: dict[tuple, dict[str, set]] = collections.defaultdict(
+        lambda: collections.defaultdict(set))
+    for r in usable:
+        by_band[peer_key(r)][r["dtd_band"]].add(r["line"])
+
+    common_base: dict[tuple, str] = {}
+    for k, bands in by_band.items():
+        want = lines_present[k]
+        shared = [b for b, ls in bands.items() if ls >= want]
+        pool = shared or list(bands)          # fall back to any usable band
+        if index_base_band is not None:
+            match = [b for b in bands if b.strip() == index_base_band.strip()]
+            pool = match or pool
+        common_base[k] = max(pool, key=_band_order)
+
+    bases: dict[tuple, dict[str, Any]] = {}
+    for r in usable:
+        if r["dtd_band"] == common_base.get(peer_key(r)):
+            bases[(r["line"],) + peer_key(r)] = r
+    for r in out:
+        b = bases.get((r["line"],) + peer_key(r))
+        r["index_base_band"] = b["dtd_band"] if b else None
+        r["index_vs_own_far_band"] = (
+            round(100 * r["median_pppn"] / b["median_pppn"], 1)
+            if b and b["median_pppn"] and r["median_pppn"] else None)
 
     both = {cell_key(r) for r in out if r["line"] == treatment_line} & set(peers)
     if not both:
@@ -1497,6 +1609,12 @@ def booking_curve(conn: sqlite3.Connection, *, tier: str,
         "share would read structurally higher for NCL regardless of demand.",
         f"bands never straddle 120 days, NCLH's stated final-payment boundary; "
         f"edges are {list(edges)}.",
+        "index_vs_own_far_band rebases each line to its own median in a base "
+        "band COMMON to every line in the cell (100 = that band). It answers the bundle "
+        "objection: inclusions shift a line's LEVEL, not the shape of its own "
+        "decline, so a line falling against itself is discounting whatever is "
+        "in the fare. index_base_band names the band each row is indexed to -- "
+        "rows with different bases are not comparable to each other.",
         "premium_vs_peer_pct compares medians inside the same band, so it is "
         "not contaminated by the two lines deploying at different horizons.",
         "CONFOUND: a band is a horizon, not a season. Days-to-departure is "

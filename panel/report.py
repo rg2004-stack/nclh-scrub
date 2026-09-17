@@ -108,6 +108,14 @@ SUITE: tuple[SheetSpec, ...] = (
               "departure, per region: 7-8 night, cruise-only, suites and "
               "non-peer-comparable cabins excluded. Bands are 15 days near "
               "departure, where fares move, and widen further out."),
+    SheetSpec("curve-by-hull", "Curve by hull gen", CROSS_SECTION,
+              lambda conn, **kw: an.booking_curve(
+                  conn, **{**kw, "regions": ["Caribbean"], "nights": (7, 8),
+                           "by_ship_generation": True}),
+              "The same curve holding hull GENERATION fixed -- NCL's newest "
+              "tonnage against Carnival's newest, not against a blend. Class "
+              "names never match across lines, so generation is the "
+              "comparable axis and it is mapped explicitly in config."),
     SheetSpec("final-payment", "Final payment", CROSS_SECTION,
               lambda conn, **kw: an.final_payment_test(
                   conn, **{**kw, "regions": ["Caribbean"], "nights": (7, 8),

@@ -48,14 +48,24 @@ from typing import Mapping
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-PRIORITY_REGIONS = ["Southern Europe", "Caribbean"]   # weighted, per the spec
+PRIORITY_REGIONS = ["Caribbean", "Southern Europe"]  # Caribbean first:
+# it is the only region carrying both lines at depth, so it is the only one
+# that can identify a cross-line test. Southern Europe stays weighted for
+# the NCL-only series the pitch also needs.
 OTHER_REGIONS = ["Northern Europe", "Bermuda", "Alaska"]
 CATEGORIES = ("inside", "oceanview", "balcony", "suite")
 TARGET_TOTAL = 26           # midpoint of the spec's 20-30
-NEAR_TERM = ("2026-10-01", "2026-12-31")
+# The window markers are selected over. Defaults to the daily tier's own
+# rolling horizon, so the picker and the collector can never disagree about
+# what "near term" means.
+NEAR_TERM = ("2026-10-01", "2026-12-31")     # overwritten in main() from config
+FINAL_PAYMENT_DAYS = 120
 EVENT_DATE = datetime.date(2026, 11, 4)
 EVENT_DAYS = 14
 CALENDAR_PATH = os.path.join("data", "sail_dates.json")
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from panel.config import load_config  # noqa: E402
 
 
 def event_window() -> tuple[str, str]:
@@ -65,11 +75,38 @@ def event_window() -> tuple[str, str]:
 
 
 def split_dates(dates) -> tuple[list[str], list[str]]:
-    """(near-term departures, earnings-window departures) from a date list."""
+    """(in-window departures, earnings-window departures) from a date list."""
     lo, hi = event_window()
     ds = sorted({str(d)[:10] for d in dates or ()} - {""})
     return ([d for d in ds if NEAR_TERM[0] <= d <= NEAR_TERM[1]],
             [d for d in ds if lo <= d <= hi])
+
+
+def straddle_counts(dates, today: datetime.date | None = None
+                    ) -> tuple[int, int]:
+    """(departures inside final payment, departures outside it), in window.
+
+    An itinerary is only useful for the 120-day test if the SAME itinerary has
+    sailings on both sides of the boundary. One that sits wholly inside it, as
+    every marker picked from an Oct-Dec 2026 frame did, can never identify the
+    discontinuity however many sailings it has.
+    """
+    today = today or datetime.date.today()
+    inside = outside = 0
+    for d in sorted({str(x)[:10] for x in dates or ()} - {""}):
+        if not (NEAR_TERM[0] <= d <= NEAR_TERM[1]):
+            continue
+        try:
+            dtd = (datetime.date.fromisoformat(d) - today).days
+        except ValueError:
+            continue
+        if dtd < 0:
+            continue
+        if dtd < FINAL_PAYMENT_DAYS:
+            inside += 1
+        else:
+            outside += 1
+    return inside, outside
 
 
 # -- candidate frames -------------------------------------------------------
@@ -126,31 +163,47 @@ def ncl_candidates(calendar: dict[str, dict], panel_codes: set[str]) -> list[dic
     return out
 
 
-def carnival_candidates(conn: sqlite3.Connection,
-                        dates: dict[str, set[str]]) -> list[dict]:
+def panel_candidates(conn: sqlite3.Connection,
+                     line_like: str = "%") -> list[dict]:
+    """Candidates straight from the weekly panel, for any line.
+
+    The panel now spans Oct 2026 - Oct 2028 for every collected line, so it is
+    a better frame than the near-term probe file it replaces: it carries real
+    sail dates, regions, cabin ladders and the package flag for both lines, and
+    it is refreshed by every weekly run rather than by a separate script.
+    """
     rows = conn.execute(
-        """SELECT line, itinerary_code, region,
+        """SELECT line, itinerary_code, region, MAX(ship) ship,
                   COUNT(DISTINCT cabin_category) cats,
                   COUNT(DISTINCT sailing_id) sailings,
-                  MAX(ship) ship
+                  MAX(COALESCE(is_package, 0)) is_package
            FROM observations
-           WHERE line LIKE 'Carnival%'
-             AND itinerary_code IS NOT NULL AND region IS NOT NULL
-           GROUP BY line, itinerary_code, region"""
-    ).fetchall()
+           WHERE line LIKE ? AND itinerary_code IS NOT NULL
+             AND region IS NOT NULL
+             AND scrape_date = (SELECT MAX(scrape_date) FROM observations
+                                WHERE tier = 'weekly-full')
+           GROUP BY line, itinerary_code, region""", (line_like,)).fetchall()
     out = []
     for r in rows:
-        near, event = split_dates(dates.get(r["itinerary_code"], ()))
+        dates = [d[0] for d in conn.execute(
+            "SELECT DISTINCT sail_date FROM observations "
+            "WHERE itinerary_code = ? AND line = ?",
+            (r["itinerary_code"], r["line"]))]
+        near, event = split_dates(dates)
+        inside, outside = straddle_counts(dates)
         cats = [c[0] for c in conn.execute(
             "SELECT DISTINCT cabin_category FROM observations "
-            "WHERE itinerary_code = ? AND cabin_category IS NOT NULL",
-            (r["itinerary_code"],))]
+            "WHERE itinerary_code = ? AND line = ? AND cabin_category IS NOT NULL",
+            (r["itinerary_code"], r["line"]))]
         out.append({
             "line": r["line"], "itinerary_code": r["itinerary_code"],
             "region": r["region"], "ship": r["ship"],
             "categories": sorted(cats), "cats": r["cats"],
             "near_term": len(near), "event": len(event),
-            "sailings": r["sailings"], "in_panel": True, "is_package": 0,
+            "inside_fp": inside, "outside_fp": outside,
+            "straddles": bool(inside and outside),
+            "sailings": r["sailings"], "in_panel": True,
+            "is_package": r["is_package"],
         })
     return out
 
@@ -168,7 +221,12 @@ def choose(cands: list[dict], target: int = TARGET_TOTAL) -> list[dict]:
         # Earnings-window coverage is the scarcest and most valuable property,
         # then the near-term run length, then the cabin ladder.
         c["score"] = (
-            min(c["event"], 4) * 10
+            # An itinerary that cannot be observed on both sides of final
+            # payment cannot identify the 120-day test, whatever else it has.
+            (40 if c.get("straddles") else 0)
+            + min(c.get("inside_fp", 0), 6) * 3
+            + min(c.get("outside_fp", 0), 6) * 3
+            + min(c["event"], 4) * 10
             + min(c["near_term"], 8) * 5
             + c["cats"] * 6
             + (2 if c["in_panel"] else 0)     # continuity with weekly-full
@@ -199,14 +257,33 @@ def choose(cands: list[dict], target: int = TARGET_TOTAL) -> list[dict]:
         pool = by_region[region]
         budget = quota.get(region, 0)
         picked, seen_ships = [], set()
+        # A cross-line test needs BOTH lines in the region. Reserve half the
+        # budget per line before the open round, otherwise the line with more
+        # itineraries takes the whole region and the region can no longer
+        # identify anything: Caribbean came back 8 Carnival to 1 NCL without
+        # this, despite 31 eligible NCL itineraries.
+        if region in PRIORITY_REGIONS:
+            for line in sorted({c["line"] for c in pool}):
+                floor = max(1, budget // 2)
+                for c in [x for x in pool if x["line"] == line]:
+                    if sum(1 for x in picked if x["line"] == line) >= floor:
+                        break
+                    key = (c["line"], c["ship"])
+                    if key in seen_ships:
+                        continue
+                    seen_ships.add(key)
+                    picked.append(c)
         for c in pool:
             if len(picked) >= budget:
                 break
+            if any(c is x for x in picked):
+                continue
             key = (c["line"], c["ship"])
             if key in seen_ships and len(picked) >= budget // 2:
                 continue
             seen_ships.add(key)
             picked.append(c)
+        picked = picked[:budget]
         spare += budget - len(picked)
         chosen.extend(picked)
 
@@ -236,6 +313,10 @@ def main() -> int:
     ap.add_argument("--config", default=os.path.join("config", "panel.yaml"))
     ap.add_argument("--calendar", default=CALENDAR_PATH)
     ap.add_argument("--target", type=int, default=TARGET_TOTAL)
+    ap.add_argument("--window-start", default=None,
+                    help="override the selection window (default: the "
+                         "daily-marker tier's rolling horizon)")
+    ap.add_argument("--window-end", default=None)
     ap.add_argument("--write", action="store_true",
                     help="write the selection into the config file")
     args = ap.parse_args()
@@ -243,16 +324,22 @@ def main() -> int:
     conn = sqlite3.connect(args.db)
     conn.row_factory = sqlite3.Row
 
-    calendar = load_calendar(args.calendar)
-    if not calendar:
-        print(f"No itinerary calendar at {args.calendar}.")
-        print("Run: python scripts/probe_sail_dates.py")
-        return 1
-    panel_codes = {r[0] for r in conn.execute(
-        "SELECT DISTINCT itinerary_code FROM observations WHERE line LIKE 'Norwegian%'")}
-    raw_dates = raw_archive_dates()
+    # The selection window is the daily tier's OWN rolling horizon, so picker
+    # and collector cannot disagree about what the tier covers. The previous
+    # hardcoded Oct-Dec 2026 frame is exactly why only 2 of 17 NCL markers had
+    # a Jan-Apr 2027 sailing: NCL itinerary codes are season-specific, so a
+    # frame that stops in December selects codes that stop in December.
+    global NEAR_TERM
+    cfg = load_config(args.config)
+    NEAR_TERM = cfg.tier("daily-marker").resolve_window()
+    if args.window_start:
+        NEAR_TERM = (args.window_start, args.window_end or NEAR_TERM[1])
 
-    cands = ncl_candidates(calendar, panel_codes) + carnival_candidates(conn, raw_dates)
+    cands = panel_candidates(conn)
+    if not cands:
+        print(f"No weekly-full observations in {args.db}; "
+              "run a collection first (or rebuild from JSONL).")
+        return 1
     eligible = [c for c in cands if c["near_term"]]
 
     lo, hi = event_window()
@@ -323,12 +410,22 @@ def main() -> int:
         print(f"  not in the weekly-full panel     : {len(off_panel)}"
               " (near-term only, no Jan-Aug 2027 baseline)")
 
-    unmapped = sorted({d for rec in calendar.values() if not rec.get("region")
-                       for d in rec.get("destinations") or ()})
-    if unmapped:
-        print(f"\n  itineraries excluded for an unmapped region: "
-              f"{sum(1 for r in calendar.values() if not r.get('region'))}")
-        print(f"  unmapped destination codes: {', '.join(unmapped)}")
+    # Straddling the boundary is what this tier exists for, so report it.
+    straddling = [c for c in chosen if c.get("straddles")]
+    print(f"\n  markers straddling the {FINAL_PAYMENT_DAYS}-day boundary: "
+          f"{len(straddling)} of {len(chosen)}")
+    per_rl = collections.defaultdict(lambda: collections.Counter())
+    for c in straddling:
+        per_rl[c["region"]][brand(c["line"])] += 1
+    for region in sorted(per_rl):
+        counts = dict(per_rl[region])
+        tag = "both lines" if len(counts) > 1 else "ONE LINE ONLY"
+        print(f"     {region:<16} {counts}  <- {tag}")
+    thin = [r for r, cts in per_rl.items() if len(cts) < 2]
+    if thin:
+        print("     NOTE: " + ", ".join(thin) + " cannot identify the "
+              f"{FINAL_PAYMENT_DAYS}-day test; it needs both lines on both "
+              "sides of the boundary.")
 
     per_line: dict[str, list[str]] = collections.defaultdict(list)
     for c in chosen:

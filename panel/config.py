@@ -69,6 +69,12 @@ class LineConfig:
     # floor. Cabin-level paths are disallowed by robots.txt and are absent
     # from this map by design, not by oversight.
     landing_pages: dict[str, str] = field(default_factory=dict)
+    # class -> [ship names]. Hull class is the one composition axis the curve
+    # does not otherwise control, and it is mapped explicitly rather than
+    # inferred from the ship name.
+    ship_classes: dict[str, list[str]] = field(default_factory=dict)
+    # class -> generation label, comparable ACROSS lines.
+    ship_generation: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass
@@ -126,6 +132,10 @@ def load_config(path: str | os.PathLike[str] = DEFAULT_CONFIG_PATH) -> Config:
             dest_codes=list(raw.get("dest_codes") or []),
             landing_pages={str(k): str(v) for k, v
                            in (raw.get("landing_pages") or {}).items()},
+            ship_classes={str(k): [str(x) for x in (v or [])]
+                          for k, v in (raw.get("ship_classes") or {}).items()},
+            ship_generation={str(k): str(v) for k, v
+                             in (raw.get("ship_generation") or {}).items()},
         )
 
     tiers: dict[str, TierConfig] = {}

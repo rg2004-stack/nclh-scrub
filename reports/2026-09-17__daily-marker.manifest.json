@@ -1,6 +1,6 @@
 {
- "digest": "fd2772cdf05b6265b7d5a75d6aacd02c684e6101ef29eb4465e0edb251d9e941",
- "generated_at_utc": "2026-09-17T20:11:08+00:00",
+ "digest": "30aede4e525b14da2f2bd6cbd2db7eaf4491447dc2bfb42389bef96ca14edf0e",
+ "generated_at_utc": "2026-09-17T21:26:12+00:00",
  "regions": [
   "Caribbean",
   "Southern Europe",
@@ -21,6 +21,10 @@
   },
   "cohort-index": {
    "rows": 98,
+   "status": "ok"
+  },
+  "curve-by-hull": {
+   "rows": 5,
    "status": "ok"
   },
   "depletion": {

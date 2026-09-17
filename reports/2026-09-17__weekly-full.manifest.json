@@ -1,6 +1,6 @@
 {
- "digest": "d29b8f5d169a1b2226f042a7938f9ae64dca05d90a7061ce4971d87450afe1a6",
- "generated_at_utc": "2026-09-17T20:11:07+00:00",
+ "digest": "15d05a7973d0373e27c3c3a1864de78c31ebba77cfcd36023dd69db88c33117a",
+ "generated_at_utc": "2026-09-17T21:26:11+00:00",
  "regions": [
   "Caribbean",
   "Southern Europe",
@@ -22,6 +22,10 @@
   "cohort-index": {
    "rows": 1077,
    "status": "COLLECTION SCOPE CHANGED BETWEEN DATES"
+  },
+  "curve-by-hull": {
+   "rows": 116,
+   "status": "ok"
   },
   "depletion": {
    "rows": 44,
