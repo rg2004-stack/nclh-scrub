@@ -1,6 +1,6 @@
 {
- "digest": "7f79151bfe7414f31f864aa0404a4ad678abf18451f848b7c72dce048db57f51",
- "generated_at_utc": "2026-09-17T19:12:34+00:00",
+ "digest": "d29b8f5d169a1b2226f042a7938f9ae64dca05d90a7061ce4971d87450afe1a6",
+ "generated_at_utc": "2026-09-17T20:11:07+00:00",
  "regions": [
   "Caribbean",
   "Southern Europe",
@@ -15,6 +15,10 @@
    "rows": 44,
    "status": "ok"
   },
+  "booking-curve": {
+   "rows": 69,
+   "status": "ok"
+  },
   "cohort-index": {
    "rows": 1077,
    "status": "COLLECTION SCOPE CHANGED BETWEEN DATES"
@@ -25,6 +29,10 @@
   },
   "earnings-window": {
    "rows": 44,
+   "status": "ok"
+  },
+  "final-payment": {
+   "rows": 28,
    "status": "ok"
   },
   "peer-gap": {

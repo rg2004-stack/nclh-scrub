@@ -342,7 +342,7 @@ class CarnivalSource:
         result = CollectResult()
         now = utcnow()
         scrape_ts, scrape_date = iso(now), now.strftime("%Y-%m-%d")
-        window = (tier_cfg.sail_window_start, tier_cfg.sail_window_end)
+        window = tier_cfg.resolve_window(now.date())
 
         page_size = self.line_cfg.search_page_size
         done = self.store.completed_itineraries(tier, self.line_cfg.line, scrape_date)

@@ -40,9 +40,15 @@ tiers:
 
   daily-marker:
     # Near-term control cohort: reprices faster than far-out sailings.
+    # ROLLING horizon, not fixed dates. Set 2026-09-17. A fixed end date walks
+    # toward the run date: the original 2026-12-31 already capped this tier at
+    # 105 days out, entirely INSIDE the 120-day final-payment boundary, so the
+    # daily tier could only ever see one side of it. 240 days keeps the
+    # requested 210-day view permanently, whatever the run date, and keeps the
+    # boundary comfortably inside scope. Same marker itineraries and the same
+    # request count -- only more of each itinerary's sailings are kept.
     sail_window:
-      start: "2026-10-01"
-      end: "2026-12-31"
+      horizon_days: 240
     # Restrict to the marker list below plus anything inside the earnings window.
     marker_only: true
     event_date: "2026-11-04"     # NCLH Q3 print

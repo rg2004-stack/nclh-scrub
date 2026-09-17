@@ -16,6 +16,7 @@ import pytest
 
 from panel import normalize as norm
 from panel.config import TierConfig, load_config
+from panel import analysis as an
 from panel.sources import carnival, ncl
 from panel.sources.base import CollectResult
 
@@ -38,10 +39,26 @@ class TestShippedWindow:
         assert months[0] == "Oct-2026" and months[-1] == "Oct-2028"
         assert len(months) == 25
 
-    def test_daily_marker_window_is_untouched(self):
+    def test_daily_marker_window_is_a_rolling_horizon(self):
+        """Fixed calendar bounds go stale. The daily tier exists to watch
+        sailings cross final payment, and a fixed end date walks toward the run
+        date until the far side of the boundary drops out of scope."""
+        import datetime
         tier = load_config("config/panel.yaml").tier("daily-marker")
-        assert (tier.sail_window_start, tier.sail_window_end) == (
-            "2026-10-01", "2026-12-31")
+        assert tier.horizon_days is not None, "daily tier must roll, not be pinned"
+        for run_day in (datetime.date(2026, 9, 17), datetime.date(2027, 6, 1),
+                        datetime.date(2030, 1, 1)):
+            start, end = tier.resolve_window(run_day)
+            span = (datetime.date.fromisoformat(end)
+                    - datetime.date.fromisoformat(start)).days
+            assert start == run_day.isoformat()
+            assert span >= 210, f"{run_day}: only {span}d of horizon"
+            assert span > an.FINAL_PAYMENT_DAYS
+
+    def test_weekly_window_stays_pinned_to_the_vendor_horizon(self):
+        tier = load_config("config/panel.yaml").tier("weekly-full")
+        assert tier.horizon_days is None
+        assert tier.resolve_window() == ("2026-10-01", "2028-10-31")
 
 
 # -- 2. counting what the window drops ---------------------------------------

@@ -310,7 +310,7 @@ class NCLSource:
         if tier_cfg.marker_only and markers:
             return markers
 
-        months = months_in_window(tier_cfg.sail_window_start, tier_cfg.sail_window_end)
+        months = months_in_window(*tier_cfg.resolve_window())
         page_size = self.line_cfg.search_page_size
         cap = self.line_cfg.max_itineraries
         codes: list[str] = []
@@ -377,7 +377,7 @@ class NCLSource:
         print(f"  {len(codes)} itineraries in scope, "
               f"{len(done)} already captured today, {len(todo)} to fetch")
 
-        window = (tier_cfg.sail_window_start, tier_cfg.sail_window_end)
+        window = tier_cfg.resolve_window(now.date())
         for index, code in enumerate(todo, 1):
             result.sailings_attempted += 1
             url = self.sailings_url(code)

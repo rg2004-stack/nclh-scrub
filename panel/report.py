@@ -100,6 +100,22 @@ SUITE: tuple[SheetSpec, ...] = (
               an.availability_snapshot,
               "Inventory mix per group. The denominator that separates "
               "'price rose' from 'the cheap cabins are gone'."),
+    SheetSpec("booking-curve", "Booking curve", CROSS_SECTION,
+              # run_suite passes regions; the curve deliberately overrides it.
+              lambda conn, **kw: an.booking_curve(
+                  conn, **{**kw, "nights": (7, 8), "by_region": True}),
+              "Price, dispersion and sold-out share against days to "
+              "departure, per region: 7-8 night, cruise-only, suites and "
+              "non-peer-comparable cabins excluded. Bands are 15 days near "
+              "departure, where fares move, and widen further out."),
+    SheetSpec("final-payment", "Final payment", CROSS_SECTION,
+              lambda conn, **kw: an.final_payment_test(
+                  conn, **{**kw, "regions": ["Caribbean"], "nights": (7, 8),
+                           "cutoffs": tuple(range(15, 211, 15))}),
+              "Do fares and sold-out share jump as sailings cross final "
+              "payment? A cutoff SCAN, so the boundary is located rather than "
+              "assumed. Check peer_own_jump_pct before reading any row: where "
+              "the control jumps too, the cutoff has caught the calendar."),
     SheetSpec("peer-gap", "Peer gap", CROSS_SECTION,
               an.peer_gap,
               "NCLH vs peer median pppn, per region and cabin category, on "

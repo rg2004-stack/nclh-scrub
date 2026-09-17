@@ -23,7 +23,25 @@ class TierConfig:
     marker_only: bool = False
     event_date: str | None = None
     event_window_days: int = 14
+    # A ROLLING horizon, in days from the run date. Fixed calendar bounds go
+    # stale: the daily tier's job is to watch sailings cross final payment, and
+    # a fixed end date walks toward the run date until the far side of the
+    # boundary drops out of scope entirely and the test quietly stops working.
+    horizon_days: int | None = None
 
+
+    def resolve_window(self, today: "date | None" = None
+                       ) -> tuple[str | None, str | None]:
+        """The sail window to collect, for a run on `today`.
+
+        With `horizon_days` set this is (today, today + horizon_days) and moves
+        with the run. Otherwise the configured fixed bounds are used unchanged.
+        """
+        if self.horizon_days is None:
+            return self.sail_window_start, self.sail_window_end
+        from datetime import date as _date, timedelta
+        base = today or _date.today()
+        return base.isoformat(), (base + timedelta(days=self.horizon_days)).isoformat()
 
     def markers_for(self, line_key: str) -> list[str]:
         """Marker itinerary codes for one line (empty if none configured)."""
@@ -119,6 +137,8 @@ def load_config(path: str | os.PathLike[str] = DEFAULT_CONFIG_PATH) -> Config:
             name=name,
             sail_window_start=window.get("start"),
             sail_window_end=window.get("end"),
+            horizon_days=(int(window["horizon_days"])
+                          if window.get("horizon_days") is not None else None),
             marker_itineraries={
                 str(k): list(v or [])
                 for k, v in (raw.get("marker_itineraries") or {}).items()

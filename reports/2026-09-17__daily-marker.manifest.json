@@ -1,6 +1,6 @@
 {
- "digest": "b13aa3557ca34ae22f0f762709b24afe41c2f59fee23f562b8feade8ba7cb8cf",
- "generated_at_utc": "2026-09-17T06:51:38+00:00",
+ "digest": "fd2772cdf05b6265b7d5a75d6aacd02c684e6101ef29eb4465e0edb251d9e941",
+ "generated_at_utc": "2026-09-17T20:11:08+00:00",
  "regions": [
   "Caribbean",
   "Southern Europe",
@@ -15,6 +15,10 @@
    "rows": 28,
    "status": "ok"
   },
+  "booking-curve": {
+   "rows": 11,
+   "status": "ok"
+  },
   "cohort-index": {
    "rows": 98,
    "status": "ok"
@@ -24,6 +28,10 @@
    "status": "ok"
   },
   "earnings-window": {
+   "rows": 28,
+   "status": "ok"
+  },
+  "final-payment": {
    "rows": 28,
    "status": "ok"
   },

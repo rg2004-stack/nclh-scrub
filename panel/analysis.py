@@ -45,10 +45,11 @@ import statistics
 from dataclasses import dataclass, field, replace
 from typing import Any, Iterable, Mapping, Sequence
 
-from panel.normalize import AVAIL_CLOSED, AVAIL_SOLO_ONLY
+from panel.normalize import AVAIL_CLOSED, AVAIL_SOLD_OUT, AVAIL_SOLO_ONLY
 from panel.sources.capabilities import (
     CAPABILITIES,
     comparison_column,
+    peer_excluded_subcategories,
     peer_keys,
     require_granularity,
     shared_granularity,
@@ -529,6 +530,15 @@ def peer_gap(conn: sqlite3.Connection, *, tier: str,
         args = [*args, nights_band[0], nights_band[1]]
     basis = _basis(conn, tier, clause, args, granularity=granularity)
 
+    # A category-level comparison must not blend a tier only one line files
+    # under that category (NCL's MINISUITE under `balcony`).
+    dropped_subs = (peer_excluded_subcategories() if granularity == "category"
+                    else [])
+    if dropped_subs:
+        clause += (" AND (cabin_subcategory IS NULL OR cabin_subcategory "
+                   "NOT IN (%s))" % ",".join("?" * len(dropped_subs)))
+        args = [*args, *dropped_subs]
+
     rows = conn.execute(
         f"""SELECT line, region, {col} AS bucket, nights, price_pppn
             FROM observations WHERE {clause} AND {col} IS NOT NULL""",
@@ -612,6 +622,11 @@ def peer_gap(conn: sqlite3.Connection, *, tier: str,
             f"{sorted(keys)} all genuinely publish.",
             "Medians, not minima: the whole point of the panel is that the "
             "minimum is contaminated by inventory mix.",
+            ("Dropped from the category comparison as not peer-comparable: "
+             + ", ".join(dropped_subs) + ". A tier only one line files under a "
+             "shared category would otherwise read as that line pricing higher."
+             ) if dropped_subs else
+            "No non-comparable subcategories in scope at this granularity.",
             "gap_pct > 0 means the treatment line prices above the peer set.",
             f"`sample` grades the smaller side of each row: THIN below "
             f"{THIN_CELLS} cells, VERY THIN below {VERY_THIN_CELLS}. It is a "
@@ -1221,6 +1236,294 @@ def promo_diff(conn: sqlite3.Connection, *, tier: str,
     ))
 
 
+# -- 7. booking curve -------------------------------------------------------
+
+# Band edges in days to departure. 120 is an edge, never inside a band, so no
+# band straddles NCLH's final-payment boundary and the curve can be read
+# against it directly.
+# Fine near the departure date, where fares actually move, and coarser far out
+# where they do not. 120 remains an edge so no band straddles final payment.
+DTD_EDGES: tuple[int, ...] = (0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150,
+                              180, 210, 240, 270, 365, 450, 540, 730)
+
+# Itinerary-length bands. Per-night price is not comparable across lengths --
+# a 4-night Bahamas run and an 11-night Southern Caribbean are different
+# products -- and the two lines deploy different lengths at the same horizon
+# (NCL a median 7 nights against Carnival's 5 in the 365-539 band). Comparing
+# medians without holding length fixed prices the deployment, not the fare.
+NIGHTS_EDGES: tuple[int, ...] = (2, 5, 7, 9, 12)
+
+
+def _latest_scrape_date(conn: sqlite3.Connection, tier: str) -> str | None:
+    """Most recent collection date in a tier."""
+    row = conn.execute(
+        "SELECT MAX(scrape_date) FROM observations WHERE tier = ?", [tier]
+    ).fetchone()
+    return row[0] if row else None
+
+
+def dtd_band(days: int | None, edges: Sequence[int] = DTD_EDGES) -> str | None:
+    """Label the days-to-departure band a sailing falls in."""
+    if days is None or days < 0:
+        return None
+    for lo, hi in zip(edges, edges[1:]):
+        if lo <= days < hi:
+            return f"{lo:>3}-{hi - 1}"
+    return f"{edges[-1]}+"
+
+
+def nights_band(nights: int | None, edges: Sequence[int] = NIGHTS_EDGES) -> str:
+    """Label the itinerary-length band, or "?" when the length is unknown."""
+    if not nights:
+        return "?"
+    for lo, hi in zip(edges, edges[1:]):
+        if lo <= nights < hi:
+            return f"{lo}-{hi - 1}n"
+    return f"{edges[-1]}+n" if nights >= edges[-1] else "?"
+
+
+def _band_order(label: str) -> int:
+    return int(label.split("-")[0].replace("+", "").strip())
+
+
+def booking_curve(conn: sqlite3.Connection, *, tier: str,
+                  scrape_date: str | None = None,
+                  lines: Sequence[str] | None = None,
+                  regions: Sequence[str] | None = None,
+                  exclude_categories: Sequence[str] = ("suite",),
+                  product: str | None = "cruise_only",
+                  peer_line: str = "Carnival Cruise Line",
+                  treatment_line: str = "Norwegian Cruise Line",
+                  split: str | None = None,
+                  edges: Sequence[int] = DTD_EDGES,
+                  by_nights: bool = True,
+                  by_region: bool = False,
+                  nights: tuple[int, int] | None = None,
+                  peer_comparable: bool = True,
+                  min_sailings: int = 5) -> Result:
+    """Price level, dispersion and depletion against days to departure.
+
+    This is a CROSS-SECTION, not a time series. On one collection date the
+    book contains sailings at every horizon, so reading across them traces the
+    curve a single sailing would follow -- without waiting a year to watch one.
+    It therefore assumes sailings at different horizons are otherwise
+    comparable, which is why it is scoped to one region and excludes suites and
+    land+cruise packages by default.
+
+    Three things it measures, one per leg of the argument:
+
+    * LEVEL -- `median_pppn`, the median across SAILINGS (each sailing reduced
+      to its own median cabin first). A sailing with forty cabins on offer and
+      one with four then count equally, so the curve is not dragged by the big
+      ships. `premium_vs_peer_pct` is the treatment line against the peer in
+      the same band.
+    * DISPERSION -- `dispersion_pct` = (p75 - p25) / median across sailings.
+      Uniform pricing across a season is what un-optimised revenue management
+      looks like; a wider spread means the line is discriminating between
+      sailings. This is the second leg of the base-loading test.
+    * DEPLETION -- `sold_out_share`. Deliberately NOT `closed_share`: Carnival
+      publishes no 'limited' state, only a sold-out boolean, so a closed share
+      is structurally higher for NCL for reasons that have nothing to do with
+      demand. `closed_share` is reported too, flagged, for within-line reading
+      only.
+
+    `split` adds a second dimension: "year" or "half" of the SAIL date, which
+    is how the same curve is compared across the 2027 and 2028 books.
+    """
+    if split not in (None, "year", "half"):
+        raise ValueError(f"unknown split {split!r}; expected None, 'year' or 'half'")
+
+    scrape_date = scrape_date or _latest_scrape_date(conn, tier)
+    clause, args = _where(tier, lines=lines, regions=regions,
+                          scrape_date=scrape_date, product=product)
+    excluded = [c for c in exclude_categories or ()]
+    if excluded:
+        clause += " AND (cabin_category IS NULL OR cabin_category NOT IN (%s))" % (
+            ",".join("?" * len(excluded)))
+        args = [*args, *excluded]
+    if nights:
+        clause += " AND nights BETWEEN ? AND ?"
+        args = [*args, nights[0], nights[1]]
+    dropped_subs = peer_excluded_subcategories() if peer_comparable else []
+    if dropped_subs:
+        clause += " AND (cabin_subcategory IS NULL OR cabin_subcategory NOT IN (%s))" % (
+            ",".join("?" * len(dropped_subs)))
+        args = [*args, *dropped_subs]
+
+    basis = _basis(conn, tier, clause, args)
+    if product == "cruise_only":
+        basis = basis.with_caveat(_product_filter_caveat(
+            conn, tier, lines=lines, regions=regions, scrape_date=scrape_date,
+            product="cruise_only"))
+    if dropped_subs:
+        basis = basis.with_caveat(
+            "PEER-COMPARABLE CABINS ONLY: dropped " + ", ".join(dropped_subs) +
+            ". These are filed under a peer category but are not the same "
+            "product as the peer's version of it, so leaving them in would "
+            "report a mapping artefact as a price premium. Pass "
+            "peer_comparable=False to see a line's own book instead.")
+
+    rows = conn.execute(
+        f"""SELECT line, sailing_id, sail_date, nights, region, cabin_category,
+                   price_pppn,
+                   availability_status, promo_hash,
+                   CAST(julianday(sail_date) - julianday(scrape_date) AS INTEGER) AS dtd
+            FROM observations WHERE {clause}""", args).fetchall()
+    if not rows:
+        return Result("booking_curve", basis, [], notes=("no rows in scope",))
+
+    # cell level -> sailing level -> band level. Each reduction is explicit
+    # because which one you aggregate at changes the answer.
+    sail: dict[tuple, dict[str, Any]] = {}
+    for r in rows:
+        key = (r["line"], r["sailing_id"])
+        s_ = sail.setdefault(key, {
+            "line": r["line"], "dtd": r["dtd"], "sail_date": r["sail_date"],
+            "prices": [], "bookable": 0, "sold_out": 0, "closed": 0,
+            "cells": 0, "promo": 0, "nights": r["nights"],
+            "region": r["region"],
+        })
+        s_["cells"] += 1
+        status = r["availability_status"]
+        if status != AVAIL_SOLO_ONLY:
+            s_["bookable"] += 1
+            if status == AVAIL_SOLD_OUT:
+                s_["sold_out"] += 1
+            if status in AVAIL_CLOSED:
+                s_["closed"] += 1
+        if r["promo_hash"]:
+            s_["promo"] += 1
+        if r["price_pppn"] is not None:
+            s_["prices"].append(r["price_pppn"])
+
+    def period(sail_date: str) -> str:
+        if split == "year":
+            return sail_date[:4]
+        return f"{sail_date[:4]}-H{1 if int(sail_date[5:7]) <= 6 else 2}"
+
+    groups: dict[tuple, list[dict[str, Any]]] = collections.defaultdict(list)
+    for s_ in sail.values():
+        band = dtd_band(s_["dtd"], edges)
+        if band is None:
+            continue
+        key = ((s_["line"], band)
+               + ((s_["region"],) if by_region else ())
+               + ((nights_band(s_["nights"]),) if by_nights else ())
+               + ((period(s_["sail_date"]),) if split else ()))
+        groups[key].append(s_)
+
+    def pct(vals: list[float], q: float) -> float | None:
+        if not vals:
+            return None
+        v = sorted(vals)
+        return v[min(len(v) - 1, int(len(v) * q))]
+
+    out: list[dict[str, Any]] = []
+    for key in sorted(groups, key=lambda k: (k[2:], _band_order(k[1]), k[0])):
+        rest = list(key[2:])
+        g = groups[key]
+        med = [statistics.median(x["prices"]) for x in g if x["prices"]]
+        cells = sum(x["cells"] for x in g)
+        bookable = sum(x["bookable"] for x in g)
+        sold = sum(x["sold_out"] for x in g)
+        closed = sum(x["closed"] for x in g)
+        promo = sum(x["promo"] for x in g)
+        p25, p50, p75 = pct(med, .25), (statistics.median(med) if med else None), pct(med, .75)
+        # A line that publishes no offer detail has an UNKNOWN promo share,
+        # not a zero one. Printing 0.0 next to NCL's 0.85 would read as
+        # "Carnival runs no promotions", which is a statement about the
+        # source, not the market.
+        key_line = LINE_BY_NAME.get(key[0])
+        exposes_promo = bool(key_line and CAPABILITIES[key_line].exposes_promo_detail)
+        sail_dates = sorted(x["sail_date"] for x in g)
+        nights = sorted(x["nights"] for x in g if x["nights"])
+        d = {"line": key[0], "dtd_band": key[1]}
+        if by_region:
+            d["region"] = rest.pop(0)
+        if by_nights:
+            d["nights_band"] = rest.pop(0)
+        if split:
+            d["sail_period"] = rest.pop(0)
+        d.update({
+            "sailings": len(g), "priced_sailings": len(med), "cells": cells,
+            "median_pppn": round(p50, 2) if p50 is not None else None,
+            "p25_pppn": round(p25, 2) if p25 is not None else None,
+            "p75_pppn": round(p75, 2) if p75 is not None else None,
+            "dispersion_pct": (round(100 * (p75 - p25) / p50, 1)
+                               if p50 else None),
+            "sold_out_share": round(sold / bookable, 4) if bookable else None,
+            "closed_share_within_line": round(closed / bookable, 4) if bookable else None,
+            "promo_share": (round(promo / cells, 4) if cells and exposes_promo
+                            else None),
+            "bookable_cells": bookable,
+            # The mix inside the band, so the seasonal/fleet confound below is
+            # visible in the row rather than taken on trust.
+            "sail_from": sail_dates[0], "sail_to": sail_dates[-1],
+            "median_nights": (statistics.median(nights) if nights else None),
+            "sample": ("INSUFFICIENT" if len(g) < min_sailings
+                       else "THIN" if len(g) < THIN_CELLS else "ok") + f" (sailings={len(g)})",
+        })
+        out.append(d)
+
+    # premium vs peer, within the same band and period
+    def cell_key(r):
+        return (r["dtd_band"], r.get("region"), r.get("nights_band"),
+                r.get("sail_period"))
+
+    peers = {cell_key(r): r for r in out if r["line"] == peer_line}
+    for r in out:
+        p = peers.get(cell_key(r))
+        r["premium_vs_peer_pct"] = (
+            round(100 * (r["median_pppn"] - p["median_pppn"]) / p["median_pppn"], 1)
+            if r["line"] == treatment_line and p and p["median_pppn"]
+            and r["median_pppn"] else None)
+
+    both = {cell_key(r) for r in out if r["line"] == treatment_line} & set(peers)
+    if not both:
+        basis = basis.with_caveat(
+            f"NO PEER OVERLAP: no band holds both {treatment_line} and "
+            f"{peer_line}, so no premium can be computed. The level column is "
+            "still readable within each line.")
+    return Result("booking_curve", basis, out, notes=(
+        "CROSS-SECTION, not a series: one collection date, sailings read "
+        "across horizons. It assumes sailings at different horizons are "
+        "otherwise comparable, hence one region and no suites or packages.",
+        "median_pppn is the median ACROSS SAILINGS, each sailing first reduced "
+        "to its own median cabin, so a big ship counts once.",
+        "dispersion_pct = (p75-p25)/median across sailings. Uniform pricing "
+        "across a season is what un-optimised revenue management looks like.",
+        "sold_out_share is the cross-line depletion measure. closed_share is "
+        "WITHIN-LINE ONLY: Carnival publishes no 'limited' state, so a closed "
+        "share would read structurally higher for NCL regardless of demand.",
+        f"bands never straddle 120 days, NCLH's stated final-payment boundary; "
+        f"edges are {list(edges)}.",
+        "premium_vs_peer_pct compares medians inside the same band, so it is "
+        "not contaminated by the two lines deploying at different horizons.",
+        "CONFOUND: a band is a horizon, not a season. Days-to-departure is "
+        "mechanically tied to sail date, so 365-539 days out is a different "
+        "part of the calendar from 120-149 and carries a different fleet and "
+        "itinerary mix. `sail_from`, `sail_to` and `median_nights` expose that "
+        "mix per row. Read the LEVEL of the premium far out versus near in; do "
+        "not read band-to-band wiggles as the curve moving.",
+        "promo_share is NULL, not 0, for a line that publishes no offer "
+        "detail. Carnival is such a line: its blank is a source gap.",
+        "SPLIT BY SAIL PERIOD IS NEARLY COLLINEAR WITH HORIZON: on one "
+        "collection date a 2028 sailing can only be far out and a near-term "
+        "sailing can only be 2026. Compare years only inside a dtd_band both "
+        "occupy, and note that even there the calendar months differ. Holding "
+        "horizon AND season fixed at once needs two collection dates a year "
+        "apart, which is what the panel accumulates toward.",
+        "Categories compared are inside / oceanview / balcony. Suites are "
+        "excluded by default because the two lines' suite tiers are not the "
+        "same product, and so is NCL's MINISUITE for the same reason.",
+        "LENGTH IS HELD FIXED: rows are also split by itinerary-length band, "
+        "and the premium is computed inside one. Per-night price is not "
+        "comparable across lengths, and the two lines deploy different lengths "
+        "at the same horizon. Pass by_nights=False to pool lengths, which "
+        "prices the deployment mix as well as the fare.",
+    ))
+
+
 # -- 6. earnings window compare --------------------------------------------
 
 def earnings_window_compare(conn: sqlite3.Connection, *, tier: str,
@@ -1284,6 +1587,192 @@ def earnings_window_compare(conn: sqlite3.Connection, *, tier: str,
                          "Split is on sail date, not collection date."))
 
 
+# -- 8. final payment discontinuity ----------------------------------------
+
+# NCLH's stated final-payment boundary for most voyages. It is a DEFAULT, not
+# a fact about every sailing: the window varies by voyage length and cabin
+# class, and the peer's boundary is different again. Hence `scan`.
+FINAL_PAYMENT_DAYS = 120
+
+
+def final_payment_test(conn: sqlite3.Connection, *, tier: str,
+                       scrape_date: str | None = None,
+                       regions: Sequence[str] | None = None,
+                       nights: tuple[int, int] | None = None,
+                       cutoffs: Sequence[int] = (FINAL_PAYMENT_DAYS,),
+                       bandwidth: int = 30,
+                       treatment_line: str = "Norwegian Cruise Line",
+                       peer_line: str = "Carnival Cruise Line",
+                       exclude_categories: Sequence[str] = ("suite",),
+                       product: str | None = "cruise_only",
+                       peer_comparable: bool = True,
+                       min_sailings: int = 10) -> Result:
+    """Do fares and availability jump as sailings cross final payment?
+
+    A cross-sectional DISCONTINUITY, not a difference-in-differences. For a
+    candidate cutoff C it compares sailings just outside the boundary (days to
+    departure in [C, C+bandwidth), deposit still refundable) with those just
+    inside it ([C-bandwidth, C), money now committed). Adjacent windows, so
+    seasonality is far weaker than a far-out-versus-near-in comparison -- and
+    what remains is differenced out by the peer, whose own boundary sits
+    elsewhere. The `did_*` columns are that difference of differences.
+
+    Two honesty constraints shape the design:
+
+    * The boundary is ESTIMATED, not assumed. Pass several `cutoffs` to trace
+      where the jump actually sits. NCLH publishes 120 days for most voyages
+      but varies it by length and cabin class, so a break at exactly 120 is a
+      finding rather than a premise. A profile that peaks somewhere else is
+      telling you the premise was wrong.
+    * The peer is only a valid control while ITS boundary is outside both
+      windows. `peer_own_jump_pct` is reported for exactly that check: if the
+      control is itself jumping at this cutoff, the difference-in-differences
+      is not identified and the row says so.
+
+    Sign convention: `price_jump_pct` is inside minus outside, so a line that
+    discounts once the money is committed reads NEGATIVE.
+    """
+    scrape_date = scrape_date or _latest_scrape_date(conn, tier)
+    clause, args = _where(tier, regions=regions, scrape_date=scrape_date,
+                          product=product)
+    excluded = list(exclude_categories or ())
+    if excluded:
+        clause += " AND (cabin_category IS NULL OR cabin_category NOT IN (%s))" % (
+            ",".join("?" * len(excluded)))
+        args = [*args, *excluded]
+    if nights:
+        clause += " AND nights BETWEEN ? AND ?"
+        args = [*args, nights[0], nights[1]]
+    dropped = peer_excluded_subcategories() if peer_comparable else []
+    if dropped:
+        clause += (" AND (cabin_subcategory IS NULL OR cabin_subcategory "
+                   "NOT IN (%s))" % ",".join("?" * len(dropped)))
+        args = [*args, *dropped]
+
+    basis = _basis(conn, tier, clause, args)
+    rows = conn.execute(
+        f"""SELECT line, sailing_id, sail_date, price_pppn, availability_status,
+                   promo_hash,
+                   CAST(julianday(sail_date) - julianday(scrape_date) AS INTEGER) AS dtd
+            FROM observations WHERE {clause}""", args).fetchall()
+    if not rows:
+        return Result("final_payment_test", basis, [],
+                      notes=("no rows in scope",))
+
+    sail: dict[tuple, dict[str, Any]] = {}
+    for r in rows:
+        s_ = sail.setdefault((r["line"], r["sailing_id"]), {
+            "line": r["line"], "dtd": r["dtd"], "sail_date": r["sail_date"],
+            "prices": [],
+            "bookable": 0, "sold_out": 0, "cells": 0, "promo": 0})
+        s_["cells"] += 1
+        if r["availability_status"] != AVAIL_SOLO_ONLY:
+            s_["bookable"] += 1
+            if r["availability_status"] == AVAIL_SOLD_OUT:
+                s_["sold_out"] += 1
+        if r["promo_hash"]:
+            s_["promo"] += 1
+        if r["price_pppn"] is not None:
+            s_["prices"].append(r["price_pppn"])
+
+    def side(line: str, lo: int, hi: int) -> dict[str, Any]:
+        g = [x for x in sail.values()
+             if x["line"] == line and lo <= x["dtd"] < hi]
+        med = [statistics.median(x["prices"]) for x in g if x["prices"]]
+        book = sum(x["bookable"] for x in g)
+        dates = sorted(x["sail_date"] for x in g)
+        return {
+            "n": len(g), "priced": len(med),
+            "from": dates[0] if dates else None,
+            "to": dates[-1] if dates else None,
+            "median": statistics.median(med) if med else None,
+            "sold_out": (sum(x["sold_out"] for x in g) / book) if book else None,
+            "promo": (sum(x["promo"] for x in g) / sum(x["cells"] for x in g))
+                     if g and sum(x["cells"] for x in g) else None,
+        }
+
+    def jump(inside: dict, outside: dict) -> tuple[float | None, float | None]:
+        price = (round(100 * (inside["median"] - outside["median"])
+                       / outside["median"], 1)
+                 if inside["median"] and outside["median"] else None)
+        sold = (round(100 * (inside["sold_out"] - outside["sold_out"]), 2)
+                if inside["sold_out"] is not None
+                and outside["sold_out"] is not None else None)
+        return price, sold
+
+    out: list[dict[str, Any]] = []
+    for c in cutoffs:
+        per_line = {}
+        for line in (treatment_line, peer_line):
+            ins = side(line, max(0, c - bandwidth), c)
+            outs = side(line, c, c + bandwidth)
+            pj, sj = jump(ins, outs)
+            per_line[line] = (ins, outs, pj, sj)
+        for line in (treatment_line, peer_line):
+            ins, outs, pj, sj = per_line[line]
+            ctl_p, ctl_s = per_line[peer_line][2], per_line[peer_line][3]
+            low = min(ins["n"], outs["n"])
+            d = {
+                "cutoff_days": c, "line": line,
+                "n_inside": ins["n"], "n_outside": outs["n"],
+                # The windows are adjacent CALENDAR periods, so print them:
+                # on one scrape, days-to-departure IS a date, and a cutoff
+                # landing on a holiday will move both lines at once.
+                "inside_sails": f"{ins['from']}..{ins['to']}",
+                "outside_sails": f"{outs['from']}..{outs['to']}",
+                "median_inside": round(ins["median"], 2) if ins["median"] else None,
+                "median_outside": round(outs["median"], 2) if outs["median"] else None,
+                "price_jump_pct": pj,
+                "sold_out_inside": (round(ins["sold_out"], 4)
+                                    if ins["sold_out"] is not None else None),
+                "sold_out_outside": (round(outs["sold_out"], 4)
+                                     if outs["sold_out"] is not None else None),
+                "sold_out_jump_pp": sj,
+                "promo_inside": (round(ins["promo"], 4)
+                                 if ins["promo"] is not None else None),
+                "promo_outside": (round(outs["promo"], 4)
+                                  if outs["promo"] is not None else None),
+                "peer_own_jump_pct": ctl_p if line == treatment_line else None,
+                "did_price_pct": (round(pj - ctl_p, 1)
+                                  if line == treatment_line and pj is not None
+                                  and ctl_p is not None else None),
+                "did_sold_out_pp": (round(sj - ctl_s, 2)
+                                    if line == treatment_line and sj is not None
+                                    and ctl_s is not None else None),
+                "sample": ("INSUFFICIENT" if low < min_sailings
+                           else "THIN" if low < THIN_CELLS else "ok")
+                          + f" (min side={low})",
+            }
+            if line == treatment_line and ctl_p is not None and abs(ctl_p) >= 10:
+                d["sample"] += "; CONTROL ALSO JUMPS, did not identified"
+            out.append(d)
+
+    if len(cutoffs) > 1:
+        basis = basis.with_caveat(
+            "CUTOFF SCAN: several candidate boundaries are reported so the "
+            "break can be located rather than assumed. Reading only the row "
+            "that suits the argument is p-hacking; report the profile.")
+    return Result("final_payment_test", basis, out, notes=(
+        f"Windows are [C-{bandwidth}, C) inside final payment and "
+        f"[C, C+{bandwidth}) outside it, on days to departure.",
+        "price_jump_pct is inside minus outside: a line that discounts once "
+        "the money is committed reads NEGATIVE.",
+        "did_* subtract the peer's own jump at the same cutoff. That is the "
+        "control, and it only works while the peer's OWN final-payment "
+        "boundary lies outside both windows -- peer_own_jump_pct is there to "
+        "be checked, not decoration.",
+        "SEASONALITY IS THE BINDING CONSTRAINT. On a single collection date "
+        "days-to-departure is a one-to-one map onto the calendar, so the two "
+        "windows are always different weeks of the year. Where a cutoff puts "
+        "the holiday peak on one side, BOTH lines jump and the discontinuity "
+        "is the calendar, not final payment. `inside_sails` / `outside_sails` "
+        "and `peer_own_jump_pct` are there to catch exactly that.",
+        "A discontinuity on one collection date is suggestive. The same "
+        "sailings observed weekly AS they cross the boundary is the stronger "
+        "test, and the panel accumulates toward it.",
+    ))
+
+
 # -- rendering --------------------------------------------------------------
 
 def render(result: Result, *, limit: int = 0) -> str:
@@ -1320,6 +1809,8 @@ def _fmt(v: Any) -> str:
 
 ANALYSES = {
     "availability": availability_snapshot,
+    "booking-curve": booking_curve,
+    "final-payment": final_payment_test,
     "promo-reference": promo_reference,
     "peer-gap": peer_gap,
     "cohort-index": cohort_index,

@@ -43,6 +43,14 @@ class SourceCapability:
     # floor-only source cannot silently drag a cross-line median down to the
     # floor rung -- it is excluded by role before granularity is consulted.
     is_control: bool = False
+    # Raw subcategories that a line files under a peer category but which are
+    # NOT the same product as the peer's version of it. NCL maps MINISUITE to
+    # `balcony`, so a category-level balcony median mixes a mini-suite tier
+    # (avg $270/night) with true balconies ($209) and compares the blend to
+    # Carnival's single OB balcony ($159). That is a mapping artefact, not a
+    # premium. Cross-line functions drop these by default; within-line ones
+    # keep them, because for NCL a mini-suite really is part of its book.
+    peer_excluded_subcategories: tuple[str, ...] = ()
     notes: str = ""
 
 
@@ -59,6 +67,7 @@ CAPABILITIES: dict[str, SourceCapability] = {
         # tax-exclusive and taxes_fees is NULL by design, not by market.
         exposes_tax_amount=False,
         exposes_promo_detail=True,
+        peer_excluded_subcategories=("MINISUITE",),
         notes=("cabin_subcategory is the stateroom type (INSIDE/BALCONY/...), "
                "which is category-level. No vendor sub-category or rate code. "
                "Emits no 'limited' state: the only non-binary status NCL "
@@ -105,6 +114,23 @@ def peer_keys(exclude: Sequence[str] = ()) -> list[str]:
     """Source keys usable as fare peers: everything that is not a control."""
     return [k for k, c in CAPABILITIES.items()
             if not c.is_control and c.line not in exclude]
+
+
+def peer_excluded_subcategories(lines: Sequence[str] = ()) -> list[str]:
+    """Subcategories to drop from a cross-line category comparison.
+
+    Keyed by LINE NAME, not source key, because that is what the observations
+    table stores. With no lines given, returns the union for every source.
+    """
+    wanted = set(lines) if lines else None
+    out: list[str] = []
+    for c in CAPABILITIES.values():
+        if wanted is not None and c.line not in wanted:
+            continue
+        for sub in c.peer_excluded_subcategories:
+            if sub not in out:
+                out.append(sub)
+    return out
 
 
 class GranularityError(ValueError):

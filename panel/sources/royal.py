@@ -272,7 +272,7 @@ class RoyalSource:
                                       "error": str(exc), "fatal": True})
                 break
 
-            lo, hi = tier_cfg.sail_window_start, tier_cfg.sail_window_end
+            lo, hi = tier_cfg.resolve_window()
             if lo:
                 obs = [o for o in obs if o.sail_date and o.sail_date >= lo]
             if hi:
