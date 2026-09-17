@@ -1,7 +1,7 @@
 name: Collect panel
 
 # Stratified cadence, per the build spec:
-#   weekly-full  -- all lines, all regions, Jan-Aug 2027 sail window. Sailings
+#   weekly-full  -- all lines, all regions, Oct 2026 - Oct 2028 sail window. Sailings
 #                   6+ months out do not move fast enough for daily sampling to
 #                   add independent signal.
 #   daily-marker -- a small filtered subset (near-term cohort + the earnings

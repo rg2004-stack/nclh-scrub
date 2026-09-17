@@ -76,6 +76,7 @@ def parse_search(
     sail_window: tuple[str | None, str | None] = (None, None),
     allowed_regions: Iterable[str] | None = None,
     expected_currency: str = EXPECTED_CURRENCY,
+    window_stats: dict[str, int] | None = None,
 ) -> tuple[list[Observation], set[str], set[str]]:
     """Turn one /cruisesearch/api/search response into observations.
 
@@ -109,6 +110,10 @@ def parse_search(
         for sailing in itinerary.get("sailings") or ():
             sail_date = sailing.get("departureDate")
             if not norm.in_window(sail_date, window_start, window_end):
+                # Counted per SAILING (Carnival's unit here), after the region
+                # filter, so only date exclusions are measured.
+                norm.count_window_drop(window_stats, sail_date,
+                                       window_start, window_end)
                 continue
             return_date = sailing.get("arrivalDate")
             nights = norm.nights_between(sail_date, return_date)
@@ -264,6 +269,7 @@ def _market_for(currency: str | None, expected: str) -> str:
 
 class CarnivalSource:
     key = "carnival"
+    window_drop_unit = "sailings"
 
     def __init__(self, cfg: Config, line_cfg: LineConfig, client: PoliteClient,
                  store: Store, archive: RawArchive):
@@ -299,7 +305,8 @@ class CarnivalSource:
                     scrape_ts=scrape_ts, scrape_date=scrape_date,
                     source_url=url, raw_path=raw_path,
                     sail_window=window,
-                    allowed_regions=self.line_cfg.regions or None)
+                    allowed_regions=self.line_cfg.regions or None,
+                    window_stats=result.outside_window)
             except CurrencyMismatch as exc:
                 print(f"  !! CURRENCY MISMATCH on {marker}: {exc}")
                 result.errors.append({"stage": "currency", "codes": batch,
@@ -392,6 +399,7 @@ class CarnivalSource:
                         raw_path=raw_path,
                         sail_window=window,
                         allowed_regions=self.line_cfg.regions or None,
+                        window_stats=result.outside_window,
                     )
                 except CurrencyMismatch as exc:
                     # Loud, not silent: recorded in collection_log, printed, and

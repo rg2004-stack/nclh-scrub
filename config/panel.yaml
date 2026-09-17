@@ -25,9 +25,18 @@ tiers:
     # and "what is happening to sailings that are about to go". daily-marker
     # then re-reads a curated subset of the near-term end of this range every
     # day; the two tiers overlap in dates by design and are never pooled.
+    #
+    # End extended 2026-09-17 from 2027-08-31 to 2028-10-31. The old end cut
+    # off all of Sep-Dec 2027 and every 2028 sailing: 32% of the pricing rows
+    # NCL returned for itineraries we already fetched, plus ~365 itineraries
+    # that only sail after Aug 2027 and were never enumerated. 2028-10-31 is
+    # NCL's published horizon -- past it, NCL's search ignores the month
+    # filter and returns the whole catalogue (see NCLSource.discover_itineraries).
+    # Carnival publishes into Apr 2029; those later sailings are counted as
+    # dropped rather than collected, because they would have no NCL peer.
     sail_window:
       start: "2026-10-01"
-      end: "2027-08-31"
+      end: "2028-10-31"
 
   daily-marker:
     # Near-term control cohort: reprices faster than far-out sailings.

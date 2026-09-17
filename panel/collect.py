@@ -115,6 +115,8 @@ def run(argv: Sequence[str] | None = None) -> int:
                     print(f"    ... and {len(codes) - 20} more")
                 for err in probe.errors:
                     print(f"  error: {err}")
+                for note in probe.notes:
+                    print(f"  note: {note}")
                 continue
 
             log_id = store.start_run(run_id, args.tier, line_cfg.line)
@@ -131,6 +133,13 @@ def run(argv: Sequence[str] | None = None) -> int:
             if result.unmapped_labels:
                 print(f"  UNMAPPED cabin labels (logged, not guessed): "
                       f"{sorted(result.unmapped_labels)}")
+            if result.outside_window:
+                unit = getattr(source, "window_drop_unit", "rows")
+                parts = ", ".join(f"{k}={v}" for k, v in
+                                  sorted(result.outside_window.items()))
+                print(f"  outside sail window (dropped, counted): {parts} {unit}")
+            for note in result.notes:
+                print(f"  note: {note}")
 
         if not args.dry_run:
             print(f"\ntotal observations in db: {store.count_observations()}")

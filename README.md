@@ -137,7 +137,7 @@ different populations:
 
 | | weekly-full | daily-marker |
 |---|---|---|
-| sail window | Oct 2026 - Aug 2027 | Oct - Dec 2026 |
+| sail window | Oct 2026 - Oct 2028 | Oct - Dec 2026 |
 | breadth | every configured region and line | ~26 curated itineraries |
 | cadence | weekly | daily |
 | cross-line? | yes: Caribbean, Southern Europe, Bermuda | **Caribbean only** |
@@ -349,7 +349,7 @@ bytes/row, and the saving grows with NCL volume since most NCL rows carry promos
 
 | Tier | Cron (UTC) | Scope |
 |---|---|---|
-| `weekly-full` | `10 6 * * 1` (Mondays) | all lines, all regions, Oct 2026 - Aug 2027 |
+| `weekly-full` | `10 6 * * 1` (Mondays) | all lines, all regions, Oct 2026 - Oct 2028 |
 | `daily-marker` | `40 6 * * *` (daily) | near-term cohort + earnings window |
 
 Each run: tests -> **confirm US market** -> rebuild from JSONL history ->
@@ -675,6 +675,36 @@ One thing Royal gives that neither other line does: it publishes the tax
 component. `netPrice` is tax-inclusive with `taxedAndFees` broken out, so the
 stored fare is `netPrice - taxedAndFees` and `taxes_fees` is kept separately,
 exactly as the spec requires.
+
+## The weekly window reaches the vendors' horizon, and drops are counted
+
+Until 2026-09-17 the weekly window ended 2027-08-31. Both endpoints publish
+further -- NCL to Oct 2028, Carnival to Apr 2029 -- so the old end silently
+discarded **32% of the pricing rows NCL returned** for itineraries we already
+fetched (all of Sep-Dec 2027 and every 2028 sailing), and never enumerated
+~365 itineraries that only sail after Aug 2027. One Aurora itinerary went from
+77 rows kept / 259 dropped to 336 kept, 203 of them 2028.
+
+The window now ends **2028-10-31**, NCL's published horizon. Discovery went
+from ~439 to 788 NCL itineraries, which adds roughly 12-15 minutes to the
+weekly run.
+
+Two guards come with it:
+
+- **Drops are counted.** Every row the window excludes is tallied by side
+  (`before` / `after`) and printed per line in the run log, after the region
+  filter, so a date exclusion is never confused with a region exclusion.
+  Carnival's Nov 2028 - Apr 2029 sailings are dropped *and counted*: they have
+  no NCL peer.
+- **NCL's search horizon is detected.** Past Oct 2028, NCL ignores the
+  `dates=` filter and returns its whole ~800-itinerary catalogue. Discovery
+  reads the catalogue size once and stops at the first month whose "filtered"
+  total equals it, with a `note:` in the log -- so a future window extension
+  cannot silently re-page the full catalogue once per month.
+
+The first weekly run on the new window changes collection scope, so its
+workbook's time-series sheets will carry the scope-drift warning against the
+previous weekly date. The matched-basket columns are unaffected.
 
 ## Every run ends in a workbook
 

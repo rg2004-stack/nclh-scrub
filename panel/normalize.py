@@ -158,6 +158,37 @@ def month_key(d: str | None) -> str | None:
     return s if len(s) == 7 and s[4] == "-" else None
 
 
+def window_side(sail_date: str | None, start: str | None,
+                end: str | None) -> str | None:
+    """Which side of the window a sail date falls on.
+
+    Returns None when the date is inside, "before"/"after" when outside, and
+    "undated" when there is no parseable date. Used to COUNT what the window
+    drops: a sailing excluded by date must be reported, not vanish.
+    """
+    if not sail_date:
+        return "undated"
+    try:
+        d = date.fromisoformat(str(sail_date)[:10])
+    except ValueError:
+        return "undated"
+    if start and d < date.fromisoformat(start):
+        return "before"
+    if end and d > date.fromisoformat(end):
+        return "after"
+    return None
+
+
+def count_window_drop(stats: dict | None, sail_date: str | None,
+                      start: str | None, end: str | None) -> None:
+    """Increment stats[side] for a date outside the window. No-op if inside."""
+    if stats is None:
+        return
+    side = window_side(sail_date, start, end)
+    if side:
+        stats[side] = stats.get(side, 0) + 1
+
+
 def in_window(sail_date: str | None, start: str | None, end: str | None) -> bool:
     """Inclusive YYYY-MM-DD window test against a sail date."""
     if not sail_date:

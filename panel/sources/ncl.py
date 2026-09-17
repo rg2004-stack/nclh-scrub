@@ -110,6 +110,7 @@ def parse_sailings(
     sail_window: tuple[str | None, str | None] = (None, None),
     allowed_regions: Iterable[str] | None = None,
     expected_currency: str = EXPECTED_CURRENCY,
+    window_stats: dict[str, int] | None = None,
 ) -> tuple[list[Observation], set[str]]:
     """Turn one /sailings/{code} payload into observations.
 
@@ -148,6 +149,10 @@ def parse_sailings(
     for row in payload.get("pricingStateRooms") or ():
         sail_date = row.get("sailStartDate")
         if not norm.in_window(sail_date, window_start, window_end):
+            # Counted, after the region filter above, so this measures only
+            # what the DATE window removed from in-scope itineraries.
+            norm.count_window_drop(window_stats, sail_date,
+                                   window_start, window_end)
             continue
 
         raw_label = row.get("stateroomType")
@@ -263,6 +268,7 @@ def months_in_window(start: str | None, end: str | None) -> list[str]:
 
 class NCLSource:
     key = "ncl"
+    window_drop_unit = "cabin pricing rows"
 
     def __init__(self, cfg: Config, line_cfg: LineConfig, client: PoliteClient,
                  store: Store, archive: RawArchive):
@@ -286,6 +292,17 @@ class NCLSource:
         return f"{self.line_cfg.base_url}/api/vacations/sailings/{itinerary_code}"
 
     # -- enumeration ------------------------------------------------------
+    def catalogue_size(self, result: CollectResult) -> int:
+        """Total itineraries with NO date filter; 0 if it cannot be read."""
+        url = self.search_url(limit=1, offset=0)
+        try:
+            payload = self.client.get_json(url)
+        except (FetchError, RobotsDisallowed) as exc:
+            result.errors.append({"stage": "catalogue", "url": url,
+                                  "error": str(exc)})
+            return 0
+        return int(payload.get("total") or 0)
+
     def discover_itineraries(self, tier_cfg: TierConfig,
                              result: CollectResult) -> list[str]:
         """Page the search endpoint to enumerate itinerary codes in scope."""
@@ -298,8 +315,18 @@ class NCLSource:
         cap = self.line_cfg.max_itineraries
         codes: list[str] = []
 
+        # NCL ignores `dates=` for months beyond its published horizon and
+        # returns the whole catalogue instead (verified 2026-09-16: Nov-2028,
+        # Jan-2029 and no filter at all all report total=801). A window that
+        # reaches past the horizon would re-page the full catalogue once per
+        # month. So learn the catalogue size once, and stop at the first month
+        # whose "filtered" total equals it.
+        catalogue = self.catalogue_size(result)
+        horizon_hit = False
+
         for month in months:
             offset = 0
+            first_page = True
             while True:
                 url = self.search_url(limit=page_size, offset=offset, dates=month)
                 try:
@@ -308,6 +335,16 @@ class NCLSource:
                     result.errors.append(
                         {"stage": "search", "url": url, "error": str(exc)})
                     break
+                total = int(payload.get("total") or 0)
+                if first_page and catalogue and total >= catalogue:
+                    result.notes.append(
+                        f"NCL search horizon reached at {month}: the date filter "
+                        f"returned the full catalogue ({total}), so it is not "
+                        f"being honoured. Stopped discovery there; later months "
+                        f"in the window add nothing a filtered search can find.")
+                    horizon_hit = True
+                    break
+                first_page = False
                 self.archive.write(self.key, "search", f"{month}_{offset}", body)
 
                 found = parse_search_itineraries(payload)
@@ -315,12 +352,13 @@ class NCLSource:
                     if code not in codes:
                         codes.append(code)
 
-                total = int(payload.get("total") or 0)
                 offset += page_size
                 if not found or offset >= total:
                     break
                 if cap and len(codes) >= cap:
                     break
+            if horizon_hit:
+                break
             if cap and len(codes) >= cap:
                 codes = codes[:cap]
                 break
@@ -362,6 +400,7 @@ class NCLSource:
                     raw_path=raw_path,
                     sail_window=window,
                     allowed_regions=self.line_cfg.regions or None,
+                    window_stats=result.outside_window,
                 )
             except norm.CurrencyMismatch as exc:
                 # The edge resolved a market we did not ask for. Every remaining
