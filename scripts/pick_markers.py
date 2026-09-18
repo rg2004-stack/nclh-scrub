@@ -60,6 +60,15 @@ TARGET_TOTAL = 26           # midpoint of the spec's 20-30
 # what "near term" means.
 NEAR_TERM = ("2026-10-01", "2026-12-31")     # overwritten in main() from config
 FINAL_PAYMENT_DAYS = 120
+
+# The itinerary-length band the cross-line analyses actually run at. Per-night
+# price is not comparable across lengths, so a marker outside this band cannot
+# pair with one from the other line however many sailings it has. NCL's
+# Caribbean markers are 7-night; Carnival's densest Caribbean product is 4-5
+# night, and picking on density alone selected 4-5n itineraries that the 7-8n
+# analysis then discarded -- leaving Carnival with 13 sailings and the
+# final-payment test unidentified while the raw data held 159.
+PEER_NIGHTS = (7, 8)
 EVENT_DATE = datetime.date(2026, 11, 4)
 EVENT_DAYS = 14
 CALENDAR_PATH = os.path.join("data", "sail_dates.json")
@@ -176,24 +185,34 @@ def panel_candidates(conn: sqlite3.Connection,
         """SELECT line, itinerary_code, region, MAX(ship) ship,
                   COUNT(DISTINCT cabin_category) cats,
                   COUNT(DISTINCT sailing_id) sailings,
+                  MAX(nights) nights,
                   MAX(COALESCE(is_package, 0)) is_package
            FROM observations
            WHERE line LIKE ? AND itinerary_code IS NOT NULL
-             AND region IS NOT NULL
+             AND region IS NOT NULL AND tier = 'weekly-full'
              AND scrape_date = (SELECT MAX(scrape_date) FROM observations
                                 WHERE tier = 'weekly-full')
            GROUP BY line, itinerary_code, region""", (line_like,)).fetchall()
     out = []
     for r in rows:
+        # Same scrape as the aggregate above: without this an itinerary that
+        # has since left the catalogue still shows sailings from an older
+        # scrape and can be selected. MEP was picked that way -- a Carnival
+        # Mediterranean code with no current sailings at all.
         dates = [d[0] for d in conn.execute(
             "SELECT DISTINCT sail_date FROM observations "
-            "WHERE itinerary_code = ? AND line = ?",
+            "WHERE itinerary_code = ? AND line = ? AND tier = 'weekly-full' "
+            "AND scrape_date = (SELECT MAX(scrape_date) FROM observations "
+            "WHERE tier='weekly-full')",
             (r["itinerary_code"], r["line"]))]
         near, event = split_dates(dates)
         inside, outside = straddle_counts(dates)
+        nights = r["nights"]
+        peer_len = bool(nights and PEER_NIGHTS[0] <= nights <= PEER_NIGHTS[1])
         cats = [c[0] for c in conn.execute(
             "SELECT DISTINCT cabin_category FROM observations "
-            "WHERE itinerary_code = ? AND line = ? AND cabin_category IS NOT NULL",
+            "WHERE itinerary_code = ? AND line = ? AND tier = 'weekly-full' "
+            "AND cabin_category IS NOT NULL",
             (r["itinerary_code"], r["line"]))]
         out.append({
             "line": r["line"], "itinerary_code": r["itinerary_code"],
@@ -202,6 +221,7 @@ def panel_candidates(conn: sqlite3.Connection,
             "near_term": len(near), "event": len(event),
             "inside_fp": inside, "outside_fp": outside,
             "straddles": bool(inside and outside),
+            "nights": nights, "peer_length": peer_len,
             "sailings": r["sailings"], "in_panel": True,
             "is_package": r["is_package"],
         })
@@ -224,8 +244,13 @@ def choose(cands: list[dict], target: int = TARGET_TOTAL) -> list[dict]:
             # An itinerary that cannot be observed on both sides of final
             # payment cannot identify the 120-day test, whatever else it has.
             (40 if c.get("straddles") else 0)
-            + min(c.get("inside_fp", 0), 6) * 3
-            + min(c.get("outside_fp", 0), 6) * 3
+            # Nor can one whose length the cross-line analyses will discard.
+            + (30 if c.get("peer_length") else 0)
+            # DENSITY, not count: ten itineraries with two sailings each are
+            # ten thin cells, while two with twenty sailings fill a window.
+            # Caps are high enough that density actually discriminates.
+            + min(c.get("inside_fp", 0), 12) * 2
+            + min(c.get("outside_fp", 0), 12) * 2
             + min(c["event"], 4) * 10
             + min(c["near_term"], 8) * 5
             + c["cats"] * 6
@@ -263,6 +288,16 @@ def choose(cands: list[dict], target: int = TARGET_TOTAL) -> list[dict]:
         # identify anything: Caribbean came back 8 Carnival to 1 NCL without
         # this, despite 31 eligible NCL itineraries.
         if region in PRIORITY_REGIONS:
+            # Where both lines are present the region's job is the CROSS-LINE
+            # test, and a marker outside the comparable length band cannot
+            # serve it at all. Restrict to that band when enough exist --
+            # density alone kept selecting Carnival's dense 4-5 night product,
+            # which the 7-8 night analyses then discarded entirely.
+            if len({c["line"] for c in pool}) > 1:
+                matched = [c for c in pool if c.get("peer_length")]
+                per_line = collections.Counter(c["line"] for c in matched)
+                if len(per_line) > 1 and min(per_line.values()) >= max(1, budget // 2):
+                    pool = matched
             for line in sorted({c["line"] for c in pool}):
                 floor = max(1, budget // 2)
                 for c in [x for x in pool if x["line"] == line]:
