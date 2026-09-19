@@ -1,6 +1,6 @@
 {
- "digest": "15d05a7973d0373e27c3c3a1864de78c31ebba77cfcd36023dd69db88c33117a",
- "generated_at_utc": "2026-09-17T21:26:11+00:00",
+ "digest": "f92ba4243e18533d66c392d05f454a2d0ec9b264f937f8076e8c3be6d7efcf47",
+ "generated_at_utc": "2026-09-19T18:01:05+00:00",
  "regions": [
   "Caribbean",
   "Southern Europe",
@@ -35,9 +35,13 @@
    "rows": 44,
    "status": "ok"
   },
-  "final-payment": {
-   "rows": 28,
-   "status": "ok"
+  "inclusion-value": {
+   "rows": 0,
+   "status": "no rows"
+  },
+  "offer-boundary": {
+   "rows": 3,
+   "status": "COLLECTION SCOPE CHANGED BETWEEN DATES"
   },
   "peer-gap": {
    "rows": 24,

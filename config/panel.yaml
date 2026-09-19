@@ -191,6 +191,19 @@ lines:
       Dawn: older
       Sun: older
 
+    # Published per-person-per-day service charge. Used ONLY to value the
+    # "FREE Pre-Paid Gratuities" inclusion as an effective discount against
+    # fares we observed ourselves. This is an INPUT WE DID NOT OBSERVE: it is
+    # NCL's published schedule, recorded here with a date so the slide can say
+    # which half of the arithmetic is measured and which half is cited.
+    # Press has reported increases since; verify before quoting.
+    inclusion_rates:
+      as_of: "2026-09-19"
+      source: "NCL published service-charge schedule (company FAQ)"
+      service_charge_per_person_per_day:
+        default: 20.0      # Club Balcony Suite and below
+        suite: 25.0        # Haven and Suites
+
   royal:
     line: "Royal Caribbean International"
     brand: "Royal Caribbean"

@@ -116,14 +116,29 @@ SUITE: tuple[SheetSpec, ...] = (
               "tonnage against Carnival's newest, not against a blend. Class "
               "names never match across lines, so generation is the "
               "comparable axis and it is mapped explicitly in config."),
-    SheetSpec("final-payment", "Final payment", CROSS_SECTION,
-              lambda conn, **kw: an.final_payment_test(
-                  conn, **{**kw, "regions": ["Caribbean"], "nights": (7, 8),
-                           "cutoffs": tuple(range(15, 211, 15))}),
-              "Do fares and sold-out share jump as sailings cross final "
-              "payment? A cutoff SCAN, so the boundary is located rather than "
-              "assumed. Check peer_own_jump_pct before reading any row: where "
-              "the control jumps too, the cutoff has caught the calendar."),
+    # The cross-sectional cutoff scan is NOT in the workbook. It could not
+    # be identified: on one collection date days-to-departure is the
+    # calendar, so every cutoff near a holiday moved both lines and the
+    # control-jump flag fired on 7 of 14 cutoffs. It remains available as
+    # `python -m panel.analysis final-payment` -- as evidence of WHY the
+    # cross-section fails, not as a finding. The event study below is the
+    # identified replacement.
+    SheetSpec("offer-boundary", "Offer boundary", TIME_SERIES,
+              # every region: crossings are rare and narrowing costs events
+              lambda conn, **kw: an.offer_boundary_event_study(
+                  conn, **{**kw, "regions": None}),
+              "Price change on sailings that CROSSED final payment, each "
+              "compared to itself days apart. The event is dated by NCL: "
+              "its risk-free cancellation offer applies outside final "
+              "payment, so losing it is the crossing. Calendar is fixed "
+              "by construction, so no seasonal correction is needed."),
+    SheetSpec("inclusion-value", "Inclusion value", CROSS_SECTION,
+              lambda conn, **kw: an.inclusion_discount(
+                  conn, **{k: v for k, v in kw.items() if k != "regions"}),
+              "What the prepaid-gratuities giveaway is worth as a share of "
+              "the fare beside it. Fares are ours; the per-day rate is NCL's "
+              "published schedule, dated and sourced on every row. A discount "
+              "that never touches the advertised price."),
     SheetSpec("peer-gap", "Peer gap", CROSS_SECTION,
               an.peer_gap,
               "NCLH vs peer median pppn, per region and cabin category, on "

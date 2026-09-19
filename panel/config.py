@@ -75,6 +75,9 @@ class LineConfig:
     ship_classes: dict[str, list[str]] = field(default_factory=dict)
     # class -> generation label, comparable ACROSS lines.
     ship_generation: dict[str, str] = field(default_factory=dict)
+    # Published third-party rates used to value an inclusion. Not observed by
+    # this panel; carried with a date and a source so outputs can say so.
+    inclusion_rates: Mapping[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -136,6 +139,7 @@ def load_config(path: str | os.PathLike[str] = DEFAULT_CONFIG_PATH) -> Config:
                           for k, v in (raw.get("ship_classes") or {}).items()},
             ship_generation={str(k): str(v) for k, v
                              in (raw.get("ship_generation") or {}).items()},
+            inclusion_rates=dict(raw.get("inclusion_rates") or {}),
         )
 
     tiers: dict[str, TierConfig] = {}

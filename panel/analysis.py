@@ -40,6 +40,7 @@ import collections
 import datetime
 import functools
 import json
+import math
 import os
 import sqlite3
 import statistics
@@ -1891,6 +1892,433 @@ def final_payment_test(conn: sqlite3.Connection, *, tier: str,
     ))
 
 
+# -- 9. offer-boundary event study ------------------------------------------
+
+# NCL's risk-free cancellation offer is defined as "sailings still outside
+# final payment", so it rolls forward one day per day: observed moving from
+# 2027-01-14 to 2027-01-17 as the scrape date moved 2026-09-16 to 2026-09-19.
+# Its disappearance from a sailing IS that sailing crossing the boundary,
+# dated by the vendor rather than inferred by us.
+BOUNDARY_OFFER = "Risk-Free-Cancellation-Offer"
+
+
+def binomial_tail(k: int, n: int, p: float) -> float | None:
+    """P(X >= k) for X ~ Binomial(n, p). Exact, no dependencies.
+
+    The event study's informative statistic is a FREQUENCY, not a median:
+    fares are sticky day to day, so most cabins contribute a zero and the
+    median is dominated by them. "4 of 5 crossings were cut, against a base
+    rate of 26% among sailings that did not cross" is a claim a small sample
+    can actually support; a median of five is not.
+    """
+    if n <= 0 or not 0.0 <= p <= 1.0:
+        return None
+    k = max(0, min(k, n))
+    return round(sum(math.comb(n, i) * p ** i * (1 - p) ** (n - i)
+                     for i in range(k, n + 1)), 5)
+
+
+def offer_boundary_event_study(
+        conn: sqlite3.Connection, *, tier: str,
+        offer_code: str = BOUNDARY_OFFER,
+        regions: Sequence[str] | None = None,
+        treatment_line: str = "Norwegian Cruise Line",
+        peer_line: str = "Carnival Cruise Line",
+        product: str | None = "cruise_only",
+        exclude_categories: Sequence[str] = ("suite",),
+        peer_comparable: bool = True,
+        lead_tolerance_days: int = 21,
+        pool: bool = True,
+        min_events: int = 5) -> Result:
+    """What happens to a sailing's price when it crosses final payment.
+
+    The cross-sectional version of this question is not identifiable: on one
+    collection date, days-to-departure IS the calendar, so a cutoff near a
+    holiday moves both lines and the discontinuity is the season. This design
+    sidesteps that entirely by comparing EACH SAILING TO ITSELF a day or two
+    apart. The calendar is held fixed by construction because the same sailing
+    is on both sides of the comparison.
+
+    The event is dated by the vendor, not by us. `offer_code` defaults to the
+    risk-free cancellation offer, which NCL defines as applying to sailings
+    still outside final payment; it therefore rolls forward exactly one day per
+    day. A sailing carrying it on date t and not on t+1 crossed the boundary in
+    between. We never have to assume where the boundary sits, or that it is the
+    same for every voyage -- NCL tells us, sailing by sailing.
+
+    Three groups per date pair, all measured the same way:
+
+    * `lost_offer`   -- treated: crossed final payment in this window.
+    * `kept_offer`   -- same line, same days, still outside the boundary. This
+      is the control that matters, because it absorbs anything that moved
+      NCL's whole book between the two dates.
+    * `peer_same_lead` -- the peer line's sailings at a similar lead time
+      (within `lead_tolerance_days`). It catches an industry-wide move.
+
+    Price change per sailing is a MATCHED BASKET: only cabin grades priced on
+    both dates, summed, so a cabin selling out cannot masquerade as a price
+    move. `vs_kept_pp` and `vs_peer_pp` are the treated group's median change
+    minus each control's, in percentage points.
+
+    Events are rare by nature -- one day's worth of sailings crosses per day --
+    so `pool` aggregates across every date pair in the tier. That is what makes
+    this runnable in days rather than the weeks a panel DiD would need.
+    """
+    # Crossings are rare by construction -- one day's worth per day -- so the
+    # default scope is every region. Narrowing costs events directly.
+    clause, args = _where(tier, regions=regions, product=product)
+    excluded = list(exclude_categories or ())
+    if excluded:
+        clause += " AND (cabin_category IS NULL OR cabin_category NOT IN (%s))" % (
+            ",".join("?" * len(excluded)))
+        args = [*args, *excluded]
+    dropped = peer_excluded_subcategories() if peer_comparable else []
+    if dropped:
+        clause += (" AND (cabin_subcategory IS NULL OR cabin_subcategory "
+                   "NOT IN (%s))" % ",".join("?" * len(dropped)))
+        args = [*args, *dropped]
+
+    basis = _basis(conn, tier, clause, args)
+    offers = _offer_index(conn)
+    carrying = {h for h, offs in offers.items()
+                if any(o["code"] == offer_code for o in offs)}
+    if not carrying:
+        return Result("offer_boundary_event_study", basis.with_caveat(
+            f"OFFER NOT FOUND: no promo bundle in scope contains "
+            f"{offer_code!r}, so no boundary crossing can be observed. Check "
+            "the code against the Promo reference sheet."), [])
+
+    rows = conn.execute(
+        f"""SELECT scrape_date, line, sailing_id, sail_date, ship,
+                   itinerary_code, cabin_subcategory,
+                   price_pppn, availability_status, promo_hash,
+                   CAST(julianday(sail_date) - julianday(scrape_date) AS INTEGER) AS dtd
+            FROM observations WHERE {clause}""", args).fetchall()
+    if not rows:
+        return Result("offer_boundary_event_study", basis, [],
+                      notes=("no rows in scope",))
+
+    # (line, sailing_id) -> scrape_date -> state
+    book: dict[tuple, dict[str, dict[str, Any]]] = collections.defaultdict(dict)
+    for r in rows:
+        st = book[(r["line"], r["sailing_id"])].setdefault(r["scrape_date"], {
+            "offer": False, "prices": {}, "bookable": 0, "sold_out": 0,
+            "sail_date": r["sail_date"], "dtd": r["dtd"],
+            "ship": r["ship"], "itinerary_code": r["itinerary_code"]})
+        if r["promo_hash"] in carrying:
+            st["offer"] = True
+        if r["availability_status"] != AVAIL_SOLO_ONLY:
+            st["bookable"] += 1
+            if r["availability_status"] == AVAIL_SOLD_OUT:
+                st["sold_out"] += 1
+        if r["price_pppn"] is not None:
+            st["prices"][r["cabin_subcategory"]] = r["price_pppn"]
+
+    dates = sorted({r["scrape_date"] for r in rows})
+    if len(dates) < 2:
+        return Result("offer_boundary_event_study", basis.with_caveat(
+            "NOT COMPUTABLE: an event study needs two collection dates in the "
+            f"tier; '{tier}' has {len(dates)}."), [])
+
+    def change(a: dict, b: dict) -> tuple[float | None, int, float | None]:
+        """(matched basket % change, matched cabins, sold-out change in pp)."""
+        matched = set(a["prices"]) & set(b["prices"])
+        base = sum(a["prices"][k] for k in matched)
+        now = sum(b["prices"][k] for k in matched)
+        pct = round(100 * (now - base) / base, 3) if base else None
+        so = None
+        if a["bookable"] and b["bookable"]:
+            so = round(100 * (b["sold_out"] / b["bookable"]
+                              - a["sold_out"] / a["bookable"]), 2)
+        return pct, len(matched), so
+
+    events: list[dict[str, Any]] = []
+    for (line, sid), byd in book.items():
+        for t0, t1 in zip(dates, dates[1:]):
+            a, b = byd.get(t0), byd.get(t1)
+            if not a or not b:
+                continue
+            pct, matched, so = change(a, b)
+            if pct is None or not matched:
+                continue
+            if line == treatment_line:
+                group = ("lost_offer" if a["offer"] and not b["offer"]
+                         else "kept_offer" if a["offer"] and b["offer"]
+                         else None)
+            else:
+                group = "peer_same_lead" if line == peer_line else None
+            if group is None:
+                continue
+            events.append({"pair": (t0, t1), "group": group, "line": line,
+                           "sailing_id": sid, "pct": pct, "matched": matched,
+                           "so": so, "dtd": a["dtd"],
+                           "sail_date": a["sail_date"], "ship": a["ship"],
+                           "itinerary_code": a["itinerary_code"]})
+
+    treated_leads = [e["dtd"] for e in events if e["group"] == "lost_offer"]
+    if treated_leads:
+        lo = min(treated_leads) - lead_tolerance_days
+        hi = max(treated_leads) + lead_tolerance_days
+        events = [e for e in events
+                  if e["group"] != "peer_same_lead" or lo <= e["dtd"] <= hi]
+
+    buckets: dict[tuple, list[dict]] = collections.defaultdict(list)
+    for e in events:
+        buckets[(("ALL PAIRS POOLED",) if pool else e["pair"]) + (e["group"],)].append(e)
+
+    out: list[dict[str, Any]] = []
+    for key in sorted(buckets, key=lambda k: (str(k[0]), k[-1])):
+        g = buckets[key]
+        pcts = sorted(e["pct"] for e in g)
+        sos = [e["so"] for e in g if e["so"] is not None]
+        sails = sorted(e["sail_date"] for e in g)
+        pair = key[0] if isinstance(key[0], str) else f"{key[0][0]}..{key[0][1]}"
+        out.append({
+            "window": pair, "group": key[-1], "sailings": len(g),
+            "matched_cabins": sum(e["matched"] for e in g),
+            "median_change_pct": round(statistics.median(pcts), 3),
+            "mean_change_pct": round(statistics.fmean(pcts), 3),
+            "p25_change_pct": round(pcts[max(0, len(pcts) // 4 - 1)], 3),
+            "p75_change_pct": round(pcts[min(len(pcts) - 1, 3 * len(pcts) // 4)], 3),
+            "share_cut": round(sum(1 for p in pcts if p < 0) / len(pcts), 3),
+            "sold_out_change_pp": (round(statistics.median(sos), 2)
+                                   if sos else None),
+            "median_lead_days": int(statistics.median([e["dtd"] for e in g])),
+            # Clustering: five crossings could be five independent pricing
+            # decisions or one revenue manager touching one ship's season on
+            # one afternoon. These three columns are the difference, and they
+            # are the first thing a sharp reader asks for.
+            "ships": len({e["ship"] for e in g if e["ship"]}),
+            "itineraries": len({e["itinerary_code"] for e in g
+                                if e["itinerary_code"]}),
+            "crossing_windows": len({e["pair"] for e in g}),
+            "sail_from": sails[0], "sail_to": sails[-1],
+        })
+
+    by_window: dict[str, dict[str, dict]] = collections.defaultdict(dict)
+    for r in out:
+        by_window[r["window"]][r["group"]] = r
+    for r in out:
+        peers = by_window[r["window"]]
+        kept, peer = peers.get("kept_offer"), peers.get("peer_same_lead")
+        if r["group"] == "lost_offer":
+            r["vs_kept_pp"] = (round(r["median_change_pct"]
+                                     - kept["median_change_pct"], 3)
+                               if kept else None)
+            r["vs_peer_pp"] = (round(r["median_change_pct"]
+                                     - peer["median_change_pct"], 3)
+                               if peer else None)
+            # The headline test: how surprising is this many cuts, given how
+            # often each control group cut over the same window?
+            cut = int(round(r["share_cut"] * r["sailings"]))
+            r["cut_of_n"] = f"{cut}/{r['sailings']}"
+            r["base_rate_kept"] = kept["share_cut"] if kept else None
+            r["base_rate_peer"] = peer["share_cut"] if peer else None
+            r["p_vs_kept"] = (binomial_tail(cut, r["sailings"], kept["share_cut"])
+                              if kept else None)
+            r["p_vs_peer"] = (binomial_tail(cut, r["sailings"], peer["share_cut"])
+                              if peer else None)
+            r["sample"] = ("INSUFFICIENT" if r["sailings"] < min_events
+                           else "THIN" if r["sailings"] < THIN_CELLS else "ok")
+            r["sample"] += f" (events={r['sailings']})"
+        else:
+            r["vs_kept_pp"] = r["vs_peer_pp"] = None
+            r["cut_of_n"] = None
+            r["base_rate_kept"] = r["base_rate_peer"] = None
+            r["p_vs_kept"] = r["p_vs_peer"] = None
+            r["sample"] = f"control (n={r['sailings']})"
+
+    lost_rows = [r for r in out if r["group"] == "lost_offer"]
+    for r in lost_rows:
+        if r["sailings"] >= 2 and r["ships"] <= 1:
+            basis = basis.with_caveat(
+                f"CLUSTERED: all {r['sailings']} crossings in '{r['window']}' "
+                "are on ONE ship. That is consistent with a single revenue "
+                "manager touching one ship's season, not with a line-wide "
+                "rule. Say so on the slide and let the sample accumulate.")
+        elif r["sailings"] >= 3 and r["crossing_windows"] <= 1:
+            basis = basis.with_caveat(
+                f"SINGLE WINDOW: all {r['sailings']} crossings fall in one "
+                "collection-date pair, so they share whatever happened that "
+                "day. Independent dates are what make this robust.")
+
+    treated = sum(r["sailings"] for r in out if r["group"] == "lost_offer")
+    if not treated:
+        basis = basis.with_caveat(
+            "NO CROSSINGS OBSERVED YET: no sailing carried "
+            f"{offer_code!r} on one collection date and lost it on the next. "
+            "One day's worth of sailings crosses per day, so this fills in as "
+            "the panel runs; it is not a failure of the design.")
+    elif treated < min_events:
+        basis = basis.with_caveat(
+            f"ONLY {treated} CROSSING(S) OBSERVED. The mechanism is visible "
+            "but the estimate is not yet worth quoting: one day's worth of "
+            "sailings crosses the boundary per day, so the sample grows by a "
+            "few events per collection date and no faster.")
+    return Result("offer_boundary_event_study", basis, out, notes=(
+        f"Event = a sailing carrying {offer_code!r} on one collection date and "
+        "not on the next. NCL defines that offer as applying to sailings still "
+        "outside final payment, so its loss IS the crossing, dated by the "
+        "vendor rather than assumed by us.",
+        "EACH SAILING IS COMPARED TO ITSELF days apart, so the calendar is "
+        "held fixed by construction. This is why it needs no seasonal "
+        "correction, and why it works where the cross-sectional cutoff scan "
+        "could not be identified.",
+        "Price change is a matched basket: only cabin grades priced on BOTH "
+        "dates, so a cabin selling out cannot read as a price move.",
+        "kept_offer is the control that matters -- same line, same days, still "
+        "outside the boundary. peer_same_lead catches an industry-wide move.",
+        "READ share_cut AND p_vs_*, NOT THE MEDIAN. Fares are sticky day to "
+        "day, so most cabins contribute a zero and the median is dominated by "
+        "them. The frequency of cutting is the informative statistic, and "
+        "p_vs_kept / p_vs_peer are exact binomial tails against each control "
+        "group's own cut rate over the same windows.",
+        "ONSET, NOT SIZE. This measures what happens in the days right after "
+        "a sailing crosses the boundary -- where cutting STARTS. It is not "
+        "the total discount, and must not be read as the yield hit. The "
+        "booking curve shows where it ends, tens of index points lower by "
+        "30-44 days out. Two exhibits, one mechanism, different horizons.",
+        "The control rows are a finding in their own right: share_cut on "
+        "kept_offer against peer_same_lead is how often each line reprices "
+        "AWAY from the boundary at all.",
+        "A COLLECTION-SCOPE WARNING ON THIS SHEET IS OVER-CAUTIOUS. Only "
+        "sailings present on BOTH dates enter, and each is compared to "
+        "itself, so a changed marker list or widened window costs events but "
+        "cannot bias the measured change. Read the event count, not the drift "
+        "flag.",
+    ))
+
+
+# -- 10. inclusion value ----------------------------------------------------
+
+GRATUITY_OFFER = "free-prepaid-service-charges"
+
+
+def inclusion_discount(conn: sqlite3.Connection, *, tier: str,
+                       offer_code: str = GRATUITY_OFFER,
+                       scrape_date: str | None = None,
+                       line: str = "Norwegian Cruise Line",
+                       regions: Sequence[str] | None = None,
+                       product: str | None = "cruise_only",
+                       by: Sequence[str] = ("region", "cabin_category"),
+                       min_cells: int = 10) -> Result:
+    """What an inclusion is worth as a percentage of the fare beside it.
+
+    A giveaway like prepaid gratuities is a discount that never touches the
+    advertised price, which is precisely why an advertised-price tracker
+    cannot see it. To size it you need two numbers, and they do NOT have the
+    same standing:
+
+    * the FARE -- observed by this panel, per cabin, on a dated scrape;
+    * the RATE -- the vendor's published per-person-per-day service charge,
+      which we did not observe. It is carried in config with `as_of` and
+      `source`, and every row here repeats them, so a slide can say which half
+      of the arithmetic is measured and which half is cited.
+
+    Because the charge is per person per DAY and price_pppn is per person per
+    NIGHT, the discount is simply rate / price_pppn -- itinerary length
+    cancels, so this is comparable across 4-night and 11-night sailings
+    without further adjustment. `value_per_person` restores the length for the
+    dollar figure.
+    """
+    from panel.config import DEFAULT_CONFIG_PATH, load_config
+    try:
+        cfg = load_config(DEFAULT_CONFIG_PATH)
+        line_cfg = next(lc for lc in cfg.lines.values() if lc.line == line)
+        rates = dict(line_cfg.inclusion_rates or {})
+    except (OSError, ValueError, StopIteration):
+        rates = {}
+    per_day = dict(rates.get("service_charge_per_person_per_day") or {})
+    if not per_day:
+        basis = _basis(conn, tier, *_where(tier, lines=[line]))
+        return Result("inclusion_discount", basis.with_caveat(
+            f"NO PUBLISHED RATE CONFIGURED for {line}: add "
+            "`inclusion_rates` to config/panel.yaml. Without it the fare is "
+            "measurable and the inclusion is not, so no discount can be "
+            "computed rather than guessed."), [])
+
+    scrape_date = scrape_date or _latest_scrape_date(conn, tier)
+    clause, args = _where(tier, lines=[line], regions=regions,
+                          scrape_date=scrape_date, product=product,
+                          priced_only=True)
+    basis = _basis(conn, tier, clause, args)
+    offers = _offer_index(conn)
+    carrying = {h for h, offs in offers.items()
+                if any(o["code"] == offer_code for o in offs)}
+    if not carrying:
+        return Result("inclusion_discount", basis.with_caveat(
+            f"OFFER NOT PRESENT: no bundle in scope contains {offer_code!r}."),
+            [])
+
+    group_cols = list(by)
+    rows = conn.execute(
+        f"""SELECT {', '.join(group_cols)}, cabin_category, nights, price_pppn,
+                   promo_hash, sailing_id, ship
+            FROM observations WHERE {clause}""", args).fetchall()
+
+    groups: dict[tuple, list[sqlite3.Row]] = collections.defaultdict(list)
+    for r in rows:
+        if r["promo_hash"] in carrying:
+            groups[tuple(r[g] for g in group_cols)].append(r)
+
+    if not groups:
+        return Result("inclusion_discount", basis.with_caveat(
+            f"OFFER NOT PRESENT on any cabin in scope: {offer_code!r} exists "
+            "in the promo catalogue but no observation in this tier, scrape "
+            "date and region carries it. That is a coverage statement, not a "
+            "zero -- check the scrape date against when the offer launched."),
+            [])
+
+    as_of, source = rates.get("as_of"), rates.get("source")
+    out: list[dict[str, Any]] = []
+    for key in sorted(groups, key=lambda k: tuple(map(str, k))):
+        g = groups[key]
+        prices = sorted(r["price_pppn"] for r in g)
+        med = statistics.median(prices)
+        cats = {r["cabin_category"] for r in g}
+        rate = (per_day.get("suite") if cats == {"suite"}
+                else per_day.get("default"))
+        nights = statistics.median([r["nights"] for r in g if r["nights"]] or [0])
+        d = dict(zip(group_cols, key))
+        d.update({
+            "cells_with_offer": len(g),
+            "sailings": len({r["sailing_id"] for r in g}),
+            "ships": len({r["ship"] for r in g if r["ship"]}),
+            "median_pppn_observed": round(med, 2),
+            "median_nights": nights or None,
+            "rate_per_person_per_day": rate,
+            # length cancels: charge is per day, fare is per night
+            "effective_discount_pct": (round(100 * rate / med, 1)
+                                       if rate and med else None),
+            "value_per_person": (round(rate * nights, 2)
+                                 if rate and nights else None),
+            "fare_per_person": (round(med * nights, 2) if nights else None),
+            "rate_as_of": as_of, "rate_source": source,
+            "sample": ("INSUFFICIENT" if len(g) < min_cells
+                       else "THIN" if len(g) < THIN_CELLS else "ok")
+                      + f" (cells={len(g)})",
+        })
+        out.append(d)
+
+    basis = basis.with_caveat(
+        "HALF MEASURED, HALF CITED: fares are this panel's own observations; "
+        f"the per-day rate is {line}'s published schedule as of {as_of} "
+        f"({source}), which we did not observe. Press has reported increases; "
+        "verify the current rate before quoting a discount figure.")
+    return Result("inclusion_discount", basis, out, notes=(
+        "effective_discount_pct = rate per person per DAY / fare per person "
+        "per NIGHT. Itinerary length cancels, so the percentage is comparable "
+        "across 4-night and 11-night sailings.",
+        "The suite rate is applied only where a group is entirely suites; a "
+        "mixed group takes the lower default rate, which understates rather "
+        "than flatters.",
+        "This is a discount that never touches the advertised price, which is "
+        "why an advertised-price tracker registers nothing while it runs.",
+        "Reach, targeting and sail window are measured by promo_reference and "
+        "promo_diff; only the per-day rate comes from outside the panel.",
+    ))
+
+
 # -- rendering --------------------------------------------------------------
 
 def render(result: Result, *, limit: int = 0) -> str:
@@ -1929,6 +2357,8 @@ ANALYSES = {
     "availability": availability_snapshot,
     "booking-curve": booking_curve,
     "final-payment": final_payment_test,
+    "offer-boundary": offer_boundary_event_study,
+    "inclusion-value": inclusion_discount,
     "promo-reference": promo_reference,
     "peer-gap": peer_gap,
     "cohort-index": cohort_index,
