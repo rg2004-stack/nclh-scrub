@@ -1,0 +1,60 @@
+{
+ "digest": "f303d78d1a3cad80b552e2ea81c8ec5270c93a17b02e1eaf89addb1ce42b09cf",
+ "generated_at_utc": "2026-09-28T07:05:44+00:00",
+ "regions": [
+  "Caribbean",
+  "Southern Europe",
+  "Northern Europe",
+  "Bermuda",
+  "Alaska",
+  "Transatlantic"
+ ],
+ "scrape_date": "2026-09-28",
+ "sheets": {
+  "availability": {
+   "rows": 44,
+   "status": "ok"
+  },
+  "booking-curve": {
+   "rows": 74,
+   "status": "ok"
+  },
+  "cohort-index": {
+   "rows": 2252,
+   "status": "COLLECTION SCOPE CHANGED BETWEEN DATES"
+  },
+  "curve-by-hull": {
+   "rows": 123,
+   "status": "ok"
+  },
+  "depletion": {
+   "rows": 44,
+   "status": "COLLECTION SCOPE CHANGED BETWEEN DATES"
+  },
+  "earnings-window": {
+   "rows": 44,
+   "status": "ok"
+  },
+  "inclusion-value": {
+   "rows": 10,
+   "status": "ok"
+  },
+  "offer-boundary": {
+   "rows": 3,
+   "status": "COLLECTION SCOPE CHANGED BETWEEN DATES"
+  },
+  "peer-gap": {
+   "rows": 24,
+   "status": "ok"
+  },
+  "promo-diff": {
+   "rows": 336,
+   "status": "COLLECTION SCOPE CHANGED BETWEEN DATES"
+  },
+  "promo-reference": {
+   "rows": 21,
+   "status": "ok"
+  }
+ },
+ "tier": "weekly-full"
+}
