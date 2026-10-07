@@ -1,0 +1,21 @@
+{
+ "basis": "jefferies",
+ "digest": "a3922c534e9ff0bf09e0a7d2d3ce15f423d8780a996850c67e74e89b353a72a6",
+ "generated_at_utc": "2026-09-29T04:46:31+00:00",
+ "scrape_date": "2026-09-28",
+ "sheets": {
+  "Cohort index (Jefferies basis)": {
+   "rows": 563,
+   "status": "ok"
+  },
+  "Jefferies grid": {
+   "rows": 149,
+   "status": "ok"
+  },
+  "Min vs mean by lead": {
+   "rows": 95,
+   "status": "ok"
+  }
+ },
+ "tier": "weekly-full"
+}

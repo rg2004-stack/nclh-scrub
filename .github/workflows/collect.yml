@@ -17,6 +17,16 @@ on:
     - cron: "10 6 * * 1"
     # Daily marker tier - every day 06:40 UTC (after the weekly on Mondays)
     - cron: "40 6 * * *"
+    # Catch-up runs. GitHub places runners in whatever Azure region has
+    # capacity; on 2026-10-07 the daily run landed in canadaeast, NCL priced
+    # in CAD, and the US-market gate correctly refused to collect. A later run
+    # gets a different runner, almost always in a US region. scripts/plan_run.py
+    # collects only what is still missing for today and skips (green, seconds)
+    # when nothing is. These strings must match CATCHUP_CRONS in that script;
+    # a test enforces it.
+    - cron: "40 9 * * *"
+    - cron: "40 13 * * *"
+    - cron: "40 17 * * *"
   workflow_dispatch:
     inputs:
       tier:
@@ -51,13 +61,53 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Decide what this run collects. Primary crons always run their tier; a
+  # catch-up cron collects only today's missing tier/lines, or nothing.
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      run: ${{ steps.plan.outputs.run }}
+      tier: ${{ steps.plan.outputs.tier }}
+      lines: ${{ steps.plan.outputs.lines }}
+    steps:
+      # Branch tip, not the trigger SHA: a run queued behind another must see
+      # what that run committed (see the collect job's checkout).
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Plan
+        id: plan
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          SCHEDULE: ${{ github.event.schedule }}
+          INPUT_TIER: ${{ github.event.inputs.tier }}
+          INPUT_LINE: ${{ github.event.inputs.line }}
+        run: python scripts/plan_run.py
+
   collect:
-    name: ${{ github.event.inputs.tier || 'scheduled' }}
+    needs: plan
+    if: needs.plan.outputs.run == 'true'
+    name: ${{ needs.plan.outputs.tier }}
     runs-on: ubuntu-latest
     timeout-minutes: 330      # full weekly panel is rate-limited to >=2s/request
 
     steps:
+      # Check out the branch TIP, not the SHA that triggered the run. On Mondays
+      # the daily run is queued behind the weekly (concurrency group) but used to
+      # start from the pre-weekly commit; both runs rewrite the shared
+      # promos.jsonl.gz, so the daily's rebase hit a binary conflict and its data
+      # was silently dropped on 2026-09-21, 09-28 and 10-05. Starting from the
+      # tip, a serialised run builds on the previous run's commit and cannot
+      # conflict with it.
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
 
       - uses: actions/setup-python@v5
         with:
@@ -69,17 +119,11 @@ jobs:
       - name: Run tests
         run: python -m pytest -q
 
-      # cron does not tell the job which schedule fired, so derive the tier.
+      # The planner decided the tier; later steps read it from here.
       - name: Resolve tier
         id: tier
         run: |
-          if [ -n "${{ github.event.inputs.tier }}" ]; then
-            tier="${{ github.event.inputs.tier }}"
-          elif [ "${{ github.event.schedule }}" = "10 6 * * 1" ]; then
-            tier="weekly-full"
-          else
-            tier="daily-marker"
-          fi
+          tier="${{ needs.plan.outputs.tier }}"
           echo "tier=$tier" >> "$GITHUB_OUTPUT"
           echo "Running tier: $tier"
 
@@ -100,12 +144,13 @@ jobs:
       - name: Collect
         run: |
           args="--tier ${{ steps.tier.outputs.tier }}"
-          # A single-line run backfills one source without re-collecting the
-          # others; scheduled runs always cover every configured line.
-          if [ -n "${{ github.event.inputs.line }}" ] \
-             && [ "${{ github.event.inputs.line }}" != "all" ]; then
-            args="$args --line ${{ github.event.inputs.line }}"
-          fi
+          # Lines come from the planner: empty means every configured line.
+          # A catch-up names only the lines still missing for today, because
+          # re-collecting one that already succeeded would change an existing
+          # dated file and the export would refuse it.
+          for line in ${{ needs.plan.outputs.lines }}; do
+            args="$args --line $line"
+          done
           if [ -n "${{ github.event.inputs.limit_itineraries }}" ]; then
             args="$args --limit-itineraries ${{ github.event.inputs.limit_itineraries }}"
           fi
@@ -159,13 +204,35 @@ jobs:
           commit. A rewritten workbook is explained in reports/REGENERATIONS.jsonl.
 
           Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
-          # Another run may have landed while this one collected.
+          # Another commit may have landed while this one collected. A failed
+          # rebase used to leave the repo mid-rebase with HEAD on origin's tip,
+          # so the push reported "Everything up-to-date", exited 0, and this
+          # run's data vanished behind a green tick. Abort a failed rebase, and
+          # fail the step unless origin ends up holding exactly our commit.
+          ours=$(git rev-parse HEAD)
+          rebased=false
           for attempt in 1 2 3; do
-            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && break
-            echo "rebase attempt $attempt failed, retrying"
+            if git pull --rebase --autostash origin "${GITHUB_REF_NAME}"; then
+              rebased=true
+              break
+            fi
+            git rebase --abort 2>/dev/null || true
+            git reset --hard "$ours"
+            echo "::warning::rebase attempt $attempt failed, retrying"
             sleep 5
           done
+          if [ "$rebased" != true ]; then
+            echo "::error::could not rebase onto ${GITHUB_REF_NAME}; this run's data was NOT pushed (the catch-up run will re-collect it)"
+            git diff --name-only "$ours" "origin/${GITHUB_REF_NAME}" || true
+            exit 1
+          fi
           git push origin "HEAD:${GITHUB_REF_NAME}"
+          git fetch origin "${GITHUB_REF_NAME}"
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse "origin/${GITHUB_REF_NAME}")" ]; then
+            echo "::error::push did not land: origin/${GITHUB_REF_NAME} is not this run's commit"
+            exit 1
+          fi
+          echo "pushed $(git rev-parse --short HEAD): $(git log -1 --format=%s)"
 
       - name: Summary
         if: always()
