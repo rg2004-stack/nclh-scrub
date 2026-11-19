@@ -13,7 +13,8 @@ a US region.
 
 So the workflow has catch-up crons. Each one runs this planner first:
 
-* primary crons always run their tier, exactly as before;
+* a primary cron runs its own tier, for the lines not yet collected today
+  (usually all of them; none if a late catch-up already got there);
 * a catch-up cron looks at what is already committed for TODAY (UTC, which is
   the scrape_date the collector writes) and collects only what is missing --
   the weekly tier first on a Monday, then the daily tier;
@@ -73,6 +74,18 @@ def missing_lines(cfg, tier: str, day: str, root: str) -> list[str]:
             if not os.path.exists(export_path(root, day, tier, name))]
 
 
+def _plan_tier(cfg, tier: str, day: str, root: str,
+               kind: str) -> dict[str, str] | None:
+    """A run of `tier` for the lines still missing on `day`, or None if none are."""
+    missing = missing_lines(cfg, tier, day, root)
+    if not missing:
+        return None
+    everything = [k for k, _ in expected_lines(cfg, tier)]
+    lines = "" if sorted(missing) == sorted(everything) else " ".join(missing)
+    return {"run": "true", "tier": tier, "lines": lines,
+            "reason": f"{kind}: {tier} for {day} missing {', '.join(missing)}"}
+
+
 def plan(*, event: str, schedule: str = "", input_tier: str = "",
          input_line: str = "", today: dt.date | None = None,
          config_path: str = str(DEFAULT_CONFIG_PATH),
@@ -86,26 +99,27 @@ def plan(*, event: str, schedule: str = "", input_tier: str = "",
         return {"run": "true", "tier": tier, "lines": lines,
                 "reason": f"manual run of {tier}"}
 
-    if schedule == WEEKLY_CRON:
-        return {"run": "true", "tier": "weekly-full", "lines": "",
-                "reason": "primary weekly schedule"}
-    if schedule == DAILY_CRON:
-        return {"run": "true", "tier": "daily-marker", "lines": "",
-                "reason": "primary daily schedule"}
+    # Primary crons are held to the same rule as catch-ups: collect only what is
+    # missing for today. GitHub starts scheduled runs hours late, so the
+    # previous day's 17:40 catch-up regularly starts after midnight UTC and
+    # collects TODAY. A primary that then re-collected unconditionally would
+    # rewrite that dated file and the export guard would fail the run -- which
+    # it did on 2026-11-10 and 11-17, with the day's data already committed.
+    if schedule in (WEEKLY_CRON, DAILY_CRON):
+        cfg = load_config(config_path)
+        tier = "weekly-full" if schedule == WEEKLY_CRON else "daily-marker"
+        return _plan_tier(cfg, tier, day, root, "primary") or {
+            "run": "false", "tier": "", "lines": "",
+            "reason": f"primary: {tier} for {day} already collected"}
 
     if schedule in CATCHUP_CRONS:
         cfg = load_config(config_path)
         tiers = (["weekly-full", "daily-marker"]
                  if today.weekday() == WEEKLY_WEEKDAY else ["daily-marker"])
         for tier in tiers:
-            missing = missing_lines(cfg, tier, day, root)
-            if not missing:
-                continue
-            everything = [k for k, _ in expected_lines(cfg, tier)]
-            lines = "" if sorted(missing) == sorted(everything) else " ".join(missing)
-            return {"run": "true", "tier": tier, "lines": lines,
-                    "reason": f"catch-up: {tier} for {day} missing "
-                              f"{', '.join(missing)}"}
+            p = _plan_tier(cfg, tier, day, root, "catch-up")
+            if p:
+                return p
         return {"run": "false", "tier": "", "lines": "",
                 "reason": f"catch-up: everything for {day} already collected"}
 

@@ -91,7 +91,7 @@ class TestCandidateFrame:
     def test_length_is_carried_and_flagged_against_the_peer_band(self, conn):
         insert(conn, [cell("SEVEN", days(60), nights=7),
                       cell("FOUR", days(60), nights=4)])
-        got = {c["itinerary_code"]: c for c in pm.panel_candidates(conn)}
+        got = {c["itinerary_code"]: c for c in pm.panel_candidates(conn, today=TODAY)}
         assert got["SEVEN"]["peer_length"] is True
         assert got["FOUR"]["peer_length"] is False
 
@@ -102,13 +102,13 @@ class TestCandidateFrame:
                       cell("STALE", days(60), scrape="2026-09-16"),
                       cell("DAILYONLY", days(60), tier="daily-marker",
                            scrape="2026-09-17")])
-        codes = {c["itinerary_code"] for c in pm.panel_candidates(conn)}
+        codes = {c["itinerary_code"] for c in pm.panel_candidates(conn, today=TODAY)}
         assert codes == {"LIVE"}
 
     def test_straddling_is_computed_per_candidate(self, conn):
         insert(conn, [cell("BOTH", days(60)), cell("BOTH", days(200)),
                       cell("ONESIDE", days(60))])
-        got = {c["itinerary_code"]: c for c in pm.panel_candidates(conn)}
+        got = {c["itinerary_code"]: c for c in pm.panel_candidates(conn, today=TODAY)}
         assert got["BOTH"]["straddles"] is True
         assert got["ONESIDE"]["straddles"] is False
 

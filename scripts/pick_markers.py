@@ -173,7 +173,8 @@ def ncl_candidates(calendar: dict[str, dict], panel_codes: set[str]) -> list[dic
 
 
 def panel_candidates(conn: sqlite3.Connection,
-                     line_like: str = "%") -> list[dict]:
+                     line_like: str = "%",
+                     today: datetime.date | None = None) -> list[dict]:
     """Candidates straight from the weekly panel, for any line.
 
     The panel now spans Oct 2026 - Oct 2028 for every collected line, so it is
@@ -206,7 +207,7 @@ def panel_candidates(conn: sqlite3.Connection,
             "WHERE tier='weekly-full')",
             (r["itinerary_code"], r["line"]))]
         near, event = split_dates(dates)
-        inside, outside = straddle_counts(dates)
+        inside, outside = straddle_counts(dates, today)
         nights = r["nights"]
         peer_len = bool(nights and PEER_NIGHTS[0] <= nights <= PEER_NIGHTS[1])
         cats = [c[0] for c in conn.execute(

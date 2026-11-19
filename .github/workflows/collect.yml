@@ -61,8 +61,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Decide what this run collects. Primary crons always run their tier; a
-  # catch-up cron collects only today's missing tier/lines, or nothing.
+  # Decide what this run collects: only today's missing tier/lines, or nothing.
+  # A primary cron is limited to its own tier; a catch-up tries both on Mondays.
   plan:
     runs-on: ubuntu-latest
     timeout-minutes: 10

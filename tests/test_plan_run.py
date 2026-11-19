@@ -38,13 +38,41 @@ def _catchup(root, today, cron=pr.CATCHUP_CRONS[0]):
     return pr.plan(event="schedule", schedule=cron, today=today, root=str(root))
 
 
-# -- primary and manual triggers are unchanged --------------------------------
+# -- primary and manual triggers ------------------------------------------------
 
-def test_primary_crons_always_run_their_tier(tmp_path):
+def test_primary_crons_run_their_tier_on_an_empty_day(tmp_path):
     w = pr.plan(event="schedule", schedule=pr.WEEKLY_CRON, today=MONDAY, root=str(tmp_path))
     d = pr.plan(event="schedule", schedule=pr.DAILY_CRON, today=MONDAY, root=str(tmp_path))
     assert (w["run"], w["tier"], w["lines"]) == ("true", "weekly-full", "")
     assert (d["run"], d["tier"], d["lines"]) == ("true", "daily-marker", "")
+
+
+def test_primary_skips_a_day_a_late_catchup_already_collected(tmp_path):
+    """2026-11-10 and 11-17: the previous day's 17:40 catch-up started after
+    midnight UTC and committed today's daily. The 06:40 primary, started hours
+    late, re-collected it and the export guard failed the run."""
+    for name in _names("daily-marker").values():
+        _touch(tmp_path, TUESDAY, "daily-marker", name)
+    p = pr.plan(event="schedule", schedule=pr.DAILY_CRON, today=TUESDAY, root=str(tmp_path))
+    assert p["run"] == "false"
+    for name in _names("weekly-full").values():
+        _touch(tmp_path, MONDAY, "weekly-full", name)
+    p = pr.plan(event="schedule", schedule=pr.WEEKLY_CRON, today=MONDAY, root=str(tmp_path))
+    assert p["run"] == "false"
+
+
+def test_primary_collects_only_the_missing_line(tmp_path):
+    names = _names("daily-marker")
+    have, *rest = sorted(names)
+    _touch(tmp_path, TUESDAY, "daily-marker", names[have])
+    p = pr.plan(event="schedule", schedule=pr.DAILY_CRON, today=TUESDAY, root=str(tmp_path))
+    assert (p["run"], p["tier"]) == ("true", "daily-marker")
+    assert p["lines"].split() == rest
+
+
+def test_primary_daily_on_monday_ignores_the_weekly_tier(tmp_path):
+    p = pr.plan(event="schedule", schedule=pr.DAILY_CRON, today=MONDAY, root=str(tmp_path))
+    assert p["tier"] == "daily-marker"
 
 
 def test_manual_run_passes_inputs_through(tmp_path):
@@ -112,7 +140,9 @@ def test_marker_tier_expects_only_lines_with_markers():
 def test_main_writes_github_output(tmp_path, monkeypatch, capsys):
     out = tmp_path / "gh_out"
     monkeypatch.setenv("GITHUB_OUTPUT", str(out))
-    assert pr.main(["--event", "schedule", "--schedule", pr.DAILY_CRON]) == 0
+    # A manual trigger, so the result does not depend on the real clock or on
+    # which dated files happen to be committed under data/observations.
+    assert pr.main(["--event", "workflow_dispatch", "--input-tier", "daily-marker"]) == 0
     kv = dict(l.split("=", 1) for l in out.read_text().splitlines())
     assert kv["run"] == "true" and kv["tier"] == "daily-marker"
 
